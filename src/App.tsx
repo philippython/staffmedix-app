@@ -7,7 +7,10 @@ import Index from "./pages/Index";
 import WorkerSignup from "./pages/WorkerSignup";
 import WorkerProfile from "./pages/WorkerProfile";
 import EditWorkerProfile from "./pages/EditWorkerProfile";
+import WorkerDashboard from "./pages/WorkerDashboard";
+import WorkerSettings from "./pages/WorkerSettings";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import EmployerSettings from "./pages/EmployerSettings";
 import JobPosting from "./pages/JobPosting";
 import JobBoard from "./pages/JobBoard";
 import JobDetails from "./pages/JobDetails";
@@ -30,7 +33,10 @@ const App = () => (
           <Route path="/worker-signup" element={<WorkerSignup />} />
           <Route path="/profile" element={<WorkerProfile />} />
           <Route path="/profile/edit" element={<EditWorkerProfile />} />
+          <Route path="/worker-dashboard" element={<WorkerDashboard />} />
+          <Route path="/worker-settings" element={<WorkerSettings />} />
           <Route path="/employer-dashboard" element={<EmployerDashboard />} />
+          <Route path="/employer-settings" element={<EmployerSettings />} />
           <Route path="/job-posting" element={<JobPosting />} />
           <Route path="/jobs" element={<JobBoard />} />
           <Route path="/jobs/:id" element={<JobDetails />} />

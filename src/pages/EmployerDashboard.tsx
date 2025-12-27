@@ -25,7 +25,7 @@ const sidebarLinks = [
   { name: "Dashboard", href: "/employer-dashboard", icon: LayoutDashboard },
   { name: "Job Posts", href: "/job-posting", icon: Briefcase },
   { name: "Subscription", href: "/pricing", icon: CreditCard },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Settings", href: "/employer-settings", icon: Settings },
 ];
 
 const statsCards = [
@@ -290,9 +290,10 @@ const EmployerDashboard = () => {
               </div>
               <div className="space-y-4">
                 {activeJobs.map((job, index) => (
-                  <div
+                  <Link
                     key={index}
-                    className="p-4 border border-border rounded-xl hover:border-primary transition-colors"
+                    to="/job-posting"
+                    className="block p-4 border border-border rounded-xl hover:border-primary transition-colors"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="font-semibold text-foreground">{job.title}</h3>
@@ -316,7 +317,7 @@ const EmployerDashboard = () => {
                         {job.posted}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
