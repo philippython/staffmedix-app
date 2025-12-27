@@ -18,12 +18,14 @@ import {
   ChevronRight,
   Calendar,
   Building2,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const sidebarLinks = [
   { name: "Dashboard", href: "/employer-dashboard", icon: LayoutDashboard },
   { name: "Job Posts", href: "/job-posting", icon: Briefcase },
+  { name: "Advertisements", href: "/employer-ads", icon: Megaphone },
   { name: "Subscription", href: "/pricing", icon: CreditCard },
   { name: "Settings", href: "/employer-settings", icon: Settings },
 ];
