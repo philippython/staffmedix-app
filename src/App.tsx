@@ -11,12 +11,15 @@ import WorkerDashboard from "./pages/WorkerDashboard";
 import WorkerSettings from "./pages/WorkerSettings";
 import EmployerDashboard from "./pages/EmployerDashboard";
 import EmployerSettings from "./pages/EmployerSettings";
+import EmployerAds from "./pages/EmployerAds";
 import JobPosting from "./pages/JobPosting";
 import JobBoard from "./pages/JobBoard";
 import JobDetails from "./pages/JobDetails";
 import Pricing from "./pages/Pricing";
+import Ads from "./pages/Ads";
 import AdminVerification from "./pages/AdminVerification";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminAds from "./pages/AdminAds";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -37,12 +40,15 @@ const App = () => (
           <Route path="/worker-settings" element={<WorkerSettings />} />
           <Route path="/employer-dashboard" element={<EmployerDashboard />} />
           <Route path="/employer-settings" element={<EmployerSettings />} />
+          <Route path="/employer-ads" element={<EmployerAds />} />
           <Route path="/job-posting" element={<JobPosting />} />
           <Route path="/jobs" element={<JobBoard />} />
           <Route path="/jobs/:id" element={<JobDetails />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/ads" element={<Ads />} />
           <Route path="/admin/verifications" element={<AdminVerification />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/ads" element={<AdminAds />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

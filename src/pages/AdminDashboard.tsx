@@ -22,6 +22,7 @@ import {
   Activity,
   UserCheck,
   Briefcase,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ const sidebarLinks = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
   { name: "Workers", href: "/admin/workers", icon: Users },
   { name: "Organizations", href: "/admin/organizations", icon: Building2 },
+  { name: "Advertisements", href: "/admin/ads", icon: Megaphone },
   { name: "Verifications", href: "/admin/verifications", icon: ShieldCheck },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
