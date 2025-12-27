@@ -5,8 +5,9 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { name: "Find Talent", href: "/jobs" },
-  { name: "For Workers", href: "/worker-signup" },
+  { name: "Find Jobs", href: "/jobs" },
+  { name: "For Workers", href: "/worker-dashboard" },
+  { name: "For Employers", href: "/employer-dashboard" },
   { name: "Pricing", href: "/pricing" },
 ];
 
@@ -45,10 +46,10 @@ export function Header() {
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Button variant="ghost" asChild>
-            <Link to="/employer-dashboard">Employer Login</Link>
+            <Link to="/auth">Login</Link>
           </Button>
           <Button asChild>
-            <Link to="/worker-signup">Join as Worker</Link>
+            <Link to="/worker-signup">Get Started</Link>
           </Button>
         </div>
 
@@ -87,13 +88,13 @@ export function Header() {
             ))}
             <div className="flex flex-col gap-2 pt-4 border-t border-border">
               <Button variant="outline" asChild className="w-full">
-                <Link to="/employer-dashboard" onClick={() => setMobileOpen(false)}>
-                  Employer Login
+                <Link to="/auth" onClick={() => setMobileOpen(false)}>
+                  Login
                 </Link>
               </Button>
               <Button asChild className="w-full">
                 <Link to="/worker-signup" onClick={() => setMobileOpen(false)}>
-                  Join as Worker
+                  Get Started
                 </Link>
               </Button>
             </div>
