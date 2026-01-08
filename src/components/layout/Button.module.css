@@ -1,0 +1,25 @@
+.button {
+  height: 2.5rem;
+  width: 5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.coloredButton {
+  background-color: #178c75;
+  color: #ffffff;
+}
+
+.coloredButton:hover {
+  background-color: #ffffff;
+  color: #178c75;
+  border: 0.1rem solid #178c75;
+}
+
+.plainButton {
+  background-color: #ffffff;
+  color: #178c75;
+  border: 0.1rem solid #178c75;
+}

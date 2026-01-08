@@ -1,0 +1,22 @@
+.nav {
+  border-bottom: 0.1rem solid #aaaaaa;
+  padding: 0.8rem 1.4rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  gap: 3rem;
+}
+
+.navList {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  gap: 2.2rem;
+}
+
+.navList li {
+  font-size: 0.9rem;
+  color: #5a5a5a;
+  font-weight: 500;
+}

@@ -1,0 +1,18 @@
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.appIcon {
+  color: #fff;
+  background-color: #178c75;
+  border-radius: 0.4rem;
+  height: 2rem;
+  width: 2rem;
+  padding: 0.4rem;
+}
+
+.appName {
+  font-size: 1.4rem;
+}
