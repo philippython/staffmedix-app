@@ -1,3 +1,13 @@
+:root {
+  --primary-bg-color: #178c75;
+  --primary-color: #ffffff;
+  --light-grey: #dee2e6;
+  --dark-grey: #495057be;
+  --light-green: #e6fcf539;
+  --light-teal: #e6fcf5;
+  --dark-teal: #099268;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,6 +19,7 @@ html {
 }
 
 body {
+  line-height: 1.1;
   font-size: 1.2rem;
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
 }
