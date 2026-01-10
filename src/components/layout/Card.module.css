@@ -37,7 +37,7 @@
   width: 20vw;
   padding: 3rem 1.5rem;
   background-color: #fff;
-  box-shadow: 0.2rem 0.1rem 1rem rgba(197, 197, 197, 0.5);
+  box-shadow: var(--soft-shadow);
 }
 
 .plainCardMedium p {

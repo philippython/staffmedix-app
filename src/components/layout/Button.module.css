@@ -22,7 +22,7 @@
 .plainButton {
   background-color: var(--primary-color);
   color: var(--primary-bg-color);
-  box-shadow: 0.2rem 0.1rem 1rem rgba(197, 197, 197, 0.5);
+  box-shadow: var(--soft-shadow);
 }
 
 .mediumColoredButton {
@@ -40,7 +40,7 @@
   padding: 1.1rem;
   background-color: var(--primary-color);
   color: var(--primary-bg-color);
-  box-shadow: 0.2rem 0.1rem 1rem rgba(197, 197, 197, 0.5);
+  box-shadow: var(--soft-shadow);
   align-self: center;
 }
 

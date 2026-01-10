@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100..900;1,100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,opsz@0,14..32;1,14..32&family=Rubik:ital,wght@0,300..900;1,300..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap");
 :root {
   --primary-bg-color: #178c75;
   --primary-color: #ffffff;
@@ -6,6 +7,9 @@
   --light-green: #e6fcf539;
   --light-teal: #e6fcf5;
   --dark-teal: #099268;
+  --secondary-bg-color: #f4f6f64d;
+  --light-shadow: 0.1rem 0.1rem 1.5rem rgba(197, 197, 197, 0.242);
+  --soft-shadow: 0.2rem 0.1rem 1rem rgba(197, 197, 197, 0.5);
 }
 
 * {
@@ -15,11 +19,11 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 body {
   line-height: 1.1;
   font-size: 1.2rem;
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-family: "Source Sans 3", sans-serif;
 }
