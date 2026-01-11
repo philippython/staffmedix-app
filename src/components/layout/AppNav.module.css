@@ -1,6 +1,6 @@
 .nav {
   border-bottom: 0.05rem solid var(--light-grey);
-  padding: 0.6rem 2.4rem;
+  padding: 0.2rem 2.4rem;
   display: flex;
   flex-direction: row;
   align-items: center;

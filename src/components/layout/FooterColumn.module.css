@@ -1,0 +1,22 @@
+.footerColumn ul {
+  list-style: none;
+}
+.footerColumn li,
+.footerColumn p {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin: 1rem 0;
+}
+.footerColumn li:hover {
+  cursor: pointer;
+  color: var(--dark-teal);
+}
+.footerColumn svg {
+  height: 20px;
+  width: 20px;
+  margin-right: 0.2rem;
+  padding-top: 0.4rem;
+}
+.footerColumn h3 {
+  font-size: 1rem;
+}
