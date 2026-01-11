@@ -2,12 +2,20 @@
 :root {
   --primary-bg-color: #178c75;
   --primary-color: #ffffff;
+
   --light-grey: #dee2e6;
   --dark-grey: #495057be;
+  --soft-grey: #eff3f5;
+  --transparent-grey: rgba(255 255, 255, 0.2);
+
   --light-green: #e6fcf539;
   --light-teal: #e6fcf5;
   --dark-teal: #099268;
   --secondary-bg-color: #f4f6f64d;
+
+  --gradient-top: hsl(168 84% 32%);
+  --gradient-bottom: hsl(190 70% 45%);
+  --transparent-bg: rgba(255, 255, 255, 0.13);
 
   --light-shadow: 0 0.1rem 015rem rgba(0, 0, 0, 0.05);
   --soft-shadow: 0 0.5rem 0.7rem rgba(0, 0, 0, 0.07);

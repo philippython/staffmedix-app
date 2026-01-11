@@ -2,6 +2,7 @@ import AppNav from "../components/layout/AppNav";
 import Hero from "../components/layout/Hero";
 import HowItWorks from "../components/layout/HowItWorks";
 import Testimoials from "../components/layout/Testimonals";
+import CTA from "../components/layout/CTA";
 
 export default function Homepage() {
   return (
@@ -10,6 +11,7 @@ export default function Homepage() {
       <Hero />
       <HowItWorks />
       <Testimoials />
+      <CTA />
     </>
   );
 }
