@@ -1,5 +1,7 @@
 import "./App.css";
 import Homepage from "./pages/Homepage";
+import JobPosting from "./pages/JobPosting";
+
 import { BrowserRouter, Routes, Route } from "react-router";
 
 function App() {
@@ -7,6 +9,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route index path="/" element={<Homepage />}></Route>
+        <Route index path="/jobs" element={<JobPosting />}></Route>
       </Routes>
     </BrowserRouter>
   );

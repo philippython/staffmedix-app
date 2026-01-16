@@ -3,6 +3,7 @@
   align-items: center;
   gap: 0.2rem;
   justify-self: start;
+  color: black;
 }
 
 .appIcon {

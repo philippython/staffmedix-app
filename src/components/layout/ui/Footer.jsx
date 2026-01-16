@@ -1,12 +1,15 @@
 import styles from "./footer.module.css";
 import FooterColumn from "./FooterColumn";
 import Logo from "./Logo";
+import { Link } from "react-router";
 
 export default function CTA() {
   return (
     <section className={styles.footer}>
       <FooterColumn>
-        <Logo />
+        <Link to={"/"}>
+          <Logo />
+        </Link>{" "}
         <p>
           Connecting verified Nigerian healthcare professionals with trusted
           employers.

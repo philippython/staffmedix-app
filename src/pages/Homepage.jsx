@@ -1,9 +1,9 @@
-import AppNav from "../components/layout/AppNav";
-import Hero from "../components/layout/Hero";
-import HowItWorks from "../components/layout/HowItWorks";
-import Testimoials from "../components/layout/Testimonals";
-import CTA from "../components/layout/CTA";
-import Footer from "../components/layout/Footer";
+import AppNav from "../components/layout/ui/AppNav";
+import Hero from "../components/layout/ui/Hero";
+import HowItWorks from "../components/layout/ui/HowItWorks";
+import Testimoials from "../components/layout/ui/Testimonals";
+import CTA from "../components/layout/ui/CTA";
+import Footer from "../components/layout/ui/Footer";
 
 export default function Homepage() {
   return (

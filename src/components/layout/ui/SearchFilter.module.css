@@ -1,0 +1,76 @@
+.searchFilter {
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--light-shadow);
+  padding: 2rem;
+  border-radius: 1rem;
+  margin: 1rem 2rem;
+  /* grid-column: span ; */
+}
+
+.searchFilter ul {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.searchFilter .filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.searchFilter .filter p {
+  color: var(--dark-teal);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.radio svg {
+  display: none;
+}
+
+.radio p {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+
+.radioSelect {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.radio div {
+  background-color: var(--primary-color);
+  border: 1px solid var(--dark-teal);
+  height: 0.8rem;
+  width: 0.8rem;
+  border-radius: 50%;
+}
+
+.radioSelect div {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  height: 0.8rem;
+  width: 0.8rem;
+  border-radius: 50%;
+}
+
+.radioSelect svg {
+  height: 5px;
+  width: 5px;
+}
+
+.radioSelect p {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
