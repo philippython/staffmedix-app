@@ -4,11 +4,12 @@
     var(--gradient-top),
     var(--gradient-bottom)
   );
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
   text-align: center;
   display: grid;
   justify-content: center;
-  grid-template-columns: 0.7fr;
+  grid-template-columns: 0.6fr;
+  grid-column: 1 / span 2;
   gap: 2rem;
 }
 
@@ -19,11 +20,12 @@
 
 .jobHero > div {
   background-color: var(--primary-color);
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 1rem;
   height: 15vh;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -55,56 +57,6 @@
 
 .input::placeholder {
   color: var(--dark-grey);
-}
-
-.select {
-  width: 25%;
-  border: 1px solid var(--light-grey);
-  color: 1px solid var(--light-grey);
-  border-radius: 0.5rem;
-  padding: 0.5rem 2.5rem 0.5rem 1rem;
-  font-size: 0.9rem;
-  display: flex;
-  gap: 1.5rem;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.select svg {
-  color: var(--dark-grey);
-}
-
-.dropdown {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  width: 20vh;
-  background-color: var(--primary-color);
-  box-shadow: var(--soft-shadow);
-  top: 40%;
-  right: 37%;
-  z-index: 999;
-  position: absolute;
-}
-
-.dropdown ul {
-  list-style: none;
-}
-
-.dropdown li {
-  font-size: 0.9rem;
-  padding: 0.2rem;
-  cursor: pointer;
-}
-
-.dropdown li:first-child {
-  color: var(--dark-teal);
-  background-color: var(--light-teal);
-  border-radius: 0.3rem;
-}
-.dropdown li:hover {
-  color: var(--dark-teal);
-  background-color: var(--light-teal);
-  border-radius: 0.3rem;
 }
 
 .searchButton {

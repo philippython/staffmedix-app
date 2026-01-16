@@ -1,5 +1,7 @@
 import styles from "./Tag.module.css";
 
-export default function Tag({ children }) {
-  return <div className={styles.tag}>{children}</div>;
+export default function Tag({ children, variant }) {
+  const tagClasses = `${styles.tagIcon} ${styles[variant]}`;
+
+  return <div className={tagClasses}>{children}</div>;
 }

@@ -5,7 +5,7 @@
   padding: 2rem;
   border-radius: 1rem;
   margin: 1rem 2rem;
-  /* grid-column: span ; */
+  grid-column: 1 / span 1;
 }
 
 .searchFilter ul {
@@ -63,11 +63,14 @@
   height: 0.8rem;
   width: 0.8rem;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
 }
 
 .radioSelect svg {
-  height: 5px;
-  width: 5px;
+  height: 12px;
+  width: 12px;
+  margin: 2px 2px;
 }
 
 .radioSelect p {

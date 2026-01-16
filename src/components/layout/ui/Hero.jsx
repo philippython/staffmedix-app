@@ -7,7 +7,7 @@ export default function Hero() {
   return (
     <header className={styles.hero}>
       <div className={styles.heroTextContainer}>
-        <Tag>
+        <Tag variant={"tag-green"}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -80,7 +80,7 @@ export default function Hero() {
               Dr. Adaeze O. <span>Registered Nurse</span>
             </h3>
           </div>
-          <Tag>
+          <Tag variant={"tag-green"}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -128,7 +128,7 @@ export default function Hero() {
           </svg>
           <h3>Lagos General Hospital</h3>
           <p>Hiring: ICU Nurses, Pharmacists</p>
-          <Tag>
+          <Tag variant={"tag-green"}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
