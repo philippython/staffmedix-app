@@ -7,18 +7,6 @@
   display: inline-block;
   cursor: pointer;
 }
-
-.button a:link,
-.button a:active {
-  color: currentColor;
-  text-decoration: none;
-}
-
-.button a:hover,
-.button a:visited {
-  color: currentColor;
-  text-decoration: none;
-}
 .outlinedButton {
   background-color: transparent;
   border: 2px solid var(--primary-bg-color);

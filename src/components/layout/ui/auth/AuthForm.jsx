@@ -57,7 +57,9 @@ export default function AuthForm() {
       <Button variant={"coloredButton"}>Sign In &rarr;</Button>
       <p className={styles.newParagraph}>New to StaffMedix? </p>
       <Button variant={"outlinedButton"}>Create an account </Button>
-      <Link to={"/"}>&larr; Back to home</Link>
+      <Link className={styles.backLink} to={"/"}>
+        &larr; Back to home
+      </Link>
     </div>
   );
 }

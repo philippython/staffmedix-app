@@ -15,16 +15,10 @@
   color: var(--dark-grey);
   font-size: 0.9rem;
 }
-.authForm a:link,
-.authForm a:visited {
+.backLink {
   font-size: 0.8rem;
   margin-top: 0.5rem;
-  color: var(--primary-bg-color);
-  text-decoration: none;
-}
-.authForm a:hover,
-.authForm a:active {
-  text-decoration: underline;
+  color: var(--primary-bg-color) !important;
 }
 .newParagraph {
   margin-top: 2rem;

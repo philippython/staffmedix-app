@@ -1,0 +1,65 @@
+.jobOpeningDetails {
+  padding: 1rem 12vw;
+  display: grid;
+  grid-template-columns: 1fr 0.5fr;
+  gap: 2rem;
+}
+.tagIcon {
+  height: 1.4rem;
+  width: 1.4rem;
+  padding: 0.2rem;
+  border-radius: 0.2rem;
+  color: var(--primary-bg-color);
+  background-color: var(--light-teal);
+}
+.backLink {
+  font-size: 0.9rem;
+  margin: 3rem 12vw 1rem 12vw;
+  display: inline-block;
+  color: var(--dark-grey) !important;
+}
+.backLink:hover {
+  text-decoration: underline;
+  color: var(--primary-bg-color) !important;
+}
+.applyContainer {
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--soft-shadow);
+  position: sticky;
+  top: 2rem;
+}
+.applyContainer span {
+  color: var(--dark-grey);
+  font-size: 0.8rem;
+  padding-bottom: 1rem;
+  align-self: center;
+  border-bottom: 1px solid var(--light-grey);
+}
+.employer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.employer p {
+  color: black !important;
+}
+.applyContainer h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.applyContainer p {
+  display: inline-block;
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+}
+.detailsContainer {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1 / span -1;
+  gap: 2rem;
+}

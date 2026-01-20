@@ -2,6 +2,7 @@ import JobOpening from "./JobOpening.jsx";
 import CustomSelect from "../app/CustomSelect.jsx";
 import Pagination from "../app/Pagination.jsx";
 import styles from "./JobListing.module.css";
+import { Link } from "react-router";
 
 export default function JobListing() {
   return (
@@ -12,7 +13,9 @@ export default function JobListing() {
         </p>
         <CustomSelect />
       </div>
-      <JobOpening />
+      <Link to={"/jobs/1"}>
+        <JobOpening />
+      </Link>
       <Pagination />
     </div>
   );

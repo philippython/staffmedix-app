@@ -9,7 +9,7 @@
   --transparent-grey: rgba(255 255, 255, 0.2);
 
   --light-green: #e6fcf539;
-  --light-teal: #e6fcf5;
+  --light-teal: #ebfdf7;
   --dark-teal: #099268;
   --secondary-bg-color: #f4f6f64d;
 
@@ -46,4 +46,16 @@ body {
 input:focus,
 select:focus {
   outline: 2px solid var(--dark-teal);
+}
+
+a:link,
+a:active {
+  color: currentColor;
+  text-decoration: none;
+}
+
+a:hover,
+a:visited {
+  color: currentColor;
+  text-decoration: none;
 }

@@ -4,14 +4,6 @@
   gap: 3rem;
   padding: 4rem 2rem 0 2rem;
 }
-.footer a:link,
-.footer a:active {
-  text-decoration: none;
-}
-.footer a:hover,
-.footer a:visited {
-  text-decoration: none;
-}
 .footerBottom {
   display: flex;
   grid-column: span 3 / -1;

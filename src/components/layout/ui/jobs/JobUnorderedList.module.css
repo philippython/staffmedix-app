@@ -1,0 +1,36 @@
+.jobUnorderedList {
+  padding: 1rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+.jobUnorderedList ul {
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.jobUnorderedList li {
+  position: relative;
+  list-style: none;
+  color: var(--dark-grey);
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.jobUnorderedList li::before {
+  content: "⨀";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  text-align: center;
+  color: var(--primary-bg-color);
+  background-color: var(--primary-color);
+}
+
+.jobUnorderedList h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
