@@ -1,0 +1,93 @@
+.button {
+  border-radius: 0.8rem;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.button a:link,
+.button a:active {
+  color: currentColor;
+  text-decoration: none;
+}
+
+.button a:hover,
+.button a:visited {
+  color: currentColor;
+  text-decoration: none;
+}
+.outlinedButton {
+  background-color: transparent;
+  border: 2px solid var(--primary-bg-color);
+  color: var(--primary-bg-color);
+}
+.outlinedButton:hover {
+  background-color: var(--light-teal);
+  border-color: var(--light-teal);
+}
+.coloredButton {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.borderlessButton {
+  color: var(--primary-bg-color);
+  margin-right: 1rem;
+}
+
+.borderlessButton:hover {
+  background-color: var(--light-teal);
+}
+
+.coloredButton:hover {
+  background-color: var(--dark-teal);
+}
+
+.plainButton {
+  background-color: var(--primary-color);
+  color: var(--primary-bg-color);
+  box-shadow: var(--soft-shadow);
+}
+
+.mediumColoredButton {
+  padding: 1.1rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  align-self: center;
+}
+
+.mediumColoredButton:hover {
+  background-color: var(--dark-teal);
+}
+
+.mediumPlainButton {
+  padding: 1.1rem;
+  background-color: var(--primary-color);
+  color: var(--primary-bg-color);
+  box-shadow: var(--soft-shadow);
+  align-self: center;
+}
+
+.mediumPlainButton:hover {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.largePlainButton {
+  padding: 1rem 5rem;
+  margin: 1rem;
+  width: 25vw;
+  font-size: 0.9rem;
+  background-color: var(--primary-color);
+  color: var(--primary-bg-color);
+  box-shadow: var(--soft-shadow);
+  align-self: start;
+}
+
+.largePlainButton:hover {
+  color: var(--light-teal);
+  box-shadow: var(--light-teal);
+}

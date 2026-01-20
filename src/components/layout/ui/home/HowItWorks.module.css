@@ -1,0 +1,30 @@
+.howItWorks {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--secondary-bg-color);
+}
+
+.howItWorks p {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--dark-grey);
+}
+
+.headerDiv {
+  margin-top: 12rem;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  justify-self: center;
+}
+
+.stepsDiv {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 2fr 1.8fr 2fr;
+  gap: 2rem;
+}

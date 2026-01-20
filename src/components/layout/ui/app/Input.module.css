@@ -1,0 +1,30 @@
+.inputDiv {
+  position: relative;
+}
+
+.inputDiv svg {
+  height: 1rem;
+  width: 1rem;
+  color: var(--dark-grey);
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+}
+
+.inputDiv input {
+  width: 100%;
+  height: 5.8vh;
+  border: 0.67px solid var(--light-grey);
+  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+  font-size: 0.9rem;
+  background-color: #fcfcfc;
+  position: relative;
+}
+
+.inputDiv input::placeholder {
+  color: var(--dark-grey);
+  font-size: 0.8rem;
+}

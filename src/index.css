@@ -15,6 +15,11 @@
 
   --gradient-top: hsl(168 84% 32%);
   --gradient-bottom: hsl(190 70% 45%);
+  --gradient-auth: linear-gradient(
+    135deg,
+    rgb(13, 150, 123) 0%,
+    rgb(34, 168, 195) 100%
+  );
   --transparent-bg: rgba(255, 255, 255, 0.13);
 
   --light-shadow: 0 0.1rem 015rem rgba(0, 0, 0, 0.05);

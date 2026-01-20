@@ -1,0 +1,60 @@
+.authHero {
+  background: var(--gradient-auth);
+  padding: 10rem 3rem;
+  width: 55vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.logoContainer {
+  margin: 2rem 0;
+}
+.authHero h1 {
+  color: var(--primary-color);
+  font-size: 2.4rem;
+  width: 70%;
+}
+.authHero h2 {
+  color: var(--primary-color);
+}
+.authHero p {
+  color: var(--soft-grey);
+  margin: 1.5rem 0 3rem 0;
+  line-height: 1.6rem;
+  font-size: 1.2rem;
+}
+.statsCardContainer {
+  display: flex;
+  gap: 1rem;
+}
+
+.statsCardContainer div {
+  width: 12vw;
+  height: 8vw;
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: start;
+  text-align: left;
+  flex-direction: column;
+}
+.statsCardContainer div p {
+  color: var(--primary-color);
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0;
+}
+.statsCardContainer div span {
+  color: var(--soft-grey);
+  font-size: 0.9rem;
+}
+
+.statsCardContainer div svg {
+  height: 2rem;
+  width: 2rem;
+  margin: 0;
+  padding: 0.2rem 0;
+  background: none;
+}

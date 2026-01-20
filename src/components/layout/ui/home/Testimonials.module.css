@@ -1,0 +1,69 @@
+.testimonials {
+  padding: 2rem;
+  margin-bottom: 4rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--primary-color);
+}
+
+.testimonialText {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  text-align: left;
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+}
+
+.testimonialPost {
+  text-align: left;
+  color: var(--dark-teal);
+  font-size: 0.8rem;
+}
+
+.headerDiv {
+  margin-top: 12rem;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  justify-self: center;
+}
+
+.cardsDiv {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: 2fr 1.8fr 2fr;
+  gap: 2rem;
+  text-align: left;
+}
+
+.testimonialUser {
+  color: var(--dark-teal);
+  font-weight: 600;
+  height: 2.8rem;
+  width: 2.8rem;
+  background-color: var(--light-teal);
+  border-radius: 50%;
+  padding: 0.3rem 0.5rem;
+  font-size: 1rem;
+}
+
+.testimonialDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  height: 2.8rem;
+  margin-left: 0.4rem;
+}
+
+.testimonialDetails h4 {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.testimonialDetails span {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+}

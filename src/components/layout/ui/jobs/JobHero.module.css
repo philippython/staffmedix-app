@@ -1,0 +1,37 @@
+.jobHero {
+  background: linear-gradient(
+    to bottom right,
+    var(--gradient-top),
+    var(--gradient-bottom)
+  );
+  padding: 3rem 2rem;
+  text-align: center;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: 0.6fr;
+  grid-column: 1 / span 2;
+  gap: 2rem;
+}
+
+.jobHero h3 {
+  color: var(--primary-color);
+  font-size: 2rem;
+}
+.jobHero > div {
+  background-color: var(--primary-color);
+  border-radius: 1rem;
+  height: 10vh;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.searchButton {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.searchButton svg {
+  height: 0.9rem;
+  width: 0.9rem;
+}

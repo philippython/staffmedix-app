@@ -1,0 +1,9 @@
+.toggle {
+  height: 3rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.8rem;
+  padding: 2px 5px;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+}

@@ -1,0 +1,70 @@
+.authForm {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 1rem;
+  padding: 4rem 6rem;
+  width: 45vw;
+  height: 100vh;
+}
+.authForm h4 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+.authForm p {
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+}
+.authForm a:link,
+.authForm a:visited {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  color: var(--primary-bg-color);
+  text-decoration: none;
+}
+.authForm a:hover,
+.authForm a:active {
+  text-decoration: underline;
+}
+.newParagraph {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+.newParagraph {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--dark-grey);
+}
+.newParagraph::before,
+.newParagraph::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--light-grey);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+.passwordLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  margin-bottom: 0.2rem;
+}
+.form label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+.authForm span {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-bg-color);
+  cursor: pointer;
+}
