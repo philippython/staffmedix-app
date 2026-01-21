@@ -1,4 +1,4 @@
-import styles from "./footer.module.css";
+import styles from "./Footer.module.css";
 import FooterColumn from "./FooterColumn";
 import Logo from "./Logo";
 import { Link } from "react-router";
