@@ -4,7 +4,7 @@
   background-color: var(--primary-color);
   box-shadow: var(--soft-shadow);
   z-index: 1000;
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
 }
 
 .navContainer {
@@ -87,34 +87,32 @@
 
 .authButtons {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-left: 1rem;
 }
 
-.signup {
-  padding: 0.6rem 1.5rem;
-  background-color: var(--light-teal);
+.login {
+  padding: 0.6rem 1.5rem !important;
   color: var(--dark-teal);
   border-radius: 0.5rem;
   font-weight: 600;
   transition: all var(--transition-speed);
 }
 
-.signup:hover {
-  background-color: var(--dark-teal);
-  color: var(--primary-color);
+.login:hover {
+  background-color: var(--light-teal);
 }
 
-.login {
-  padding: 0.6rem 1.5rem;
+.signup {
+  padding: 0.6rem 1.5rem !important;
   background-color: var(--primary-bg-color);
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
   border-radius: 0.5rem;
   font-weight: 600;
   transition: all var(--transition-speed);
 }
 
-.login:hover {
+.signup:hover {
   background-color: var(--dark-teal);
 }
 

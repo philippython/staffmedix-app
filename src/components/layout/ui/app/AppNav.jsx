@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import styles from "./AppNav.module.css";
+import Logo from "./Logo";
 
 export default function AppNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,7 +16,7 @@ export default function AppNav() {
     <nav className={styles.appNav}>
       <div className={styles.navContainer}>
         <Link to="/" className={styles.logo} onClick={closeMenu}>
-          <h2>StaffMedix</h2>
+          <Logo />
         </Link>
 
         <button
@@ -77,15 +78,15 @@ export default function AppNav() {
             </Link>
           </li>
           <li className={styles.authButtons}>
+            <Link to="/auth" className={styles.login} onClick={closeMenu}>
+              Login
+            </Link>
             <Link
               to="/auth/employee-signup"
               className={styles.signup}
               onClick={closeMenu}
             >
-              Sign Up
-            </Link>
-            <Link to="/auth" className={styles.login} onClick={closeMenu}>
-              Login
+              Get Started
             </Link>
           </li>
         </ul>
