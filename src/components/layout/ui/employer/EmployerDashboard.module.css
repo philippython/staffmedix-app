@@ -1,0 +1,410 @@
+.dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.dashboardHeader h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.dashboardHeader p {
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.postJobButton {
+  padding: 0.8rem 1.8rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  font-size: 1rem;
+}
+
+.postJobButton:hover {
+  background-color: var(--dark-teal);
+  transform: translateY(-2px);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform var(--transition-speed);
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.statIcon {
+  font-size: 2rem;
+  background-color: var(--light-teal);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-bg-color);
+}
+
+.statLabel {
+  color: var(--dark-grey);
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.jobPostsSection {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader h2 {
+  font-size: 1.3rem;
+  color: var(--dark-grey);
+}
+
+.sectionHeader a {
+  color: var(--primary-bg-color);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color var(--transition-speed);
+}
+
+.sectionHeader a:hover {
+  color: var(--dark-teal);
+}
+
+.jobPostsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.jobPostCard {
+  padding: 1.2rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  transition: all var(--transition-speed);
+}
+
+.jobPostCard:hover {
+  border-color: var(--primary-bg-color);
+  box-shadow: var(--light-shadow);
+}
+
+.jobPostHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.jobPostHeader h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+}
+
+.statusBadge {
+  padding: 0.4rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.active {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.closed {
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+}
+
+.jobPostDetails {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+  flex-wrap: wrap;
+}
+
+.jobPostActions {
+  display: flex;
+  gap: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--light-grey);
+}
+
+.viewButton,
+.editButton,
+.closeButton {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  border: none;
+}
+
+.viewButton {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.viewButton:hover {
+  background-color: var(--dark-teal);
+}
+
+.editButton {
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+}
+
+.editButton:hover {
+  background-color: var(--light-grey);
+}
+
+.closeButton {
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+}
+
+.closeButton:hover {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.recentApplications,
+.quickActions,
+.subscriptionInfo {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.recentApplications h3,
+.quickActions h3,
+.subscriptionInfo h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 1rem;
+}
+
+.applicationItem {
+  padding: 1rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.applicationItem:last-of-type {
+  margin-bottom: 1rem;
+}
+
+.applicantInfo h4 {
+  font-size: 0.95rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.position {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.applicantMeta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+}
+
+.appStatusBadge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.new {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.reviewed {
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+}
+
+.viewAllApps {
+  display: block;
+  text-align: center;
+  padding: 0.7rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.viewAllApps:hover {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.actionButton {
+  display: block;
+  padding: 0.8rem;
+  text-align: center;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+  transition: all var(--transition-speed);
+}
+
+.actionButton:last-child {
+  margin-bottom: 0;
+}
+
+.actionButton:hover {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.planBadge {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.planDetails {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.renewalDate {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 1.5rem;
+  }
+
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .dashboardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .postJobButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .jobPostActions {
+    flex-direction: column;
+  }
+
+  .viewButton,
+  .editButton,
+  .closeButton {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 1rem;
+  }
+
+  .dashboardHeader h1 {
+    font-size: 1.4rem;
+  }
+
+  .jobPostDetails {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
