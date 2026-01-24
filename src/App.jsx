@@ -35,7 +35,7 @@ function App() {
         {/* Jobs */}
         <Route path="/jobs">
           <Route index element={<JobPosting />} />
-          <Route path=":id" element={<JobOpeningDetails />} />
+          <Route path=":jobId" element={<JobOpeningDetails />} />
         </Route>
 
         {/* Authentication */}

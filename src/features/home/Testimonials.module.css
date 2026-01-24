@@ -5,7 +5,12 @@
   flex-direction: column;
   background-color: var(--primary-color);
 }
-
+.testimonials .headerDiv p {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+}
 .testimonialText {
   margin-top: 1rem;
   margin-bottom: 2rem;
@@ -21,14 +26,12 @@
 }
 
 .headerDiv {
-  margin-top: 12rem;
+  margin-top: 10rem;
   margin-bottom: 3rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  align-self: center;
-  justify-self: center;
+  text-align: center;
 }
 
 .cardsDiv {
@@ -66,4 +69,20 @@
 .testimonialDetails span {
   font-size: 0.8rem;
   color: var(--dark-grey);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .cardsDiv {
+    grid-template-columns: 1fr;
+  }
+  .headerDiv {
+    margin-top: 6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cardsDiv {
+    grid-template-columns: 1fr;
+  }
 }

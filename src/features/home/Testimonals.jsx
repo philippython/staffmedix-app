@@ -6,7 +6,7 @@ export default function Testimoials() {
     <section className={styles.testimonials}>
       <div className={styles.headerDiv}>
         <h2>Trusted by Healthcare Leaders</h2>
-        <p className={styles.testimonialText}>
+        <p>
           Hear from the employers and professionals who use StaffMedix every day
         </p>
       </div>

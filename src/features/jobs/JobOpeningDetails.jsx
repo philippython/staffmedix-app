@@ -6,8 +6,13 @@ import styles from "./JobOpeningDetails.module.css";
 import { Link } from "react-router";
 import JobUnorderedList from "./JobUnorderedList";
 import Button from "../../components/Button";
+import { useParams } from "react-router";
+import { useGetJobByIdQuery } from "../../services/jobsApi";
 
 export default function JobOpeningDetails() {
+  const { jobId } = useParams();
+  const { data: job, isLoading, isError } = useGetJobByIdQuery(jobId);
+
   return (
     <>
       <AppNav />
@@ -16,8 +21,8 @@ export default function JobOpeningDetails() {
       </Link>
       <div className={styles.jobOpeningDetails}>
         <div className={styles.detailsContainer}>
-          <JobSummary />
-          <JobDescription />
+          <JobSummary job={job} />
+          <JobDescription job={job} />
           <JobUnorderedList title={"Responsibilites"}>
             <li>
               Provide direct nursing care to critically ill patients in the ICU
@@ -83,13 +88,9 @@ export default function JobOpeningDetails() {
                 <path d="M10 14h4"></path>
                 <path d="M10 18h4"></path>
               </svg>
-              <p>Lagos University Teaching Hospital</p>
+              <p>{job?.company["company_name"]}</p>
             </div>
-            <p>
-              Lagos University Teaching Hospital (LUTH) is a premier healthcare
-              institution in Nigeria, renowned for its commitment to excellence
-              in patient care, medical education, and research
-            </p>
+            <p>{job?.company["description"]}</p>
           </div>
           <JobUnorderedList title={"Benefits"}>
             <li>Competitive salary and performance bonuses</li>

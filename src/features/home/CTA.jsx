@@ -37,7 +37,7 @@ export default function CTA() {
             Post jobs and hire from our pool of pre-verified healthcare
             professionals. Reduce hiring risks and save time.
           </p>
-          <Button variant={"largePlainButton"}>
+          <Button variant={"plainButton"}>
             Start Hiring <bold>&rarr;</bold>
           </Button>
         </CtaCard>
@@ -64,7 +64,7 @@ export default function CTA() {
             Get your credentials verified and unlock access to top healthcare
             facilities across Nigeria.
           </p>
-          <Button variant={"largePlainButton"}>Create a Profile &rarr;</Button>
+          <Button variant={"plainButton"}>Create a Profile &rarr;</Button>
         </CtaCard>
       </div>
     </section>

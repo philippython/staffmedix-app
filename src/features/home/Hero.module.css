@@ -34,7 +34,7 @@
 
 .actionButtons {
   display: grid;
-  grid-template-columns: 12rem 17rem;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: 3.4rem;
   gap: 1.6rem;
 }
@@ -77,4 +77,37 @@
   align-self: end;
   justify-self: end;
   position: relative;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .heroTextContainer {
+    width: 100vw;
+    margin-top: 2rem;
+  }
+  .circleDiv {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .circleDiv {
+    display: none;
+  }
+  .actionButtons {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .heroText {
+    font-size: 2rem;
+    margin-top: 0.8rem;
+    margin-bottom: 0.4rem;
+  }
+  .heroTextContainer p {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--dark-grey);
+  font-size: 1rem;
+}
+
 }

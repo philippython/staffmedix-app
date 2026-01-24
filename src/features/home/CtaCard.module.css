@@ -34,3 +34,13 @@
   font-weight: 400;
   margin: 0.5rem 1rem;
 }
+
+@media (max-width: 768px) {
+  .ctaCard {
+    flex-direction: column;
+    width: 80vw;
+  }
+  .ctaCard button {
+    padding: 1rem 1.5rem;
+  }
+}

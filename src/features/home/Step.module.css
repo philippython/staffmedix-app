@@ -64,3 +64,9 @@
   color: var(--primary-color);
   background-color: var(--dark-teal);
 }
+
+@media (max-width: 768px) {
+  .step::after {
+    content: none;
+  }
+}

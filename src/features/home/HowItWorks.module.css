@@ -28,3 +28,24 @@
   grid-template-columns: 2fr 1.8fr 2fr;
   gap: 2rem;
 }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .stepsDiv {
+    margin: 1.5rem 0;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stepsDiv {
+    margin: 1rem 0;
+    grid-template-columns: 1fr;
+  }
+  .howItWorks p {
+    margin-top: 1rem;
+    font-size: 1rem;
+    text-align: center;
+    color: var(--dark-grey);
+  }
+}

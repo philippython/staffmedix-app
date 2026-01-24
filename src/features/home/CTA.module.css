@@ -19,7 +19,7 @@
 .cta p {
   color: var(--soft-grey);
   margin-bottom: 2rem;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
 }
 
 .ctaCards {
@@ -27,4 +27,21 @@
   justify-content: center;
   margin: 1rem;
   gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .ctaCards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cta p {
+    font-size: 0.9rem;
+  }
 }

@@ -63,19 +63,3 @@
   background-color: var(--primary-bg-color);
   color: var(--primary-color);
 }
-
-.largePlainButton {
-  padding: 1rem 5rem;
-  margin: 1rem;
-  width: 25vw;
-  font-size: 0.9rem;
-  background-color: var(--primary-color);
-  color: var(--primary-bg-color);
-  box-shadow: var(--soft-shadow);
-  align-self: start;
-}
-
-.largePlainButton:hover {
-  color: var(--light-teal);
-  box-shadow: var(--light-teal);
-}
