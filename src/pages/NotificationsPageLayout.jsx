@@ -1,6 +1,6 @@
-import AppNav from "../components/layout/ui/app/AppNav";
-import Footer from "../components/layout/ui/app/Footer";
-import NotificationsPage from "../components/layout/ui/notifications/NotificationsPage";
+import AppNav from "../components/AppNav";
+import Footer from "../components/Footer";
+import NotificationsPage from "../features/notifications/NotificationsPage";
 
 export default function NotificationsPageLayout() {
   return (

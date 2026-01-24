@@ -1,7 +1,7 @@
-import Button from "../app/Button";
-import Card from "../app/Card";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
 import styles from "./Hero.module.css";
-import Tag from "../app/Tag";
+import Tag from "../../components/Tag";
 
 export default function Hero() {
   return (

@@ -1,6 +1,6 @@
-import AppNav from "../components/layout/ui/app/AppNav";
-import Footer from "../components/layout/ui/app/Footer";
-import AdminDashboard from "../components/layout/ui/admin/AdminDashboard";
+import AppNav from "../components/AppNav";
+import Footer from "../components/Footer";
+import AdminDashboard from "../features/admin/AdminDashboard";
 
 export default function AdminDashboardPage() {
   return (

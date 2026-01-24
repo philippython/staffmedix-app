@@ -1,6 +1,6 @@
-import AppNav from "../components/layout/ui/app/AppNav";
-import Footer from "../components/layout/ui/app/Footer";
-import AdsPage from "../components/layout/ui/ads/AdsPage";
+import AppNav from "../components/AppNav";
+import Footer from "../components/Footer";
+import AdsPage from "../features/ads/AdsPage";
 
 export default function AdsPageLayout() {
   return (

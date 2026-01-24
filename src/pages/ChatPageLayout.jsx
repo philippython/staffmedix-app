@@ -1,5 +1,5 @@
-import AppNav from "../components/layout/ui/app/AppNav";
-import ChatPage from "../components/layout/ui/chat/ChatPage";
+import AppNav from "../components/AppNav";
+import ChatPage from "../features/chat/ChatPage";
 
 export default function ChatPageLayout() {
   return (

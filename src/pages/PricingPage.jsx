@@ -1,6 +1,6 @@
-import AppNav from "../components/layout/ui/app/AppNav";
-import Footer from "../components/layout/ui/app/Footer";
-import Pricing from "../components/layout/ui/pricing/Pricing";
+import AppNav from "../components/AppNav";
+import Footer from "../components/Footer";
+import Pricing from "../features/pricing/Pricing";
 
 export default function PricingPage() {
   return (

@@ -1,7 +1,7 @@
-import Toggle from "../app/Toggle";
+import Toggle from "../../components/Toggle";
 import styles from "./AuthForm.module.css";
-import Button from "../app/Button";
-import Input from "../app/Input";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 import { Link } from "react-router";
 
 export default function AuthForm() {

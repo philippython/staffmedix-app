@@ -1,4 +1,4 @@
-import Logo from "../app/Logo";
+import Logo from "../../components/Logo";
 import CtaCard from "../home/CtaCard";
 import styles from "./AuthHero.module.css";
 

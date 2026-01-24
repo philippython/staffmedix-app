@@ -1,6 +1,6 @@
 import JobOpening from "./JobOpening.jsx";
-import CustomSelect from "../app/CustomSelect.jsx";
-import Pagination from "../app/Pagination.jsx";
+import CustomSelect from "../../components/CustomSelect";
+import Pagination from "../../components/Pagination";
 import styles from "./JobListing.module.css";
 import { Link } from "react-router";
 

@@ -1,5 +1,5 @@
 import CtaCard from "./CtaCard";
-import Button from "../app/Button";
+import Button from "../../components/Button";
 import styles from "./CTA.module.css";
 
 export default function CTA() {

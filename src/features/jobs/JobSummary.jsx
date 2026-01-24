@@ -1,4 +1,4 @@
-import Tag from "../app/Tag";
+import Tag from "../../components/Tag";
 import styles from "./JobSummary.module.css";
 
 export default function JobSummary() {

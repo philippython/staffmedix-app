@@ -1,12 +1,11 @@
-import AppNav from "../app/AppNav";
-import Footer from "../app/Footer";
-import Tag from "../app/Tag";
+import AppNav from "../../components/AppNav";
+import Footer from "../../components/Footer";
 import JobSummary from "./JobSummary";
 import JobDescription from "./JobDescription";
 import styles from "./JobOpeningDetails.module.css";
 import { Link } from "react-router";
 import JobUnorderedList from "./JobUnorderedList";
-import Button from "../app/Button";
+import Button from "../../components/Button";
 
 export default function JobOpeningDetails() {
   return (

@@ -1,4 +1,4 @@
-import Auth from "../components/layout/ui/auth/Auth";
+import Auth from "../features/auth/Auth";
 
 export default function Authentication() {
   return (

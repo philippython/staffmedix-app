@@ -1,6 +1,6 @@
-import Tag from "../app/Tag";
+import Tag from "../../components/Tag";
 import styles from "./JobOpening.module.css";
-import Button from "../app/Button";
+import Button from "../../components/Button";
 
 export default function JobOpening() {
   return (

@@ -1,6 +1,6 @@
-import AppNav from "../components/layout/ui/app/AppNav";
-import Footer from "../components/layout/ui/app/Footer";
-import ApplicationsPage from "../components/layout/ui/applications/Applications";
+import AppNav from "../components/AppNav";
+import Footer from "../components/Footer";
+import ApplicationsPage from "../features/applications/Applications";
 
 export default function ApplicationsPageLayout() {
   return (

@@ -1,6 +1,6 @@
-import AppNav from "../components/layout/ui/app/AppNav";
-import Footer from "../components/layout/ui/app/Footer";
-import EmployeeDashboard from "../components/layout/ui/dashboard/EmployeeDashboard";
+import AppNav from "../components/AppNav";
+import Footer from "../components/Footer";
+import EmployeeDashboard from "../features/dashboard/EmployeeDashboard";
 
 export default function EmployeeDashboardPage() {
   return (

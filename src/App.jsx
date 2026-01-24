@@ -15,15 +15,15 @@ import AdsPageLayout from "./pages/AdsPageLayout";
 import ApplicationsPageLayout from "./pages/ApplicationsPageLayout";
 
 // Components
-import JobOpeningDetails from "./components/layout/ui/jobs/JobOpeningDetails";
-import EmployeeSignup from "./components/layout/ui/auth/EmployeeSignup";
-import EmployerSignup from "./components/layout/ui/auth/EmployerSignup";
-import JobPostForm from "./components/layout/ui/employer/JobPostForm";
-import AdminVerification from "./components/layout/ui/admin/AdminVerification";
-import AdminAnalytics from "./components/layout/ui/admin/AdminAnalytics";
-import AdminAdsManager from "./components/layout/ui/admin/AdminAdsManager";
-import AppNav from "./components/layout/ui/app/AppNav";
-import Footer from "./components/layout/ui/app/Footer";
+import JobOpeningDetails from "./features/jobs/JobOpeningDetails";
+import EmployeeSignup from "./features/auth/EmployeeSignup";
+import EmployerSignup from "./features/auth/EmployerSignup";
+import JobPostForm from "./features/employer/JobPostForm";
+import AdminVerification from "./features/admin/AdminVerification";
+import AdminAnalytics from "./features/admin/AdminAnalytics";
+import AdminAdsManager from "./features/admin/AdminAdsManager";
+import AppNav from "./components/AppNav";
+import Footer from "./components/Footer";
 
 function App() {
   return (
