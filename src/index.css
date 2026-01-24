@@ -50,12 +50,10 @@ select:focus {
 
 a:link,
 a:active {
-  color: currentColor;
   text-decoration: none;
 }
 
 a:hover,
 a:visited {
-  color: currentColor;
   text-decoration: none;
 }
