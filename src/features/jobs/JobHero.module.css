@@ -22,8 +22,8 @@
   border-radius: 1rem;
   height: 10vh;
   padding: 0 1rem;
+  gap: 1rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 .searchButton {
@@ -45,15 +45,18 @@
     font-size: 1.5rem;
   }
   .jobHero > div {
-    width: 90vw;
+    width: 80vw;
     height: auto;
     flex-direction: column;
     justify-self: center;
     gap: 1rem;
     padding: 1rem;
   }
+  .jobHero > div > div {
+    width: 100% !important;
+  }
   .searchButton {
-    justify-self: center;
     width: 100%;
+    justify-content: center;
   }
 }

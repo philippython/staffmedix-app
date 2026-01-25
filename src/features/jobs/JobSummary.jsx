@@ -133,7 +133,7 @@ export default function JobSummary({ job }) {
         <div className={styles.detailsCard}>
           <div>
             <p>Salary</p>
-            <span>{`₦${job?.salary_min} - ₦${job?.salary_max}`}</span>
+            <span>{`₦${job?.salary_min.toLocaleString()} - ₦${job?.salary_max.toLocaleString()}`}</span>
           </div>
           <div>
             <p>Posted</p>

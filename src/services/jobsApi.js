@@ -17,7 +17,7 @@ export const jobsApi = createApi({
       }),
     }),
     getJobById: builder.query({
-      query: (id) => `job-postings/${id}/`,
+      query: (jobId) => `job-postings/${jobId}/`,
     }),
   }),
 });

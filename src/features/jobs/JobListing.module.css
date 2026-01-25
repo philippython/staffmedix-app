@@ -21,3 +21,27 @@
 .jobListing a {
   color: currentColor;
 }
+
+.error {
+  box-shadow: var(--light-shadow);
+  color: var(--primary-bg-color);
+  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .jobListing {
+    margin: 1rem;
+  }
+  .filter {
+    display: block;
+    color: var(--primary-color);
+    background-color: var(--primary-bg-color);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+}

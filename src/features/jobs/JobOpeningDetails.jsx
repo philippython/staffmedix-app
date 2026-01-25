@@ -2,17 +2,16 @@ import AppNav from "../../components/AppNav";
 import Footer from "../../components/Footer";
 import JobSummary from "./JobSummary";
 import JobDescription from "./JobDescription";
-import styles from "./JobOpeningDetails.module.css";
-import { Link } from "react-router";
 import JobUnorderedList from "./JobUnorderedList";
 import Button from "../../components/Button";
+import styles from "./JobOpeningDetails.module.css";
+import { Link } from "react-router";
 import { useParams } from "react-router";
 import { useGetJobByIdQuery } from "../../services/jobsApi";
 
 export default function JobOpeningDetails() {
   const { jobId } = useParams();
   const { data: job, isLoading, isError } = useGetJobByIdQuery(jobId);
-
   return (
     <>
       <AppNav />

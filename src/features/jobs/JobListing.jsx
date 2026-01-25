@@ -1,14 +1,14 @@
 import JobOpening from "./JobOpening.jsx";
+import SearchFilter from "./SearchFilter.jsx";
 import CustomSelect from "../../components/CustomSelect";
 import Pagination from "../../components/Pagination";
 import styles from "./JobListing.module.css";
 import { useGetJobsQuery } from "../../services/jobsApi.js";
+import { useState } from "react";
 
 export default function JobListing() {
   const { data: jobs, isLoading, isError } = useGetJobsQuery();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading jobs</div>;
+  const [showFilter, setShowFilter] = useState(true);
 
   return (
     <div className={styles.jobListing}>
@@ -18,8 +18,24 @@ export default function JobListing() {
         </p>
         <CustomSelect />
       </div>
+
+      <button
+        className={styles.filter}
+        onClick={() => setShowFilter((prev) => !prev)}
+      >
+        {showFilter ? "Show Filters" : "Hide Filters"}
+      </button>
+
+      {!showFilter && <SearchFilter variant={"block"} />}
+      {isError ? (
+        <div className={styles.error}>
+          Error loading jobs, Check your internet connection :(
+        </div>
+      ) : null}
       {jobs && jobs.map((job) => <JobOpening key={job.id} job={job} />)}
-      <Pagination />
+      {isError || isLoading ? null : (
+        <Pagination pages={Math.round(jobs?.length / 10)} />
+      )}
     </div>
   );
 }

@@ -55,7 +55,7 @@ export default function JobOpening({ job }) {
           <p>{job.description}</p>
         </div>
         <div className={styles.applyWages}>
-          <h5>{`₦${job.salary_min} - ₦${job.salary_max}`}</h5>
+          <h5>{`₦${job?.salary_min.toLocaleString()} - ₦${job?.salary_max.toLocaleString()}`}</h5>
           <p>{daysAgo(job.created_at)}</p>
           <Button variant={"coloredButton"}>Apply Now</Button>
         </div>
