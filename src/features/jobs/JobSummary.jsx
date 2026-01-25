@@ -6,7 +6,7 @@ export default function JobSummary({ job }) {
   return (
     <>
       <div className={styles.jobSummary}>
-        <div>
+        <div className={styles.jobTitle}>
           <h5>{job?.title}</h5>
           <Tag variant={"tag-green"}>
             <svg

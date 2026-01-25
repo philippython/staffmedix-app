@@ -58,3 +58,9 @@
   padding: 0.2rem 0;
   background: none;
 }
+
+@media (max-width: 768px) {
+  .authHero {
+    display: none;
+  }
+}

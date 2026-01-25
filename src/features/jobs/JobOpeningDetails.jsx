@@ -92,7 +92,7 @@ export default function JobOpeningDetails() {
             </div>
             <p>{job?.company["description"]}</p>
           </div>
-          <JobUnorderedList title={"Benefits"}>
+          <JobUnorderedList title={"Benefits"} className={styles.benefits}>
             <li>Competitive salary and performance bonuses</li>
             <li>Comprehensive health insurance coverage</li>
             <li>Retirement savings plan with employer matching</li>

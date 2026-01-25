@@ -35,3 +35,25 @@
   height: 0.9rem;
   width: 0.9rem;
 }
+
+@media (max-width: 768px) {
+  .jobHero {
+    grid-template-columns: 1fr;
+    padding: 2rem 1rem;
+  }
+  .jobHero h3 {
+    font-size: 1.5rem;
+  }
+  .jobHero > div {
+    width: 90vw;
+    height: auto;
+    flex-direction: column;
+    justify-self: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .searchButton {
+    justify-self: center;
+    width: 100%;
+  }
+}

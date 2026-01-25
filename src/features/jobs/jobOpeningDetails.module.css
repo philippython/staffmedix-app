@@ -63,3 +63,21 @@
   grid-column: 1 / span -1;
   gap: 2rem;
 }
+
+@media (max-width: 768px) {
+  .jobOpeningDetails {
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .sideSection {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .benefits {
+    grid-row: 1;
+  }
+  .applyContainer {
+    grid-row: 2;
+  }
+}

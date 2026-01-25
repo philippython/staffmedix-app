@@ -62,3 +62,11 @@
   color: var(--primary-bg-color);
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .authForm {
+    width: 100%;
+    padding: 2rem;
+    margin: 2rem 0;
+  }
+}

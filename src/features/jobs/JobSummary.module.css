@@ -8,6 +8,7 @@
   box-shadow: var(--soft-shadow);
   padding: 1rem 2rem;
   border-radius: 0.8rem;
+  align-items: start;
 }
 .jobSummary h5 {
   font-size: 1.7rem;
@@ -20,6 +21,7 @@
 .share {
   color: var(--primary-bg-color);
   box-shadow: inset 0 0 0 0.1rem var(--primary-bg-color);
+  justify-self: center;
   padding: 0.5rem;
   border-radius: 0.5rem;
 }
@@ -85,4 +87,54 @@
 .detailsCard span {
   font-size: 1rem;
   font-weight: 500;
+}
+@media (max-width: 768px) {
+  .jobSummary {
+    grid-template-columns: 1fr 10%;
+    padding: 1rem;
+  }
+  .jobTitle {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .jobSummary h5 {
+    font-size: 1.4rem;
+  }
+  .detailsCard {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  .detailsCard div {
+    border-right: none;
+    border-bottom: solid 1px var(--light-grey);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .detailsCard div:last-child {
+    border-bottom: none;
+  }
+}
+@media (max-width: 480px) {
+  .jobSummary {
+    grid-template-columns: 1fr 15%;
+    padding: 1rem;
+  }
+  .tagIcon {
+    height: 1rem;
+    width: 1rem;
+  }
+  .detailsCard {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  .detailsCard div {
+    border-right: none;
+    border-bottom: solid 1px var(--light-grey);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .detailsCard div:last-child {
+    border-bottom: none;
+  }
 }
