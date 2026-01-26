@@ -1,0 +1,405 @@
+.allApplications {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.exportBtn,
+.backBtn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.exportBtn {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.exportBtn:hover {
+  background-color: var(--dark-teal);
+  color: var(--primary-color);
+}
+
+.backBtn {
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+}
+
+.backBtn:hover {
+  background-color: var(--light-grey);
+}
+
+.statsBar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background-color: var(--primary-color);
+  padding: 1rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-bg-color);
+  margin-bottom: 0.3rem;
+}
+
+.statLabel {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.filterSection {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.filterSelect {
+  padding: 0.7rem 1.2rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  background-color: var(--primary-color);
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.filterSelect:focus {
+  outline: 2px solid var(--primary-bg-color);
+}
+
+.bulkActions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.bulkBtn {
+  padding: 0.7rem 1.2rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  font-size: 0.85rem;
+}
+
+.bulkBtn:hover {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.applicationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.applicationCard {
+  background-color: var(--primary-color);
+  border: 1px solid var(--light-grey);
+  border-radius: 0.8rem;
+  padding: 1.5rem;
+  box-shadow: var(--soft-shadow);
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 2rem;
+  align-items: center;
+  transition: all var(--transition-speed);
+}
+
+.applicationCard:hover {
+  border-color: var(--primary-bg-color);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.cardLeft {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.checkbox {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.applicantInfo h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.jobTitle {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.cardCenter {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.matchScore {
+  text-align: center;
+}
+
+.matchValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-bg-color);
+}
+
+.matchLabel {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+}
+
+.statusBadge {
+  padding: 0.5rem 1.2rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.new {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.reviewed {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.shortlisted {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.cardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 180px;
+}
+
+.viewProfileBtn,
+.viewJobBtn,
+.messageBtn {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+
+.viewProfileBtn {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.viewProfileBtn:hover {
+  background-color: var(--dark-teal);
+}
+
+.viewJobBtn {
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+}
+
+.viewJobBtn:hover {
+  background-color: var(--light-grey);
+}
+
+.messageBtn {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.messageBtn:hover {
+  background-color: var(--dark-teal);
+  color: var(--primary-color);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.8rem;
+}
+
+.emptyState p {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .allApplications {
+    padding: 1.5rem;
+  }
+
+  .statsBar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .applicationCard {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cardCenter {
+    justify-content: flex-start;
+  }
+
+  .cardActions {
+    flex-direction: row;
+    min-width: auto;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .exportBtn,
+  .backBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .statsBar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filterSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filterSelect {
+    width: 100%;
+  }
+
+  .bulkActions {
+    flex-direction: column;
+  }
+
+  .bulkBtn {
+    width: 100%;
+  }
+
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .cardActions > * {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .allApplications {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.4rem;
+  }
+
+  .statsBar {
+    grid-template-columns: 1fr;
+  }
+}

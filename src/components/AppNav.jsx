@@ -50,6 +50,15 @@ export default function AppNav() {
           </li>
           <li>
             <Link
+              to="/talents"
+              className={isActive("/talents") ? styles.activeLink : ""}
+              onClick={closeMenu}
+            >
+              Talents
+            </Link>
+          </li>
+          <li>
+            <Link
               to="/employer-dashboard"
               className={
                 isActive("/employer-dashboard") ? styles.activeLink : ""

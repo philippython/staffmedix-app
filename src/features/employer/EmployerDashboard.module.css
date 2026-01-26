@@ -313,7 +313,7 @@
   padding: 0.8rem;
   text-align: center;
   background-color: var(--soft-grey);
-  color: var(--primary-color);
+  color: var(--dark-grey);
   border-radius: 0.5rem;
   font-weight: 500;
   margin-bottom: 0.8rem;
@@ -349,7 +349,10 @@
   font-size: 0.85rem;
   color: var(--dark-grey);
 }
-
+.headerActionButtons {
+  display: flex;
+  gap: 0.5rem;
+}
 /* Tablet */
 @media (max-width: 1024px) {
   .dashboard {
@@ -407,4 +410,20 @@
     flex-direction: column;
     gap: 0.5rem;
   }
+}
+.settingsButton {
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  font-size: 0.9rem;
+}
+.settingsButton {
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+}
+
+.settingsButton:hover {
+  background-color: var(--dark-grey);
+  color: var(--primary-color);
 }

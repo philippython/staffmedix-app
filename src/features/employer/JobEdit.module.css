@@ -1,0 +1,374 @@
+.jobEditView {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 1rem;
+}
+
+.viewAppsBtn,
+.backBtn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  font-size: 0.9rem;
+}
+
+.viewAppsBtn {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.viewAppsBtn:hover {
+  background-color: var(--dark-teal);
+}
+
+.backBtn {
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+}
+
+.backBtn:hover {
+  background-color: var(--light-grey);
+}
+
+.statsBar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statItem {
+  background-color: var(--primary-color);
+  padding: 1.2rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  text-align: center;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-bg-color);
+  margin-bottom: 0.3rem;
+}
+
+.statLabel {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.editForm {
+  background-color: var(--primary-color);
+  padding: 2rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.statusSection {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--light-grey);
+}
+
+.statusSection h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 1rem;
+}
+
+.statusButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.statusBtn {
+  flex: 1;
+  padding: 0.8rem;
+  border: 2px solid var(--light-grey);
+  background-color: var(--primary-color);
+  color: var(--dark-grey);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.statusBtn:hover {
+  border-color: var(--primary-bg-color);
+}
+
+.statusBtn.active {
+  background-color: var(--light-teal);
+  border-color: var(--dark-teal);
+  color: var(--dark-teal);
+}
+
+.statusBtn.paused {
+  background-color: #fff3cd;
+  border-color: #856404;
+  color: #856404;
+}
+
+.statusBtn.closed {
+  background-color: #f8d7da;
+  border-color: #721c24;
+  color: #721c24;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  color: var(--primary-bg-color);
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--light-teal);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all var(--transition-speed);
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  border-color: var(--dark-teal);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(9, 146, 104, 0.1);
+}
+
+.formGroup textarea {
+  resize: vertical;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--light-grey);
+  margin-top: 1.5rem;
+}
+
+.deleteBtn,
+.saveBtn {
+  flex: 1;
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.deleteBtn {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.deleteBtn:hover {
+  background-color: #721c24;
+  color: var(--primary-color);
+}
+
+.saveBtn {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.saveBtn:hover {
+  background-color: var(--dark-teal);
+  transform: translateY(-2px);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quickActions,
+.previewCard {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.quickActions h3,
+.previewCard h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 1rem;
+}
+
+.actionLink {
+  display: block;
+  padding: 0.8rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+  transition: all var(--transition-speed);
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.actionLink:last-child {
+  margin-bottom: 0;
+}
+
+.actionLink:hover {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.previewCard p {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-bottom: 1rem;
+}
+
+.previewBtn {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.previewBtn:hover {
+  background-color: var(--dark-teal);
+  color: var(--primary-color);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .jobEditView {
+    padding: 1.5rem;
+  }
+
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+
+  .statsBar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .viewAppsBtn,
+  .backBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .statsBar {
+    grid-template-columns: 1fr;
+  }
+
+  .editForm {
+    padding: 1.5rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .statusButtons {
+    flex-direction: column;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .jobEditView {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.4rem;
+  }
+}

@@ -1,0 +1,315 @@
+.allJobPosts {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.createJobBtn {
+  padding: 0.8rem 1.8rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.createJobBtn:hover {
+  background-color: var(--dark-teal);
+  transform: translateY(-2px);
+}
+
+.filterSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filters {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.filters button {
+  padding: 0.7rem 1.2rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  font-size: 0.85rem;
+}
+
+.filters button:hover {
+  background-color: var(--light-grey);
+}
+
+.filters button.active {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.sortSelect {
+  padding: 0.7rem 1.2rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  background-color: var(--primary-color);
+  cursor: pointer;
+}
+
+.jobsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.jobCard {
+  background-color: var(--primary-color);
+  border: 1px solid var(--light-grey);
+  border-radius: 0.8rem;
+  padding: 1.5rem;
+  box-shadow: var(--soft-shadow);
+  transition: all var(--transition-speed);
+}
+
+.jobCard:hover {
+  border-color: var(--primary-bg-color);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--light-grey);
+}
+
+.cardHeader h3 {
+  font-size: 1.3rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.jobMeta {
+  display: flex;
+  gap: 0.8rem;
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+
+.statusBadge {
+  padding: 0.5rem 1.2rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.active {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.paused {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.closed {
+  background-color: var(--light-grey);
+  color: var(--dark-grey);
+}
+
+.cardBody {
+  margin-bottom: 1.2rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.statItem {
+  text-align: center;
+  padding: 0.8rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-bg-color);
+  margin-bottom: 0.3rem;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--light-grey);
+  flex-wrap: wrap;
+}
+
+.viewAppsBtn,
+.editBtn,
+.pauseBtn,
+.resumeBtn,
+.closeBtn {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  text-decoration: none;
+  text-align: center;
+}
+
+.viewAppsBtn {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  flex: 1;
+}
+
+.viewAppsBtn:hover {
+  background-color: var(--dark-teal);
+}
+
+.editBtn {
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+}
+
+.editBtn:hover {
+  background-color: var(--light-grey);
+}
+
+.pauseBtn {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.pauseBtn:hover {
+  background-color: #856404;
+  color: var(--primary-color);
+}
+
+.resumeBtn {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.resumeBtn:hover {
+  background-color: var(--dark-teal);
+  color: var(--primary-color);
+}
+
+.closeBtn {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.closeBtn:hover {
+  background-color: #721c24;
+  color: var(--primary-color);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .allJobPosts {
+    padding: 1.5rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .createJobBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .filterSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sortSelect {
+    width: 100%;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .statusBadge {
+    align-self: flex-start;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .cardActions > * {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .allJobPosts {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.4rem;
+  }
+}

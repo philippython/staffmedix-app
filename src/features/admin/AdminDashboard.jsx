@@ -156,18 +156,6 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
-
-          <div className={styles.systemStatus}>
-            <h3>System Status</h3>
-            <div className={styles.statusItem}>
-              <span className={styles.statusIndicator}></span>
-              <p>All systems operational</p>
-            </div>
-            <div className={styles.statusDetail}>
-              <p>Server Uptime: 99.9%</p>
-              <p>Last Backup: 2 hours ago</p>
-            </div>
-          </div>
         </aside>
       </div>
     </div>

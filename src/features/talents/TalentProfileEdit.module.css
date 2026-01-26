@@ -1,0 +1,380 @@
+.profileEdit {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.backBtn {
+  padding: 0.7rem 1.5rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.backBtn:hover {
+  background-color: var(--light-grey);
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+}
+
+.sidebar {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  height: fit-content;
+  position: sticky;
+  top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  background-color: transparent;
+  color: var(--dark-grey);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.sidebar button:hover {
+  background-color: var(--soft-grey);
+}
+
+.sidebar button.active {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.editContent {
+  background-color: var(--primary-color);
+  padding: 2rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  color: var(--dark-grey);
+  margin-bottom: 1.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all var(--transition-speed);
+}
+
+.formGroup input:focus,
+.formGroup select:focus,
+.formGroup textarea:focus {
+  border-color: var(--dark-teal);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(9, 146, 104, 0.1);
+}
+
+.formGroup textarea {
+  resize: vertical;
+}
+
+.photoUpload {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  border: 2px dashed var(--light-grey);
+  border-radius: 0.5rem;
+}
+
+.currentPhoto {
+  width: 5rem;
+  height: 5rem;
+  font-size: 3rem;
+  background-color: var(--light-teal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+  margin-top: 0.3rem;
+}
+
+.saveBtn {
+  padding: 0.9rem 2rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.saveBtn:hover {
+  background-color: var(--dark-teal);
+  transform: translateY(-2px);
+}
+
+.skillsSection,
+.certSection {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--light-grey);
+}
+
+.skillsSection:last-child,
+.certSection:last-child {
+  border-bottom: none;
+}
+
+.skillsSection h3,
+.certSection h3 {
+  font-size: 1.2rem;
+  color: var(--dark-grey);
+  margin-bottom: 1rem;
+}
+
+.skillInput {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.skillInput input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.addBtn {
+  padding: 0.8rem 1.5rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.addBtn:hover {
+  background-color: var(--dark-teal);
+}
+
+.skillTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.skillTag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--dark-teal);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all var(--transition-speed);
+}
+
+.removeBtn:hover {
+  background-color: var(--dark-teal);
+  color: var(--primary-color);
+}
+
+.addCertBtn,
+.addWorkBtn,
+.addEducationBtn {
+  padding: 0.8rem 1.5rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  margin-bottom: 1.5rem;
+}
+
+.addCertBtn:hover,
+.addWorkBtn:hover,
+.addEducationBtn:hover {
+  background-color: var(--dark-teal);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  color: var(--dark-grey);
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
+}
+
+.uploadSection {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border: 2px dashed var(--light-grey);
+  border-radius: 0.5rem;
+}
+
+.uploadSection h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.8rem;
+}
+
+.uploadSection input[type="file"] {
+  margin-bottom: 0.5rem;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .profileEdit {
+    padding: 1.5rem;
+  }
+
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .sidebar button {
+    white-space: nowrap;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .backBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .editContent {
+    padding: 1.5rem;
+  }
+
+  .sidebar {
+    flex-direction: column;
+  }
+
+  .photoUpload {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileEdit {
+    padding: 1rem;
+  }
+
+  .editContent {
+    padding: 1.2rem;
+  }
+
+  .section h2 {
+    font-size: 1.3rem;
+  }
+}

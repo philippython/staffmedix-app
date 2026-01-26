@@ -1,0 +1,337 @@
+.browseTalents {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+}
+
+.filterSidebar {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  height: fit-content;
+  position: sticky;
+  top: 5rem;
+}
+
+.filterSidebar h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 1.5rem;
+}
+
+.filterGroup {
+  margin-bottom: 1.5rem;
+}
+
+.filterGroup label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.filterGroup select {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  background-color: var(--primary-color);
+  cursor: pointer;
+}
+
+.filterGroup select:focus {
+  outline: 2px solid var(--primary-bg-color);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+}
+
+.clearFilters {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.clearFilters:hover {
+  background-color: var(--light-grey);
+}
+
+.talentsList {
+  flex: 1;
+}
+
+.resultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.resultsHeader p {
+  font-size: 0.95rem;
+  color: var(--dark-grey);
+  font-weight: 600;
+}
+
+.sortSelect {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  background-color: var(--primary-color);
+  cursor: pointer;
+}
+
+.talentsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.talentCard {
+  background-color: var(--primary-color);
+  border: 1px solid var(--light-grey);
+  border-radius: 0.8rem;
+  padding: 1.5rem;
+  box-shadow: var(--soft-shadow);
+  transition: all var(--transition-speed);
+}
+
+.talentCard:hover {
+  border-color: var(--primary-bg-color);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.cardHeader {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--light-grey);
+}
+
+.talentImage {
+  width: 4rem;
+  height: 4rem;
+  font-size: 2.5rem;
+  background-color: var(--light-teal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.talentBasicInfo {
+  flex: 1;
+}
+
+.talentBasicInfo h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.profession {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.2rem;
+}
+
+.specialization {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.verifiedBadge {
+  display: inline-block;
+  padding: 0.3rem 0.7rem;
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cardBody {
+  margin-bottom: 1.2rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.icon {
+  font-size: 1rem;
+}
+
+.skills {
+  margin-top: 1rem;
+}
+
+.skillsLabel {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.skillTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skillTag {
+  padding: 0.4rem 0.8rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border-radius: 1rem;
+  font-size: 0.8rem;
+}
+
+.cardActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--light-grey);
+}
+
+.viewProfileBtn {
+  padding: 0.7rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all var(--transition-speed);
+  font-size: 0.9rem;
+}
+
+.viewProfileBtn:hover {
+  background-color: var(--light-grey);
+}
+
+.sendMessageBtn {
+  padding: 0.7rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  font-size: 0.9rem;
+}
+
+.sendMessageBtn:hover {
+  background-color: var(--dark-teal);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .browseTalents {
+    padding: 1.5rem;
+  }
+
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+
+  .filterSidebar {
+    position: static;
+  }
+
+  .talentsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .sortSelect {
+    width: 100%;
+  }
+
+  .talentsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardActions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .browseTalents {
+    padding: 1rem;
+  }
+
+  .talentCard {
+    padding: 1.2rem;
+  }
+}

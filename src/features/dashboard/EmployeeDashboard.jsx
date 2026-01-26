@@ -40,7 +40,10 @@ export default function EmployeeDashboard() {
           <h1>Welcome back, Dr. Sarah!</h1>
           <p>Here's what's happening with your applications</p>
         </div>
-        <Link to="/profile" className={styles.editProfile}>
+        <Link
+          to="/employee-dashboard/profile/edit"
+          className={styles.editProfile}
+        >
           Edit Profile
         </Link>
       </div>
@@ -61,7 +64,7 @@ export default function EmployeeDashboard() {
         <section className={styles.applications}>
           <div className={styles.sectionHeader}>
             <h2>Recent Applications</h2>
-            <Link to="/applications">View All</Link>
+            <Link to="/employee-dashboard/applications">View All</Link>
           </div>
 
           <div className={styles.applicationsList}>
@@ -95,7 +98,10 @@ export default function EmployeeDashboard() {
               <div className={styles.progress} style={{ width: "75%" }}></div>
             </div>
             <p className={styles.completionText}>75% Complete</p>
-            <Link to="/profile" className={styles.completeProfile}>
+            <Link
+              to="/employee-dashboard/profile/edit"
+              className={styles.completeProfile}
+            >
               Complete Your Profile
             </Link>
           </div>
@@ -116,8 +122,11 @@ export default function EmployeeDashboard() {
 
           <div className={styles.quickActions}>
             <h3>Quick Actions</h3>
-            <Link to="/jobs" className={styles.actionButton}>
-              Browse Jobs
+            <Link
+              to="/employee-dashboard/interviews"
+              className={styles.actionButton}
+            >
+              Check Interviews
             </Link>
             <Link to="/notifications" className={styles.actionButton}>
               View Notifications

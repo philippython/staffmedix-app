@@ -70,9 +70,20 @@ export default function EmployerDashboard() {
           <h1>Welcome back, General Hospital Lagos!</h1>
           <p>Manage your job postings and candidate applications</p>
         </div>
-        <Link to="/post-job" className={styles.postJobButton}>
-          + Post New Job
-        </Link>
+        <div className={styles.headerActionButtons}>
+          <Link
+            to="/employer-dashboard/settings"
+            className={styles.settingsButton}
+          >
+            ⚙️ Settings
+          </Link>
+          <Link
+            to="/employer-dashboard/post-job"
+            className={styles.postJobButton}
+          >
+            + Post New Job
+          </Link>
+        </div>
       </div>
 
       <div className={styles.statsGrid}>
@@ -91,7 +102,7 @@ export default function EmployerDashboard() {
         <section className={styles.jobPostsSection}>
           <div className={styles.sectionHeader}>
             <h2>Active Job Posts</h2>
-            <Link to="/jobs">View All</Link>
+            <Link to="/employer-dashboard/all-job-posts">View All</Link>
           </div>
 
           <div className={styles.jobPostsList}>
@@ -113,10 +124,15 @@ export default function EmployerDashboard() {
                   <span>⏰ Deadline: {job.deadline}</span>
                 </div>
                 <div className={styles.jobPostActions}>
-                  <Link to={`/jobs/${job.id}`} className={styles.viewButton}>
+                  <Link
+                    to={`/employer-dashboard/view-applications/1`}
+                    className={styles.viewButton}
+                  >
                     View Applications
                   </Link>
-                  <button className={styles.editButton}>Edit</button>
+                  <Link to={"/employer-dashboard/job-edit/1"}>
+                    <button className={styles.editButton}>Edit</button>
+                  </Link>
                   <button className={styles.closeButton}>
                     {job.status === "Active" ? "Close" : "Reopen"}
                   </button>
@@ -149,20 +165,32 @@ export default function EmployerDashboard() {
                 </span>
               </div>
             ))}
-            <Link to="/applications" className={styles.viewAllApps}>
+            <Link
+              to="/employer-dashboard/applications"
+              className={styles.viewAllApps}
+            >
               View All Applications
             </Link>
           </div>
 
           <div className={styles.quickActions}>
             <h3>Quick Actions</h3>
-            <Link to="/post-job" className={styles.actionButton}>
-              📝 Post a Job
+            <Link
+              to="/employer-dashboard/interviews"
+              className={styles.actionButton}
+            >
+              📝 Check Interviews
             </Link>
-            <Link to="/pricing" className={styles.actionButton}>
+            <Link
+              to="/employer-dashboard/settings"
+              className={styles.actionButton}
+            >
               💎 Upgrade Plan
             </Link>
-            <Link to="/ads" className={styles.actionButton}>
+            <Link
+              to="/employer-dashboard/ads-manager"
+              className={styles.actionButton}
+            >
               📢 Advertise Your Organization
             </Link>
             <Link to="/chat" className={styles.actionButton}>
