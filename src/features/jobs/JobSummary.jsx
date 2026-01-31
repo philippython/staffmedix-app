@@ -141,11 +141,11 @@ export default function JobSummary({ job }) {
           </div>
           <div>
             <p>Deadline</p>
-            <span>Feburary 12th</span>
+            <span>{job?.deadline}</span>
           </div>
           <div>
             <p>Applicants</p>
-            <span>{job?.views} Viewed</span>
+            <span>{job?.views} Applied</span>
           </div>
         </div>
       </div>

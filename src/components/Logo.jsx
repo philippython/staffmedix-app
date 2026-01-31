@@ -1,10 +1,9 @@
 import styles from "./Logo.module.css";
-import logo from "../assets/logo.png";
 
-export default function Logo() {
+export default function Logo({ logoUrl }) {
   return (
     <div className={styles.logo}>
-      <img className={styles.appIcon} src={logo} />
+      <img className={styles.appIcon} src={logoUrl} />
       <h2 className={styles.appName}>StaffMedix</h2>
     </div>
   );

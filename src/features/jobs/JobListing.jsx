@@ -7,7 +7,11 @@ import { useGetJobsQuery } from "../../services/jobsApi.js";
 import { useState } from "react";
 
 export default function JobListing() {
-  const { data: jobs, isLoading, isError } = useGetJobsQuery();
+  const {
+    data: { count, results: jobs } = {},
+    isLoading,
+    isError,
+  } = useGetJobsQuery();
   const [showFilter, setShowFilter] = useState(true);
 
   return (
@@ -34,7 +38,7 @@ export default function JobListing() {
       ) : null}
       {jobs && jobs.map((job) => <JobOpening key={job.id} job={job} />)}
       {isError || isLoading ? null : (
-        <Pagination pages={Math.round(jobs?.length / 10)} />
+        <Pagination pages={Math.round(count / 10) || 0} />
       )}
     </div>
   );

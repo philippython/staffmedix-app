@@ -1,12 +1,13 @@
 import Logo from "../../components/Logo";
 import CtaCard from "../home/CtaCard";
 import styles from "./AuthHero.module.css";
+import logo from "../../assets/logo-white.png";
 
 export default function AuthHero() {
   return (
     <div className={styles.authHero}>
       <div className={styles.logoContainer}>
-        <Logo />
+        <Logo logoUrl={logo} />
       </div>
       <h1>Connect with Verified Healthcare Professionals</h1>
       <p>

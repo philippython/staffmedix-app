@@ -33,9 +33,7 @@ export default function Hero() {
           verified before appearing on the platform. Safe hiring, guaranteed.
         </p>
         <div className={styles.actionButtons}>
-          <Button variant="mediumColoredButton">
-            Hire Talent <bold>&rarr;</bold>{" "}
-          </Button>
+          <Button variant="mediumColoredButton">Hire Talent →</Button>
           <Button variant="mediumPlainButton">Create Worker Profile</Button>
         </div>
       </div>

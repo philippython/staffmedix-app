@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import styles from "./AppNav.module.css";
 import Logo from "./Logo";
+import logo from "../assets/logo.png";
 
 export default function AppNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,7 +17,7 @@ export default function AppNav() {
     <nav className={styles.appNav}>
       <div className={styles.navContainer}>
         <Link to="/" className={styles.logo} onClick={closeMenu}>
-          <Logo />
+          <Logo logoUrl={logo} />
         </Link>
 
         <button

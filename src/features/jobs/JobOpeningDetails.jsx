@@ -12,6 +12,7 @@ import { useGetJobByIdQuery } from "../../services/jobsApi";
 export default function JobOpeningDetails() {
   const { jobId } = useParams();
   const { data: job, isLoading, isError } = useGetJobByIdQuery(jobId);
+
   return (
     <>
       <AppNav />
@@ -64,7 +65,7 @@ export default function JobOpeningDetails() {
         <div className={styles.sideSection}>
           <div className={styles.applyContainer}>
             <Button variant={"coloredButton"}>Apply Now</Button>
-            <span>Application deadline: March 15, 2026</span>
+            <span>Application deadline: {job?.deadline}</span>
             <h3>About the Employer</h3>
             <div className={styles.employer}>
               <svg

@@ -62,7 +62,10 @@
   color: var(--primary-bg-color);
   cursor: pointer;
 }
-
+.errMsg {
+  color: red !important;
+  margin: 0 !important;
+}
 @media (max-width: 768px) {
   .authForm {
     width: 100%;

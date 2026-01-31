@@ -1,10 +1,18 @@
 import styles from "./Toggle.module.css";
 import ToggleItem from "./ToggleItem";
+import { useDispatch, useSelector } from "react-redux";
+import { roleToggle } from "../store/slices/authSlice";
 
 export default function Toggle() {
+  const dispatch = useDispatch();
+  const role = useSelector((state) => state.auth.role);
+
   return (
     <div className={styles.toggle}>
-      <ToggleItem variant="active">
+      <ToggleItem
+        variant={role === "employer" ? "inactive" : "active"}
+        onClick={() => dispatch(roleToggle())}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -22,7 +30,10 @@ export default function Toggle() {
         </svg>
         <p>Healthcare Worker</p>
       </ToggleItem>
-      <ToggleItem variant="inactive">
+      <ToggleItem
+        variant={role === "employer" ? "active" : "inactive"}
+        onClick={() => dispatch(roleToggle())}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"

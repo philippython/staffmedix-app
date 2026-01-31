@@ -1,7 +1,11 @@
 import styles from "./Button.module.css";
 
-export default function Button({ variant, children }) {
+export default function Button({ variant, onClick, children }) {
   const buttonClasses = `${styles.button} ${styles[variant]}`;
 
-  return <div className={buttonClasses}>{children}</div>;
+  return (
+    <div onClick={onClick} className={buttonClasses}>
+      {children}
+    </div>
+  );
 }
