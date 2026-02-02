@@ -20,8 +20,11 @@ import AppNav from "./components/AppNav";
 import Footer from "./components/Footer";
 
 // Auth Components
+import AdminSigin from "./features/auth/AdminSignin";
 import EmployeeSignup from "./features/auth/EmployeeSignup";
 import EmployerSignup from "./features/auth/EmployerSignup";
+import PasswordReset from "./features/auth/PasswordReset";
+import PasswordResetConfirm from "./features/auth/PasswordResetConfirm";
 
 // Employer Components
 import BrowseTalents from "./features/talents/BrowseTalents";
@@ -65,8 +68,14 @@ function App() {
         {/* Authentication */}
         <Route path="/auth">
           <Route index element={<Authentication />} />
+          <Route path="admin" element={<AdminSigin />} />
           <Route path="employee-signup" element={<EmployeeSignup />} />
           <Route path="employer-signup" element={<EmployerSignup />} />
+          <Route path="password-reset" element={<PasswordReset />} />
+          <Route
+            path="password-reset-confirm/:token"
+            element={<PasswordResetConfirm />}
+          />
         </Route>
 
         {/* Employee Routes */}

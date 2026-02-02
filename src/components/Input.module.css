@@ -1,8 +1,9 @@
 .inputDiv {
   position: relative;
+  margin-bottom: 0.5rem;
 }
 
-.inputDiv svg {
+.inputDiv svg:first-of-type {
   height: 1rem;
   width: 1rem;
   color: var(--dark-grey);
@@ -11,6 +12,17 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 1000;
+}
+
+.inputDiv svg:last-of-type {
+  height: 1rem;
+  width: 1rem;
+  color: var(--dark-grey);
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 
 .inputDiv input {

@@ -12,14 +12,18 @@
   display: inline-block;
   align-self: center;
 }
-
+.toggleItem p:hover {
+  color: black;
+}
+.toggleItem:hover {
+  color: black;
+}
 .toggleItem svg {
   height: 1rem;
   width: 1rem;
   margin: 0 0.4rem;
   align-self: center;
 }
-
 .active {
   background-color: var(--primary-color);
   color: black;

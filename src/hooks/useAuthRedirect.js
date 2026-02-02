@@ -21,11 +21,8 @@ export function useAuthRedirect() {
     if (!user?.role) return null;
 
     const role = user.role.toLowerCase();
-
-    if (userRole !== role) {
-      return `Login as ${role} :)`;
-    }
-    return null;
+    if (role === "admin") return null;
+    if (userRole !== role) return `Login as ${role} :)`;
   }, [user, userRole]);
 
   useEffect(() => {
@@ -34,8 +31,10 @@ export function useAuthRedirect() {
     const roleRoutes = {
       talent: "/employee-dashboard",
       employer: "/employer-dashboard",
+      admin: "/admin",
     };
 
+    console.log(user.role.toLowerCase());
     navigate(roleRoutes[user.role.toLowerCase()] ?? "/auth");
   }, [user, loginErrorMsg, navigate]);
 
