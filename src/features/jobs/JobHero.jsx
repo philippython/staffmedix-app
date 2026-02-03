@@ -2,6 +2,7 @@ import Button from "../../components/Button";
 import styles from "./JobHero.module.css";
 import CustomSelect from "../../components/CustomSelect";
 import Input from "../../components/Input";
+import { nigerianStates } from "../../data/data";
 
 export default function JobHero() {
   return (
@@ -26,7 +27,7 @@ export default function JobHero() {
           </svg>
           <input type="text" placeholder="Search by job title, profession..." />
         </Input>
-        <CustomSelect />
+        <CustomSelect filter={"Location"} options={nigerianStates} />
         <Button variant={"coloredButton"}>
           <div className={styles.searchButton}>
             <svg

@@ -1,10 +1,4 @@
 .job {
   display: grid;
-  grid-template-columns: 25% 1fr;
-}
-
-@media (max-width: 768px) {
-  .job {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: 30% 1fr;
 }

@@ -3,6 +3,7 @@ import SearchFilter from "./SearchFilter.jsx";
 import CustomSelect from "../../components/CustomSelect";
 import Pagination from "../../components/Pagination";
 import styles from "./JobListing.module.css";
+import { filters } from "../../data/data.js";
 import { useGetJobsQuery } from "../../services/jobsApi.js";
 import { useState } from "react";
 
@@ -13,14 +14,18 @@ export default function JobListing() {
     isError,
   } = useGetJobsQuery();
   const [showFilter, setShowFilter] = useState(true);
+  const [currentPage, setCurrPage] = useState(1);
 
+  function handlePageChange(newPage) {
+    setCurrPage(newPage);
+  }
   return (
     <div className={styles.jobListing}>
       <div className={styles.searchFilterCount}>
         <p>
           Showing <strong>{jobs?.length || 0}</strong> jobs
         </p>
-        <CustomSelect />
+        <CustomSelect filter={filters[0]} options={filters} />
       </div>
 
       <button
@@ -38,7 +43,11 @@ export default function JobListing() {
       ) : null}
       {jobs && jobs.map((job) => <JobOpening key={job.id} job={job} />)}
       {isError || isLoading ? null : (
-        <Pagination pages={Math.round(count / 10) || 0} />
+        <Pagination
+          pages={Math.ceil(count / 10) || 0}
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+        />
       )}
     </div>
   );

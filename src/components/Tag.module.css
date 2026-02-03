@@ -18,3 +18,17 @@
   color: var(--dark-grey);
   background-color: var(--light-grey);
 }
+
+@media (max-width: 450px) {
+  .tag-green p {
+    font-size: 0.5rem !important;
+    color: var(--primary-bg-color) !important;
+    background-color: var(--light-teal) !important;
+  }
+
+  .tag-grey p {
+    font-size: 0.5rem !important;
+    color: var(--dark-grey) !important;
+    background-color: var(--light-grey) !important;
+  }
+}

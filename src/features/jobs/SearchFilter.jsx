@@ -1,33 +1,28 @@
 import styles from "./SearchFilter.module.css";
-import { exprienceLevels, professions } from "../../data/data";
-import { useState } from "react";
+import { exprienceLevels, employment_type, shift_type } from "../../data/data";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  toggleMultiFilter,
+  updateFilters,
+  clearAllFilters,
+} from "../../store/slices/jobFilterSlice";
 
 export default function SearchFilter({ variant }) {
-  const [professionFilters, setProfessionFilters] = useState([]);
-  const [experienceFilters, setExperienceFilters] = useState([]);
+  const dispatch = useDispatch();
+  const filters = useSelector((state) => state.jobFilter);
 
-  function clearAllFilters() {
-    setProfessionFilters([]);
-    setExperienceFilters([]);
-  }
-
-  function handleProfessionFilterAdd(clickedFilter) {
-    setProfessionFilters((filters) => [...filters, clickedFilter]);
-    if (professionFilters.includes(clickedFilter)) {
-      setProfessionFilters((filters) =>
-        filters.filter((filter) => filter !== clickedFilter),
-      );
+  const handleToggle = (field, value) => {
+    if (field === "experience_level") {
+      dispatch(updateFilters({ experience_level: value }));
+    } else {
+      dispatch(toggleMultiFilter({ field, value }));
     }
-  }
+  };
 
-  function handleExperienceFilterAdd(clickedFilter) {
-    setExperienceFilters((filters) => [...filters, clickedFilter]);
-    if (experienceFilters.includes(clickedFilter)) {
-      setExperienceFilters((filters) =>
-        filters.filter((filter) => filter !== clickedFilter),
-      );
-    }
-  }
+  const handleClearAll = () => {
+    dispatch(clearAllFilters());
+  };
+
   return (
     <div
       className={
@@ -36,23 +31,25 @@ export default function SearchFilter({ variant }) {
           : `${styles.searchFilter} ${styles.searchFilterResponsive}`
       }
     >
+      {/* Header */}
       <div className={styles.filter}>
         <h5>Filters</h5>
-        <p onClick={clearAllFilters}>Clear all</p>
+        <p onClick={handleClearAll}>Clear all</p>
       </div>
 
+      {/* Employment Type */}
       <ul>
-        <h5>Profession</h5>
+        <h5>Employment type</h5>
         <li>
-          {professions.map((profession) => (
+          {employment_type.map((empType) => (
             <div
+              key={empType}
               className={
-                professionFilters.includes(profession)
+                filters.employment_type.includes(empType)
                   ? styles.radioSelect
                   : styles.radio
               }
-              key={profession}
-              onClick={() => handleProfessionFilterAdd(profession)}
+              onClick={() => handleToggle("employment_type", empType)}
             >
               <div>
                 <svg
@@ -62,31 +59,33 @@ export default function SearchFilter({ variant }) {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-check h-4 w-4"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-check h-4 w-4"
                 >
                   <path d="M20 6 9 17l-5-5"></path>
                 </svg>
               </div>
-              <p>{profession}</p>
+              <p>{empType}</p>
             </div>
           ))}
         </li>
       </ul>
+
+      {/* Shift Type */}
       <ul>
-        <h5>Profession</h5>
+        <h5>Shift type</h5>
         <li>
-          {exprienceLevels.map((experience) => (
+          {shift_type.map((shift) => (
             <div
+              key={shift}
               className={
-                experienceFilters.includes(experience)
+                filters.shift_type.includes(shift)
                   ? styles.radioSelect
                   : styles.radio
               }
-              key={experience}
-              onClick={() => handleExperienceFilterAdd(experience)}
+              onClick={() => handleToggle("shift_type", shift)}
             >
               <div>
                 <svg
@@ -96,15 +95,51 @@ export default function SearchFilter({ variant }) {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-check h-4 w-4"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-check h-4 w-4"
                 >
                   <path d="M20 6 9 17l-5-5"></path>
                 </svg>
               </div>
-              <p>{experience}</p>
+              <p>{shift}</p>
+            </div>
+          ))}
+        </li>
+      </ul>
+
+      {/* Experience Level */}
+      <ul>
+        <h5>Experience level</h5>
+        <li>
+          {exprienceLevels.map((exp) => (
+            <div
+              key={exp}
+              className={
+                filters.experience_level === exp
+                  ? styles.radioSelect
+                  : styles.radio
+              }
+              onClick={() => handleToggle("experience_level", exp)}
+            >
+              <div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-check h-4 w-4"
+                >
+                  <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+              </div>
+              <p>{exp}</p>
             </div>
           ))}
         </li>

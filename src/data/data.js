@@ -10,6 +10,10 @@ const professions = [
   "Other",
 ];
 
+const shift_type = ["Day Shift", "Night Shift", "Rotation Shift", "Flex Shift"];
+
+const employment_type = ["Full time", "Part time", "Contract", "Temporary"];
+
 const exprienceLevels = [
   "Entry Level (0-2 years)",
   "Mid Level (3-5 years)",
@@ -56,7 +60,14 @@ const nigerianStates = [
   "Taraba",
   "Yobe",
   "Zamfara",
-  "Federal Capital Territory",
+  "FCT",
 ];
 
-export { professions, exprienceLevels, filters, nigerianStates };
+export {
+  professions,
+  exprienceLevels,
+  shift_type,
+  employment_type,
+  filters,
+  nigerianStates,
+};

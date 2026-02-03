@@ -1,11 +1,11 @@
 import styles from "./CustomSelect.module.css";
 import { useState } from "react";
 
-export default function CustomSelect() {
-  const [location, setLocation] = useState("Lagos");
+export default function CustomSelect({ filter, options }) {
+  const [location, setLocation] = useState(filter);
   const [selected, setSelected] = useState(false);
 
-  function handleLocationClick(e) {
+  function handleOptionClick(e) {
     setSelected(!selected);
     setLocation(e.target.textContent);
   }
@@ -33,18 +33,18 @@ export default function CustomSelect() {
         >
           <path d="m6 9 6 6 6-6"></path>
         </svg>
-      </div>
-      <div
-        style={{ display: selected ? "block" : "none" }}
-        className={styles.dropdown}
-      >
-        {selected && (
-          <ul>
-            <li onClick={handleLocationClick}>Lagos</li>
-            <li onClick={handleLocationClick}>Ogun</li>
-            <li onClick={handleLocationClick}>Port-Harcout</li>
-          </ul>
-        )}
+        <div
+          style={{ display: selected ? "block" : "none" }}
+          className={styles.dropdown}
+        >
+          {selected && (
+            <ul>
+              {options.map((option) => (
+                <li onClick={handleOptionClick}>{option}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -34,9 +34,11 @@
 .filter {
   display: none;
 }
-@media (max-width: 768px) {
+
+@media (max-width: 988px) {
   .jobListing {
     margin: 1rem;
+    grid-column: span 2 / -1;
   }
   .filter {
     display: block;
