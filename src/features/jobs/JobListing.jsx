@@ -8,13 +8,15 @@ import { useGetJobsQuery } from "../../services/jobsApi.js";
 import { useState } from "react";
 
 export default function JobListing() {
+  const [showFilter, setShowFilter] = useState(true);
+  const [currentPage, setCurrPage] = useState(1);
   const {
     data: { count, results: jobs } = {},
     isLoading,
     isError,
-  } = useGetJobsQuery();
-  const [showFilter, setShowFilter] = useState(true);
-  const [currentPage, setCurrPage] = useState(1);
+  } = useGetJobsQuery({
+    offset: currentPage === 1 ? 0 : (currentPage - 1) * 10,
+  });
 
   function handlePageChange(newPage) {
     setCurrPage(newPage);
@@ -46,7 +48,7 @@ export default function JobListing() {
         <Pagination
           pages={Math.ceil(count / 10) || 0}
           currentPage={currentPage}
-          handlePageChange={handlePageChange}
+          onPageChange={handlePageChange}
         />
       )}
     </div>
