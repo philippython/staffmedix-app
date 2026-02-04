@@ -1,14 +1,13 @@
 import styles from "./CustomSelect.module.css";
 import { useState } from "react";
 
-export default function CustomSelect({ filter, options }) {
-  const [location, setLocation] = useState(filter);
+export default function CustomSelect({
+  filter,
+  options,
+  onOptionChange,
+  selectedOption,
+}) {
   const [selected, setSelected] = useState(false);
-
-  function handleOptionClick(e) {
-    setSelected(!selected);
-    setLocation(e.target.textContent);
-  }
 
   return (
     <div>
@@ -17,7 +16,7 @@ export default function CustomSelect({ filter, options }) {
         className={styles.select}
         onClick={() => setSelected(!selected)}
       >
-        {location}
+        {selectedOption ? selectedOption : filter}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -40,7 +39,7 @@ export default function CustomSelect({ filter, options }) {
           {selected && (
             <ul>
               {options.map((option) => (
-                <li onClick={handleOptionClick}>{option}</li>
+                <li onClick={() => onOptionChange(option)}>{option}</li>
               ))}
             </ul>
           )}

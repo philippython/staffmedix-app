@@ -147,6 +147,10 @@ export default function JobSummary({ job }) {
             <p>Applicants</p>
             <span>{job?.views} Applied</span>
           </div>
+          <div>
+            <p>Experience</p>
+            <span>{job?.experience} yrs</span>
+          </div>
         </div>
       </div>
     </>

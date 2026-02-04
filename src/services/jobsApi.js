@@ -15,12 +15,16 @@ export const jobsApi = createApi({
   }),
   endpoints: (builder) => ({
     getJobs: builder.query({
-      query: ({ limit = 10, offset = 0, ordering } = {}) => ({
+      query: ({
+        limit = 10,
+        offset = 0,
+        ...filters //
+      } = {}) => ({
         url: "job-postings/",
         params: {
           limit,
           offset,
-          ordering,
+          ...filters,
         },
       }),
     }),

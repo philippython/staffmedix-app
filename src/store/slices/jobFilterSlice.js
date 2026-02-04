@@ -3,10 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   title: "",
   location: "",
-  ordering: null,
+  ordering: "Most recent",
   shift_type: [],
   employment_type: [],
-  experience_level: null,
+  experience: [],
 };
 
 const jobFilterSlice = createSlice({
@@ -26,10 +26,20 @@ const jobFilterSlice = createSlice({
 
       if (!state[field]) return;
 
-      if (state[field].includes(value)) {
-        state[field] = state[field].filter((v) => v !== value);
+      let processedValue = value;
+
+      // Special handling for experience level
+      if (field === "experience") {
+        const match = value.match(/\((\d+)(?:-|[+])/);
+        if (match) {
+          processedValue = Number(match[1]);
+        }
+      }
+
+      if (state[field].includes(processedValue)) {
+        state[field] = state[field].filter((v) => v !== processedValue);
       } else {
-        state[field].push(value);
+        state[field].push(processedValue);
       }
     },
   },

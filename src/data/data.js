@@ -12,7 +12,13 @@ const professions = [
 
 const shift_type = ["Day Shift", "Night Shift", "Rotation Shift", "Flex Shift"];
 
-const employment_type = ["Full time", "Part time", "Contract", "Temporary"];
+const employment_type = [
+  "Full time",
+  "Part time",
+  "Contract",
+  "Temporary",
+  "Internship",
+];
 
 const exprienceLevels = [
   "Entry Level (0-2 years)",
