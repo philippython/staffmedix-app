@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import styles from "./EmployeeSignup.module.css";
+import { useTalentSignUpMutation } from "../../services/talentApi";
 
 export default function EmployeeSignup() {
+  const [talentSignUp, { isLoading: loading, isError: error }] =
+    useTalentSignUpMutation();
   const [formData, setFormData] = useState({
-    fullName: "",
+    full_name: "",
+    username: "",
     email: "",
     phone: "",
     profession: "",
-    license: "",
-    experience: "",
+    license_number: "",
+    years_of_experience: "",
     password: "",
-    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -21,10 +24,16 @@ export default function EmployeeSignup() {
     });
   };
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
+
     console.log("Form submitted:", formData);
-  };
+    try {
+      await talentSignUp(formData).unwrap();
+    } catch (err) {
+      console.error("Talent sign up", err);
+    }
+  }
 
   return (
     <div className={styles.signupContainer}>
@@ -35,16 +44,30 @@ export default function EmployeeSignup() {
         </div>
 
         <form className={styles.signupForm} onSubmit={handleSubmit}>
+          {error && <p>error</p>}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="fullName">Full Name *</label>
+              <label htmlFor="full_name">Full Name *</label>
               <input
                 type="text"
-                id="fullName"
-                name="fullName"
-                value={formData.fullName}
+                id="full_name"
+                name="full_name"
+                value={formData.full_name}
                 onChange={handleChange}
                 placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="user"> Username *</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Enter your username"
                 required
               />
             </div>
@@ -61,20 +84,19 @@ export default function EmployeeSignup() {
                 required
               />
             </div>
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="phone">Phone Number *</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="+234 XXX XXX XXXX"
-                required
-              />
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="phone">Phone Number *</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+234 XXX XXX XXXX"
+                  required
+                />
+              </div>
             </div>
 
             <div className={styles.formGroup}>
@@ -97,41 +119,35 @@ export default function EmployeeSignup() {
                 <option value="other">Other</option>
               </select>
             </div>
-          </div>
-
-          <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="license">License Number *</label>
+              <label htmlFor="license_number">License Number (Optional)</label>
               <input
                 type="text"
-                id="license"
-                name="license"
-                value={formData.license}
+                id="license_number"
+                name="license_number"
+                value={formData.license_number}
                 onChange={handleChange}
                 placeholder="Professional license number"
-                required
               />
             </div>
-
             <div className={styles.formGroup}>
-              <label htmlFor="experience">Years of Experience *</label>
+              <label htmlFor="years_of_experience">Years of experience *</label>
               <select
-                id="experience"
-                name="experience"
-                value={formData.experience}
+                id="years_of_experience"
+                name="years_of_experience"
+                value={formData.years_of_experience}
                 onChange={handleChange}
                 required
               >
                 <option value="">Select experience</option>
-                <option value="0-2">0-2 years</option>
-                <option value="3-5">3-5 years</option>
-                <option value="6-10">6-10 years</option>
-                <option value="10+">10+ years</option>
+
+                {[...Array(15)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
               </select>
             </div>
-          </div>
-
-          <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="password">Password *</label>
               <input
@@ -145,21 +161,6 @@ export default function EmployeeSignup() {
               />
             </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="confirmPassword">Confirm Password *</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Re-enter your password"
-                required
-              />
-            </div>
-          </div>
-
-          <div className={styles.formGroup}>
             <label className={styles.checkboxLabel}>
               <input type="checkbox" required />
               <span>
@@ -167,11 +168,11 @@ export default function EmployeeSignup() {
                 <Link to="/privacy">Privacy Policy</Link>
               </span>
             </label>
-          </div>
 
-          <button type="submit" className={styles.submitButton}>
-            Create Account
-          </button>
+            <button type="submit" className={styles.submitButton}>
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </div>
         </form>
 
         <div className={styles.loginPrompt}>

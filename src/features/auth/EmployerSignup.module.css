@@ -156,7 +156,10 @@
   padding-top: 0.5rem;
   margin-top: 0.5rem;
 }
-
+.errMsg {
+  color: red !important;
+  margin: 0 !important;
+}
 /* Tablet */
 @media (max-width: 1024px) {
   .signupCard {

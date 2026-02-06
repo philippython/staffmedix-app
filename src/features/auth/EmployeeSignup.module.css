@@ -80,6 +80,8 @@
 .checkboxLabel {
   display: flex;
   align-items: center;
+  justify-self: center;
+  grid-column: span 2 / 3;
   gap: 0.7rem;
   font-size: 0.9rem;
   color: var(--dark-grey);
@@ -100,6 +102,8 @@
 
 .submitButton {
   padding: 1rem;
+  justify-self: center;
+  grid-column: span 2 / 3;
   background-color: var(--primary-bg-color);
   color: var(--primary-color);
   border: none;
@@ -146,7 +150,10 @@
   padding-top: 0.5rem;
   margin-top: 0.5rem;
 }
-
+.errMsg {
+  color: red !important;
+  margin: 0 !important;
+}
 /* Tablet */
 @media (max-width: 1024px) {
   .signupCard {

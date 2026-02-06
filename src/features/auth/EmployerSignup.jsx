@@ -1,21 +1,26 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import styles from "./EmployerSignup.module.css";
+import { nigerianStates } from "../../data/data";
+import { useEmployerSignUpMutation } from "../../services/employerApi";
 
 export default function EmployerSignup() {
+  const [employerSignUp, { isLoading: loading, isError: error }] =
+    useEmployerSignUpMutation();
+  const [errMsg, setErrMsg] = useState("");
   const [formData, setFormData] = useState({
-    organizationName: "",
-    organizationType: "",
-    registrationNumber: "",
-    contactPerson: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    website: "",
+    company_name: "",
+    username: "",
     password: "",
+    email: "",
     confirmPassword: "",
+    registration_number: "",
+    contact_person_full_name: "",
+    contact_person_phone_number: "",
+    contact_person_email: "",
+    contact_person_address: "",
+    contact_person_city: "",
+    contact_person_state: "",
   });
 
   const handleChange = (e) => {
@@ -25,10 +30,16 @@ export default function EmployerSignup() {
     });
   };
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log("Employer form submitted:", formData);
-  };
+
+    console.log("Form submitted:", formData);
+    try {
+      await employerSignUp(formData).unwrap();
+    } catch (err) {
+      setErrMsg(err.data?.detail);
+    }
+  }
 
   return (
     <div className={styles.signupContainer}>
@@ -39,16 +50,17 @@ export default function EmployerSignup() {
         </div>
 
         <form className={styles.signupForm} onSubmit={handleSubmit}>
+          {error && <p className={styles.errMsg}>{errMsg}</p>}
           <div className={styles.sectionTitle}>Organization Information</div>
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="organizationName">Organization Name *</label>
+              <label htmlFor="company_name">Organization Name *</label>
               <input
                 type="text"
-                id="organizationName"
-                name="organizationName"
-                value={formData.organizationName}
+                id="company_name"
+                name="company_name"
+                value={formData.company_name}
                 onChange={handleChange}
                 placeholder="Hospital/Clinic Name"
                 required
@@ -56,51 +68,42 @@ export default function EmployerSignup() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="organizationType">Organization Type *</label>
-              <select
-                id="organizationType"
-                name="organizationType"
-                value={formData.organizationType}
+              <label htmlFor="username">Organization Username *</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 required
-              >
-                <option value="">Select type</option>
-                <option value="hospital">Hospital</option>
-                <option value="clinic">Clinic</option>
-                <option value="diagnostic-center">Diagnostic Center</option>
-                <option value="pharmacy">Pharmacy</option>
-                <option value="medical-center">Medical Center</option>
-                <option value="nursing-home">Nursing Home</option>
-                <option value="other">Other</option>
-              </select>
+              />
             </div>
           </div>
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="registrationNumber">
-                CAC Registration Number *
+              <label htmlFor="registration_number">
+                CAC Registration Number (Optional)
               </label>
               <input
                 type="text"
-                id="registrationNumber"
-                name="registrationNumber"
-                value={formData.registrationNumber}
+                id="registration_number"
+                name="registration_number"
+                value={formData.registration_number}
                 onChange={handleChange}
                 placeholder="CAC/BN/RC Number"
-                required
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="website">Website (Optional)</label>
+              <label htmlFor="email">Email </label>
               <input
-                type="url"
-                id="website"
-                name="website"
-                value={formData.website}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="https://www.example.com"
+                placeholder="example@gmail.com"
               />
             </div>
           </div>
@@ -109,12 +112,12 @@ export default function EmployerSignup() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="contactPerson">Contact Person *</label>
+              <label htmlFor="contact_person_full_name">Contact Person *</label>
               <input
                 type="text"
-                id="contactPerson"
-                name="contactPerson"
-                value={formData.contactPerson}
+                id="contact_person_full_name"
+                name="contact_person_full_name"
+                value={formData.contact_person_full_name}
                 onChange={handleChange}
                 placeholder="Full name of HR/Admin"
                 required
@@ -122,14 +125,14 @@ export default function EmployerSignup() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="email">Email Address *</label>
+              <label htmlFor="contact_person_email">Email Address *</label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="contact_person_email"
+                id="contact_person_email"
+                name="contact_person_email"
+                value={formData.contact_person_email}
                 onChange={handleChange}
-                placeholder="organization@example.com"
+                placeholder="johndoe@example.com"
                 required
               />
             </div>
@@ -137,12 +140,14 @@ export default function EmployerSignup() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="phone">Phone Number *</label>
+              <label htmlFor="contact_person_phone_number">
+                Phone Number *
+              </label>
               <input
                 type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
+                id="contact_person_phone_number"
+                name="contact_person_phone_number"
+                value={formData.contact_person_phone_number}
                 onChange={handleChange}
                 placeholder="+234 XXX XXX XXXX"
                 required
@@ -150,12 +155,12 @@ export default function EmployerSignup() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="address">Address *</label>
+              <label htmlFor="contact_person_address">Address *</label>
               <input
                 type="text"
-                id="address"
-                name="address"
-                value={formData.address}
+                id="contact_person_address"
+                name="contact_person_address"
+                value={formData.contact_person_address}
                 onChange={handleChange}
                 placeholder="Street address"
                 required
@@ -165,12 +170,12 @@ export default function EmployerSignup() {
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="city">City *</label>
+              <label htmlFor="contact_person_city">City *</label>
               <input
                 type="text"
-                id="city"
-                name="city"
-                value={formData.city}
+                id="contact_person_city"
+                name="contact_person_city"
+                value={formData.contact_person_city}
                 onChange={handleChange}
                 placeholder="City"
                 required
@@ -178,21 +183,17 @@ export default function EmployerSignup() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="state">State *</label>
+              <label htmlFor="contact_person_state">State *</label>
               <select
-                id="state"
-                name="state"
-                value={formData.state}
+                id="contact_person_state"
+                name="contact_person_state"
+                value={formData.contact_person_state}
                 onChange={handleChange}
                 required
               >
-                <option value="">Select state</option>
-                <option value="lagos">Lagos</option>
-                <option value="abuja">Abuja (FCT)</option>
-                <option value="kano">Kano</option>
-                <option value="rivers">Rivers</option>
-                <option value="oyo">Oyo</option>
-                <option value="kaduna">Kaduna</option>
+                {nigerianStates.map((state) => (
+                  <option>{state}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -238,7 +239,9 @@ export default function EmployerSignup() {
           </div>
 
           <button type="submit" className={styles.submitButton}>
-            Register Organization
+            {loading
+              ? "Creating your employer account...."
+              : "Register Organization"}
           </button>
         </form>
 

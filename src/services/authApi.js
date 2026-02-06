@@ -13,6 +13,7 @@ export const authApi = createApi({
         body: credentials,
       }),
     }),
+
     passwordReset: builder.mutation({
       query: (email) => ({
         url: "password_reset/",
