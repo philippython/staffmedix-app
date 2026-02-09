@@ -33,8 +33,8 @@ export function useAuthRedirect() {
       employer: "/employer-dashboard",
       admin: "/admin",
     };
+    console.log(user.role);
 
-    console.log(user.role.toLowerCase());
     navigate(roleRoutes[user.role.toLowerCase()] ?? "/auth");
   }, [user, loginErrorMsg, navigate]);
 

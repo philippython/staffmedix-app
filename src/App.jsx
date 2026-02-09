@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
+import ProtectedRoutes from "./routes/ProtectedRoutes";
 
 // Existing Pages
 import Homepage from "./pages/Homepage";
@@ -79,11 +80,17 @@ function App() {
         </Route>
 
         {/* Employee Routes */}
-        <Route path="/employee-dashboard">
-          <Route index element={<EmployeeDashboardPage />} />
-          <Route path="applications" element={<ApplicationsPageLayout />} />
+        <Route element={<ProtectedRoutes group="talent" />}>
           <Route
-            path="profile/edit"
+            path="/employee-dashboard"
+            element={<EmployeeDashboardPage />}
+          />
+          <Route
+            path="/employee-dashboard/applications"
+            element={<ApplicationsPageLayout />}
+          />
+          <Route
+            path="/employee-dashboard/profile/edit"
             element={
               <>
                 <AppNav />
@@ -93,20 +100,19 @@ function App() {
             }
           />
           <Route
-            path="interviews"
-            element={
-              <>
-                <InterviewsPage />
-              </>
-            }
+            path="/employee-dashboard/interviews"
+            element={<InterviewsPage />}
           />
         </Route>
 
         {/* Employer Routes */}
-        <Route path="/employer-dashboard">
-          <Route index element={<EmployerDashboardPage />} />
+        <Route element={<ProtectedRoutes group="employer" />}>
           <Route
-            path="post-job"
+            path="/employer-dashboard"
+            element={<EmployerDashboardPage />}
+          />
+          <Route
+            path="/employer-dashboard/post-job"
             element={
               <>
                 <AppNav />
@@ -116,7 +122,7 @@ function App() {
             }
           />
           <Route
-            path="job-edit/:id"
+            path="/employer-dashboard/job-edit/:id"
             element={
               <>
                 <AppNav />
@@ -126,7 +132,7 @@ function App() {
             }
           />
           <Route
-            path="view-applications/:jobId"
+            path="/employer-dashboard/view-applications/:jobId"
             element={
               <>
                 <AppNav />
@@ -136,7 +142,7 @@ function App() {
             }
           />
           <Route
-            path="all-job-posts"
+            path="/employer-dashboard/all-job-posts"
             element={
               <>
                 <AppNav />
@@ -146,7 +152,7 @@ function App() {
             }
           />
           <Route
-            path="interviews"
+            path="/employer-dashboard/interviews"
             element={
               <>
                 <InterviewsPage />
@@ -154,7 +160,7 @@ function App() {
             }
           />
           <Route
-            path="settings"
+            path="/employer-dashboard/settings"
             element={
               <>
                 <AppNav />
@@ -164,7 +170,7 @@ function App() {
             }
           />
           <Route
-            path="applications"
+            path="/employer-dashboard/applications"
             element={
               <>
                 <AppNav />
@@ -174,7 +180,7 @@ function App() {
             }
           />
           <Route
-            path="ads-manager"
+            path="/employer-dashboard/ads-manager"
             element={
               <>
                 <AppNav />
@@ -219,11 +225,11 @@ function App() {
         />
 
         {/* Admin Routes */}
-        <Route path="/admin">
-          <Route index element={<AdminDashboardPage />} />
+        <Route element={<ProtectedRoutes group="employer" />}>
+          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
 
           <Route
-            path="verification"
+            path="/admin-dashboard/verification"
             element={
               <>
                 <AppNav />
@@ -234,7 +240,7 @@ function App() {
           />
 
           <Route
-            path="analytics"
+            path="/admin-dashboard/analytics"
             element={
               <>
                 <AppNav />
@@ -245,7 +251,7 @@ function App() {
           />
 
           <Route
-            path="ads-manager"
+            path="/admin-dashboard/ads-manager"
             element={
               <>
                 <AppNav />
