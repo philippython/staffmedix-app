@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import styles from "./AppNav.module.css";
 import Logo from "./Logo";
-import logo from "../assets/logo.png";
+import logo from "../assets/Logo.png";
 
 export default function AppNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

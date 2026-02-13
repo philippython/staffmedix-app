@@ -38,8 +38,21 @@ export const jobsApi = createApi({
     getJobById: builder.query({
       query: (jobId) => `job-postings/${jobId}/`,
     }),
+    applyToJob: builder.mutation({
+      query: (jobId) => ({
+        url: "applied-jobs/",
+        method: "POST",
+        body: {
+          job: jobId,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetJobsQuery, useCreateJobMutation, useGetJobByIdQuery } =
-  jobsApi;
+export const {
+  useGetJobsQuery,
+  useCreateJobMutation,
+  useGetJobByIdQuery,
+  useApplyToJobMutation,
+} = jobsApi;

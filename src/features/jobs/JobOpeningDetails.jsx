@@ -6,12 +6,49 @@ import JobUnorderedList from "./JobUnorderedList";
 import Button from "../../components/Button";
 import styles from "./JobOpeningDetails.module.css";
 import { Link } from "react-router";
-import { useParams } from "react-router";
-import { useGetJobByIdQuery } from "../../services/jobsApi";
+import { useParams, useNavigate } from "react-router";
+import {
+  useGetJobByIdQuery,
+  useApplyToJobMutation,
+} from "../../services/jobsApi";
+import { useSelector } from "react-redux";
 
 export default function JobOpeningDetails() {
   const { jobId } = useParams();
+  const navigate = useNavigate();
   const { data: job, isLoading, isError } = useGetJobByIdQuery(jobId);
+
+  // Get auth state
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const userRole = useSelector((state) => state.auth.role);
+
+  // Apply to job mutation
+  const [applyToJob, { isLoading: isApplying }] = useApplyToJobMutation();
+
+  async function handleApplyNow() {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      navigate("/auth");
+      return;
+    }
+
+    // Check if user is a talent
+    if (userRole !== "talent") {
+      navigate("/auth");
+      return;
+    }
+
+    try {
+      await applyToJob(job.id).unwrap();
+      alert("Application submitted successfully!");
+    } catch (error) {
+      console.error("Failed to apply:", error);
+      alert(
+        error?.data?.detail ||
+          "Failed to submit application. Please try again.",
+      );
+    }
+  }
 
   return (
     <>
@@ -64,7 +101,13 @@ export default function JobOpeningDetails() {
 
         <div className={styles.sideSection}>
           <div className={styles.applyContainer}>
-            <Button variant={"coloredButton"}>Apply Now</Button>
+            <Button
+              variant={"coloredButton"}
+              onClick={handleApplyNow}
+              disabled={isApplying}
+            >
+              {isApplying ? "Applying..." : "Apply Now"}
+            </Button>
             <span>Application deadline: {job?.deadline}</span>
             <h3>About the Employer</h3>
             <div className={styles.employer}>

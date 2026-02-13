@@ -4,7 +4,7 @@ import Button from "../../components/Button";
 import { daysAgo } from "../../utils/timelineCalculator";
 import { Link } from "react-router";
 
-export default function JobOpening({ job }) {
+export default function JobOpening({ job, isLoading, onApply }) {
   return (
     <Link to={`/jobs/${job.id}`}>
       <div className={styles.jobOpening}>
@@ -40,7 +40,15 @@ export default function JobOpening({ job }) {
         <div className={styles.applyWages}>
           <h5>{`₦${job?.salary_min.toLocaleString()} - ₦${job?.salary_max.toLocaleString()}`}</h5>
           <p>{daysAgo(job.created_at)}</p>
-          <Button variant={"coloredButton"}>Apply Now</Button>
+          <Button
+            variant={"coloredButton"}
+            onClick={(e) => {
+              e.preventDefault(); // prevents Link navigation
+              onApply(job.id);
+            }}
+          >
+            {isLoading ? "Applying..." : "Apply Now"}
+          </Button>
         </div>
       </div>
     </Link>

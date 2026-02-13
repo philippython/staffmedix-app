@@ -1,7 +1,7 @@
 import styles from "./Footer.module.css";
 import FooterColumn from "./FooterColumn";
 import Logo from "./Logo";
-import logo from "../assets/logo.png";
+import logo from "../assets/Logo.png";
 import { Link } from "react-router";
 
 export default function CTA() {

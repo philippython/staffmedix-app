@@ -5,10 +5,14 @@ import Pagination from "../../components/Pagination";
 import styles from "./JobListing.module.css";
 import { filters } from "../../data/data.js";
 import FILTER_MAPS from "../../data/filter_map.js";
-import { useGetJobsQuery } from "../../services/jobsApi.js";
+import {
+  useGetJobsQuery,
+  useApplyToJobMutation,
+} from "../../services/jobsApi.js";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFilters } from "../../store/slices/jobFilterSlice";
+import { useNavigate } from "react-router";
 
 export default function JobListing() {
   const [showFilter, setShowFilter] = useState(true);
@@ -16,6 +20,14 @@ export default function JobListing() {
   const ordering = useSelector((state) => state.jobFilter.ordering);
   const rawFilters = useSelector((state) => state.jobFilter);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Get auth state
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const userRole = useSelector((state) => state.auth.role);
+
+  // Apply to job mutation
+  const [applyToJob, { isLoading: isApplying }] = useApplyToJobMutation();
 
   const { SHIFT_TYPE_MAP, EMPLOYMENT_TYPE_MAP, ORDERING_MAP } = FILTER_MAPS;
   const apiFilters = {
@@ -60,6 +72,31 @@ export default function JobListing() {
     setCurrPage(newPage);
   }
 
+  async function handleApplyNow(jobId) {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      navigate("/auth");
+      return;
+    }
+
+    // Check if user is a talent
+    if (userRole !== "talent") {
+      navigate("/auth");
+      return;
+    }
+
+    try {
+      await applyToJob(jobId).unwrap();
+      alert("Application submitted successfully!");
+    } catch (error) {
+      console.error("Failed to apply:", error);
+      alert(
+        error?.data?.detail ||
+          "Failed to submit application. Please try again.",
+      );
+    }
+  }
+
   return (
     <div className={styles.jobListing}>
       <div className={styles.searchFilterCount}>
@@ -87,7 +124,15 @@ export default function JobListing() {
           Error loading jobs, Check your internet connection :(
         </div>
       ) : null}
-      {jobs && jobs.map((job) => <JobOpening key={job.id} job={job} />)}
+      {jobs &&
+        jobs.map((job) => (
+          <JobOpening
+            key={job.id}
+            job={job}
+            onApply={() => handleApplyNow(job.id)}
+            isApplying={isApplying}
+          />
+        ))}
       {isError || isLoading ? null : (
         <Pagination
           pages={Math.ceil(count / 10) || 0}
