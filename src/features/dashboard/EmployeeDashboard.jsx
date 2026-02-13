@@ -1,47 +1,102 @@
 import { Link } from "react-router";
 import styles from "./EmployeeDashboard.module.css";
+import { useGetAppliedJobsQuery } from "../../services/jobsApi";
+import { useWhoAmIQuery } from "../../services/userApi";
+import { useMemo } from "react";
 
 export default function EmployeeDashboard() {
-  const applications = [
-    {
-      id: 1,
-      jobTitle: "Senior ICU Nurse",
-      hospital: "Lagos University Teaching Hospital",
-      status: "Under Review",
-      appliedDate: "Jan 15, 2026",
-    },
-    {
-      id: 2,
-      jobTitle: "Pediatric Nurse",
-      hospital: "Federal Medical Centre",
-      status: "Interview Scheduled",
-      appliedDate: "Jan 10, 2026",
-    },
-    {
-      id: 3,
-      jobTitle: "Emergency Room Nurse",
-      hospital: "National Hospital Abuja",
-      status: "Rejected",
-      appliedDate: "Jan 5, 2026",
-    },
-  ];
+  // Get current user info
+  const { data: user, isLoading: userLoading } = useWhoAmIQuery();
 
-  const stats = [
-    { label: "Applications Submitted", value: "12", icon: "📄" },
-    { label: "Interviews Scheduled", value: "3", icon: "📅" },
-    { label: "Profile Views", value: "45", icon: "👁️" },
-    { label: "Saved Jobs", value: "8", icon: "⭐" },
-  ];
+  // Get applied jobs for the current user
+  const {
+    data: appliedJobsData,
+    isLoading: applicationsLoading,
+    isError: applicationsError,
+  } = useGetAppliedJobsQuery({ limit: 3 });
+
+  // Format status for display
+  const formatStatus = (status) => {
+    const statusMap = {
+      PENDING: "Pending",
+      "UNDER REVIEW": "Under Review",
+      INTERVIEW_SCHEDULED: "Interview Scheduled",
+      SHORTLISTED: "Shortlisted",
+      ACCEPTED: "Accepted",
+      REJECTED: "Rejected",
+      WITHDRAWN: "Withdrawn",
+    };
+    return statusMap[status] || status;
+  };
+
+  // Get status class (matching your original CSS classes)
+  const getStatusClass = (status) => {
+    const displayStatus = formatStatus(status);
+    const statusMap = {
+      Pending: "pending",
+      "Under Review": "underreview",
+      "Interview Scheduled": "interviewscheduled",
+      Shortlisted: "shortlisted",
+      Rejected: "rejected",
+      Withdrawn: "withdrawn",
+      Accepted: "accepted",
+    };
+    return statusMap[displayStatus] || "";
+  };
+
+  // Calculate stats from applied jobs data
+  const stats = useMemo(() => {
+    if (!appliedJobsData?.results) {
+      return [
+        { label: "Applications Submitted", value: "0", icon: "📄" },
+        { label: "Interviews Scheduled", value: "0", icon: "📅" },
+        { label: "Profile Views", value: "0", icon: "👁️" },
+      ];
+    }
+
+    const applications = appliedJobsData.results;
+    const totalApplications = appliedJobsData.count || applications.length;
+    const interviewsScheduled = applications.filter(
+      (app) => app.status === "INTERVIEW_SCHEDULED",
+    ).length;
+
+    return [
+      {
+        label: "Applications Submitted",
+        value: totalApplications.toString(),
+        icon: "📄",
+      },
+      {
+        label: "Interviews Scheduled",
+        value: interviewsScheduled.toString(),
+        icon: "📅",
+      },
+      { label: "Profile Views", value: "0", icon: "👁️" },
+    ];
+  }, [appliedJobsData]);
+
+  // Format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const applications = appliedJobsData?.results || [];
+  const userName = user?.fullname || user?.username || "User";
 
   return (
     <div className={styles.dashboard}>
       <div className={styles.dashboardHeader}>
         <div>
-          <h1>Welcome back, Dr. Sarah!</h1>
+          <h1>Welcome back, {userName}!</h1>
           <p>Here's what's happening with your applications</p>
         </div>
         <Link
-          to="/employee-dashboard/profile/edit"
+          to={`/employee-dashboard/profile/edit/${user?.talent_id}`}
           className={styles.editProfile}
         >
           Edit Profile
@@ -68,26 +123,39 @@ export default function EmployeeDashboard() {
           </div>
 
           <div className={styles.applicationsList}>
-            {applications.map((app) => (
-              <div key={app.id} className={styles.applicationCard}>
-                <div className={styles.applicationInfo}>
-                  <h3>{app.jobTitle}</h3>
-                  <p className={styles.hospital}>{app.hospital}</p>
-                  <p className={styles.appliedDate}>
-                    Applied on {app.appliedDate}
-                  </p>
+            {applicationsLoading ? (
+              <p>Loading applications...</p>
+            ) : applicationsError ? (
+              <p>Error loading applications. Please try again later.</p>
+            ) : applications.length === 0 ? (
+              <p>
+                No applications yet. <Link to="/jobs">Browse jobs</Link> to get
+                started!
+              </p>
+            ) : (
+              applications.map((app) => (
+                <div key={app.id} className={styles.applicationCard}>
+                  <div className={styles.applicationInfo}>
+                    <h3>{app.job?.title || "Job Title"}</h3>
+                    <p className={styles.hospital}>
+                      {app["company"].company_name || "Company"}
+                    </p>
+                    <p className={styles.appliedDate}>
+                      Applied on {formatDate(app.applied_at)}
+                    </p>
+                  </div>
+                  <div className={styles.applicationStatus}>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        styles[getStatusClass(app.status)]
+                      }`}
+                    >
+                      {formatStatus(app.status)}
+                    </span>
+                  </div>
                 </div>
-                <div className={styles.applicationStatus}>
-                  <span
-                    className={`${styles.statusBadge} ${
-                      styles[app.status.replace(" ", "").toLowerCase()]
-                    }`}
-                  >
-                    {app.status}
-                  </span>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
 
@@ -99,7 +167,7 @@ export default function EmployeeDashboard() {
             </div>
             <p className={styles.completionText}>75% Complete</p>
             <Link
-              to="/employee-dashboard/profile/edit"
+              to={`/employee-dashboard/profile/edit/${user?.talent_id}`}
               className={styles.completeProfile}
             >
               Complete Your Profile

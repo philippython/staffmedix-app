@@ -49,7 +49,12 @@ export default function EmployeeSignup() {
             </div>
 
             <form className={styles.signupForm} onSubmit={handleSubmit}>
-              {error && <p>error</p>}
+              {error && (
+                <p className={styles.errMsg}>
+                  Error creating account. Please try again.
+                </p>
+              )}
+
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
                   <label htmlFor="full_name">Full Name *</label>
@@ -65,7 +70,7 @@ export default function EmployeeSignup() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label htmlFor="user"> Username *</label>
+                  <label htmlFor="username">Username *</label>
                   <input
                     type="text"
                     id="username"
@@ -89,19 +94,18 @@ export default function EmployeeSignup() {
                     required
                   />
                 </div>
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="phone">Phone Number *</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+234 XXX XXX XXXX"
-                      required
-                    />
-                  </div>
+
+                <div className={styles.formGroup}>
+                  <label htmlFor="phone">Phone Number *</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+234 XXX XXX XXXX"
+                    required
+                  />
                 </div>
 
                 <div className={styles.formGroup}>
@@ -126,6 +130,7 @@ export default function EmployeeSignup() {
                     <option value="other">Other</option>
                   </select>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="license_number">
                     License Number (Optional)
@@ -139,6 +144,7 @@ export default function EmployeeSignup() {
                     placeholder="Professional license number"
                   />
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="years_of_experience">
                     Years of experience *
@@ -151,7 +157,6 @@ export default function EmployeeSignup() {
                     required
                   >
                     <option value="">Select experience</option>
-
                     {[...Array(15)].map((_, i) => (
                       <option key={i + 1} value={i + 1}>
                         {i + 1}
@@ -159,6 +164,7 @@ export default function EmployeeSignup() {
                     ))}
                   </select>
                 </div>
+
                 <div className={styles.formGroup}>
                   <label htmlFor="password">Password *</label>
                   <input
@@ -194,14 +200,14 @@ export default function EmployeeSignup() {
 
             <div className={styles.employerPrompt}>
               <p>
-                Are you an employer?
+                Are you an employer?{" "}
                 <Link to="/auth/employer-signup">Sign up as an employer</Link>
               </p>
             </div>
           </>
         ) : (
           <p>
-            {success} <Link to="/auth"> Click here</Link> to login
+            {success} <Link to="/auth">Click here</Link> to login
           </p>
         )}
       </div>

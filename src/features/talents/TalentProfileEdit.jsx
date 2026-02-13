@@ -1,61 +1,173 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router";
 import styles from "./TalentProfileEdit.module.css";
+import {
+  useGetMyProfileQuery,
+  useUpdateTalentProfileMutation,
+  useGetSkillsQuery,
+  useAddSkillMutation,
+  useDeleteSkillMutation,
+  useGetWorkExperienceQuery,
+  useAddWorkExperienceMutation,
+  useUpdateWorkExperienceMutation,
+  useDeleteWorkExperienceMutation,
+  useGetEducationQuery,
+  useAddEducationMutation,
+  useUpdateEducationMutation,
+  useDeleteEducationMutation,
+  useGetCredentialsQuery,
+  useUploadCredentialMutation,
+  useDeleteCredentialMutation,
+  useUploadProfileImageMutation,
+} from "../../services/talentApi";
 
 export default function TalentProfileEdit() {
+  const { talentId } = useParams();
   const [activeSection, setActiveSection] = useState("basic");
 
+  // Fetch profile data
+  const { data: profile, isLoading: profileLoading } =
+    useGetMyProfileQuery(talentId);
+  const { data: skills = [], isLoading: skillsLoading } =
+    useGetSkillsQuery(talentId);
+  const { data: workExperience = [], isLoading: workLoading } =
+    useGetWorkExperienceQuery(talentId);
+  const { data: education = [], isLoading: educationLoading } =
+    useGetEducationQuery(talentId);
+  const { data: credentials = [], isLoading: credentialsLoading } =
+    useGetCredentialsQuery(talentId);
+
+  // Mutations
+  const [updateProfile, { isLoading: updating }] =
+    useUpdateTalentProfileMutation();
+  const [addSkill] = useAddSkillMutation();
+  const [deleteSkill] = useDeleteSkillMutation();
+  const [addWork] = useAddWorkExperienceMutation();
+  const [updateWork] = useUpdateWorkExperienceMutation();
+  const [deleteWork] = useDeleteWorkExperienceMutation();
+  const [addEdu] = useAddEducationMutation();
+  const [updateEdu] = useUpdateEducationMutation();
+  const [deleteEdu] = useDeleteEducationMutation();
+  const [uploadCredential] = useUploadCredentialMutation();
+  const [deleteCredentialMutation] = useDeleteCredentialMutation();
+  const [uploadImage] = useUploadProfileImageMutation();
+
+  // Form states
   const [basicInfo, setBasicInfo] = useState({
-    fullName: "Dr. Sarah Okonkwo",
-    profession: "doctor",
-    specialization: "ICU Specialist",
-    email: "sarah.okonkwo@email.com",
-    phone: "+234 801 234 5678",
-    location: "Lagos, Nigeria",
-    availability: "available",
+    full_name: "",
+    profession: "",
+    specialization: "",
+    phone_number: "",
+    location: "",
+    biography: "",
+    license_number: "",
+    years_of_experience: "",
   });
-
-  const [professionalInfo, setProfessionalInfo] = useState({
-    licenseNumber: "MD-12345-NG",
-    experience: "8 years",
-    currentPosition: "Senior ICU Nurse",
-    summary: "Experienced ICU specialist with 8 years...",
-  });
-
-  const [skills, setSkills] = useState([
-    "Critical Care",
-    "Emergency Medicine",
-    "Patient Management",
-  ]);
 
   const [newSkill, setNewSkill] = useState("");
+
+  // Load profile data into form
+  useEffect(() => {
+    if (profile) {
+      setBasicInfo({
+        full_name: profile.full_name || "",
+        profession: profile.profession || "",
+        specialization: profile.specialization || "",
+        phone_number: profile.phone_number || "",
+        location: profile.location || "",
+        biography: profile.biography || "",
+        license_number: profile.license_number || "",
+        years_of_experience: profile.years_of_experience || "",
+      });
+    }
+  }, [profile]);
 
   const handleBasicChange = (e) => {
     setBasicInfo({ ...basicInfo, [e.target.name]: e.target.value });
   };
 
-  const handleProfessionalChange = (e) => {
-    setProfessionalInfo({
-      ...professionalInfo,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleAddSkill = () => {
-    if (newSkill.trim()) {
-      setSkills([...skills, newSkill.trim()]);
-      setNewSkill("");
+  const handleBasicSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateProfile({ talentId, data: basicInfo }).unwrap();
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Failed to update profile. Please try again.");
     }
   };
 
-  const handleRemoveSkill = (index) => {
-    setSkills(skills.filter((_, i) => i !== index));
+  const handleAddSkill = async () => {
+    if (newSkill.trim()) {
+      try {
+        await addSkill({
+          talentId,
+          data: { name: newSkill.trim() },
+        }).unwrap();
+        setNewSkill("");
+      } catch (error) {
+        console.error("Failed to add skill:", error);
+        alert("Failed to add skill.");
+      }
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Profile updated");
+  const handleRemoveSkill = async (skillId) => {
+    try {
+      await deleteSkill({ skillId }).unwrap();
+    } catch (error) {
+      console.error("Failed to delete skill:", error);
+      alert("Failed to delete skill.");
+    }
   };
+
+  const handleFileUpload = async (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+
+    try {
+      await uploadCredential({
+        talentId,
+        data: formData,
+      }).unwrap();
+      alert("File uploaded successfully!");
+    } catch (error) {
+      console.error("Failed to upload file:", error);
+      alert("Failed to upload file.");
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      await uploadImage({ talentId, formData }).unwrap();
+      alert("Profile image uploaded successfully!");
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      alert("Failed to upload image.");
+    }
+  };
+
+  if (profileLoading) {
+    return <div className={styles.loading}>Loading profile...</div>;
+  }
+
+  if (!talentId) {
+    return (
+      <div className={styles.error}>
+        Unable to load profile. Please try again.
+      </div>
+    );
+  }
 
   return (
     <div className={styles.profileEdit}>
@@ -78,16 +190,10 @@ export default function TalentProfileEdit() {
             👤 Basic Information
           </button>
           <button
-            className={activeSection === "professional" ? styles.active : ""}
-            onClick={() => setActiveSection("professional")}
-          >
-            💼 Professional Details
-          </button>
-          <button
             className={activeSection === "skills" ? styles.active : ""}
             onClick={() => setActiveSection("skills")}
           >
-            🎯 Skills & Certifications
+            🎯 Skills
           </button>
           <button
             className={activeSection === "work" ? styles.active : ""}
@@ -113,13 +219,23 @@ export default function TalentProfileEdit() {
           {activeSection === "basic" && (
             <div className={styles.section}>
               <h2>Basic Information</h2>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleBasicSubmit}>
                 <div className={styles.formGroup}>
                   <label>Profile Photo</label>
                   <div className={styles.photoUpload}>
-                    <div className={styles.currentPhoto}>👩‍⚕️</div>
+                    <div className={styles.currentPhoto}>
+                      {profile?.image ? (
+                        <img src={profile.image} alt="Profile" />
+                      ) : (
+                        "👩‍⚕️"
+                      )}
+                    </div>
                     <div>
-                      <input type="file" accept="image/*" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                      />
                       <p className={styles.hint}>
                         PNG, JPG up to 5MB. Recommended: 300x300px
                       </p>
@@ -132,8 +248,8 @@ export default function TalentProfileEdit() {
                     <label>Full Name *</label>
                     <input
                       type="text"
-                      name="fullName"
-                      value={basicInfo.fullName}
+                      name="full_name"
+                      value={basicInfo.full_name}
                       onChange={handleBasicChange}
                       required
                     />
@@ -147,10 +263,15 @@ export default function TalentProfileEdit() {
                       onChange={handleBasicChange}
                       required
                     >
+                      <option value="">Select profession</option>
                       <option value="doctor">Doctor</option>
                       <option value="nurse">Nurse</option>
                       <option value="pharmacist">Pharmacist</option>
                       <option value="lab-tech">Lab Technician</option>
+                      <option value="radiographer">Radiographer</option>
+                      <option value="physiotherapist">Physiotherapist</option>
+                      <option value="dentist">Dentist</option>
+                      <option value="other">Other</option>
                     </select>
                   </div>
                 </div>
@@ -169,29 +290,16 @@ export default function TalentProfileEdit() {
 
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
-                    <label>Email *</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={basicInfo.email}
-                      onChange={handleBasicChange}
-                      required
-                    />
-                  </div>
-
-                  <div className={styles.formGroup}>
                     <label>Phone *</label>
                     <input
                       type="tel"
-                      name="phone"
-                      value={basicInfo.phone}
+                      name="phone_number"
+                      value={basicInfo.phone_number}
                       onChange={handleBasicChange}
                       required
                     />
                   </div>
-                </div>
 
-                <div className={styles.formRow}>
                   <div className={styles.formGroup}>
                     <label>Location *</label>
                     <input
@@ -203,83 +311,49 @@ export default function TalentProfileEdit() {
                       required
                     />
                   </div>
-
-                  <div className={styles.formGroup}>
-                    <label>Availability Status *</label>
-                    <select
-                      name="availability"
-                      value={basicInfo.availability}
-                      onChange={handleBasicChange}
-                      required
-                    >
-                      <option value="available">Available Immediately</option>
-                      <option value="2weeks">Available in 2 weeks</option>
-                      <option value="1month">Available in 1 month</option>
-                      <option value="not-looking">Not Looking</option>
-                    </select>
-                  </div>
                 </div>
 
-                <button type="submit" className={styles.saveBtn}>
-                  Save Changes
-                </button>
-              </form>
-            </div>
-          )}
-
-          {activeSection === "professional" && (
-            <div className={styles.section}>
-              <h2>Professional Details</h2>
-              <form onSubmit={handleSubmit}>
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
-                    <label>License Number *</label>
+                    <label>License Number</label>
                     <input
                       type="text"
-                      name="licenseNumber"
-                      value={professionalInfo.licenseNumber}
-                      onChange={handleProfessionalChange}
-                      required
+                      name="license_number"
+                      value={basicInfo.license_number}
+                      onChange={handleBasicChange}
                     />
                   </div>
 
                   <div className={styles.formGroup}>
                     <label>Years of Experience *</label>
                     <input
-                      type="text"
-                      name="experience"
-                      value={professionalInfo.experience}
-                      onChange={handleProfessionalChange}
-                      placeholder="e.g., 5 years"
+                      type="number"
+                      name="years_of_experience"
+                      value={basicInfo.years_of_experience}
+                      onChange={handleBasicChange}
+                      min="0"
                       required
                     />
                   </div>
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label>Current Position</label>
-                  <input
-                    type="text"
-                    name="currentPosition"
-                    value={professionalInfo.currentPosition}
-                    onChange={handleProfessionalChange}
-                  />
-                </div>
-
-                <div className={styles.formGroup}>
-                  <label>Professional Summary *</label>
+                  <label>Professional Summary</label>
                   <textarea
-                    name="summary"
-                    value={professionalInfo.summary}
-                    onChange={handleProfessionalChange}
+                    name="biography"
+                    value={basicInfo.biography}
+                    onChange={handleBasicChange}
                     rows="6"
                     placeholder="Write a brief summary of your professional background..."
-                    required
                   ></textarea>
                 </div>
 
-                <button type="submit" className={styles.saveBtn}>
-                  Save Changes
+                <button
+                  type="submit"
+                  className={styles.saveBtn}
+                  disabled={updating}
+                >
+                  {updating ? "Saving..." : "Save Changes"}
                 </button>
               </form>
             </div>
@@ -287,10 +361,9 @@ export default function TalentProfileEdit() {
 
           {activeSection === "skills" && (
             <div className={styles.section}>
-              <h2>Skills & Certifications</h2>
+              <h2>Skills</h2>
 
               <div className={styles.skillsSection}>
-                <h3>Skills</h3>
                 <div className={styles.skillInput}>
                   <input
                     type="text"
@@ -314,11 +387,11 @@ export default function TalentProfileEdit() {
                 </div>
 
                 <div className={styles.skillTags}>
-                  {skills.map((skill, index) => (
-                    <div key={index} className={styles.skillTag}>
-                      <span>{skill}</span>
+                  {skills.map((skill) => (
+                    <div key={skill.id} className={styles.skillTag}>
+                      <span>{skill.name}</span>
                       <button
-                        onClick={() => handleRemoveSkill(index)}
+                        onClick={() => handleRemoveSkill(skill.id)}
                         className={styles.removeBtn}
                       >
                         ✕
@@ -327,37 +400,32 @@ export default function TalentProfileEdit() {
                   ))}
                 </div>
               </div>
-
-              <div className={styles.certSection}>
-                <h3>Certifications</h3>
-                <button className={styles.addCertBtn}>
-                  + Add Certification
-                </button>
-              </div>
             </div>
           )}
 
           {activeSection === "work" && (
             <div className={styles.section}>
               <h2>Work History</h2>
-              <button className={styles.addWorkBtn}>
-                + Add Work Experience
-              </button>
-              <p className={styles.emptyState}>
-                No work history added yet. Click above to add your experience.
-              </p>
+              <WorkExperienceSection
+                talentId={talentId}
+                experiences={workExperience}
+                onAdd={addWork}
+                onUpdate={updateWork}
+                onDelete={deleteWork}
+              />
             </div>
           )}
 
           {activeSection === "education" && (
             <div className={styles.section}>
               <h2>Education</h2>
-              <button className={styles.addEducationBtn}>
-                + Add Education
-              </button>
-              <p className={styles.emptyState}>
-                No education added yet. Click above to add your qualifications.
-              </p>
+              <EducationSection
+                talentId={talentId}
+                education={education}
+                onAdd={addEdu}
+                onUpdate={updateEdu}
+                onDelete={deleteEdu}
+              />
             </div>
           )}
 
@@ -366,26 +434,375 @@ export default function TalentProfileEdit() {
               <h2>Documents</h2>
               <div className={styles.uploadSection}>
                 <h3>Resume/CV</h3>
-                <input type="file" accept=".pdf,.doc,.docx" />
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => handleFileUpload(e, "RESUME")}
+                />
                 <p className={styles.hint}>PDF, DOC, DOCX up to 10MB</p>
               </div>
 
               <div className={styles.uploadSection}>
                 <h3>Professional License</h3>
-                <input type="file" accept=".pdf,.jpg,.png" />
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.png"
+                  onChange={(e) => handleFileUpload(e, "LICENSE")}
+                />
                 <p className={styles.hint}>PDF, JPG, PNG up to 5MB</p>
               </div>
 
               <div className={styles.uploadSection}>
                 <h3>Certifications</h3>
-                <input type="file" accept=".pdf,.jpg,.png" multiple />
-                <p className={styles.hint}>
-                  Multiple files allowed - PDF, JPG, PNG
-                </p>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.png"
+                  onChange={(e) => handleFileUpload(e, "CERTIFICATE")}
+                />
+                <p className={styles.hint}>PDF, JPG, PNG</p>
+              </div>
+
+              <div className={styles.documentslist}>
+                <h3>Uploaded Documents</h3>
+                {credentials.length === 0 ? (
+                  <p className={styles.emptyState}>
+                    No documents uploaded yet.
+                  </p>
+                ) : (
+                  credentials.map((doc) => (
+                    <div key={doc.id} className={styles.docItem}>
+                      <span>
+                        {doc.type} -{" "}
+                        {new Date(doc.upload_date).toLocaleDateString()}
+                      </span>
+                      <button
+                        onClick={() =>
+                          deleteCredentialMutation({ credentialId: doc.id })
+                        }
+                        className={styles.deleteBtn}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Work Experience Component
+function WorkExperienceSection({
+  talentId,
+  experiences,
+  onAdd,
+  onUpdate,
+  onDelete,
+}) {
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({
+    job_title: "",
+    facility: "",
+    start_date: "",
+    end_date: "",
+    description: "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingId) {
+        await onUpdate({
+          workId: editingId,
+          data: formData,
+        }).unwrap();
+      } else {
+        await onAdd({ talentId, data: formData }).unwrap();
+      }
+      setShowForm(false);
+      setEditingId(null);
+      setFormData({
+        job_title: "",
+        facility: "",
+        start_date: "",
+        end_date: "",
+        description: "",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to save work experience.");
+    }
+  };
+
+  const handleEdit = (exp) => {
+    setFormData({
+      job_title: exp.job_title,
+      facility: exp.facility,
+      start_date: exp.start_date,
+      end_date: exp.end_date || "",
+      description: exp.description,
+    });
+    setEditingId(exp.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm("Are you sure you want to delete this work experience?")) {
+      try {
+        await onDelete({ workId: id }).unwrap();
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to delete work experience.");
+      }
+    }
+  };
+
+  return (
+    <div>
+      <button
+        onClick={() => setShowForm(!showForm)}
+        className={styles.addWorkBtn}
+      >
+        {showForm ? "Cancel" : "+ Add Work Experience"}
+      </button>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className={styles.workForm}>
+          <div className={styles.formGroup}>
+            <label>Job Title *</label>
+            <input
+              type="text"
+              value={formData.job_title}
+              onChange={(e) =>
+                setFormData({ ...formData, job_title: e.target.value })
+              }
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Facility/Hospital *</label>
+            <input
+              type="text"
+              value={formData.facility}
+              onChange={(e) =>
+                setFormData({ ...formData, facility: e.target.value })
+              }
+              required
+            />
+          </div>
+          <div className={styles.formRow}>
+            <div className={styles.formGroup}>
+              <label>Start Date *</label>
+              <input
+                type="date"
+                value={formData.start_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, start_date: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>End Date (Leave blank if current)</label>
+              <input
+                type="date"
+                value={formData.end_date}
+                onChange={(e) =>
+                  setFormData({ ...formData, end_date: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <div className={styles.formGroup}>
+            <label>Description *</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              rows="4"
+              required
+            />
+          </div>
+          <button type="submit" className={styles.saveBtn}>
+            {editingId ? "Update" : "Add"} Experience
+          </button>
+        </form>
+      )}
+
+      <div className={styles.experienceList}>
+        {experiences.length === 0 ? (
+          <p className={styles.emptyState}>No work history added yet.</p>
+        ) : (
+          experiences.map((exp) => (
+            <div key={exp.id} className={styles.experienceItem}>
+              <h4>{exp.job_title}</h4>
+              <p className={styles.facility}>{exp.facility}</p>
+              <p className={styles.dates}>
+                {new Date(exp.start_date).toLocaleDateString()} -{" "}
+                {exp.end_date
+                  ? new Date(exp.end_date).toLocaleDateString()
+                  : "Present"}
+              </p>
+              <p className={styles.description}>{exp.description}</p>
+              <div className={styles.actions}>
+                <button
+                  onClick={() => handleEdit(exp)}
+                  className={styles.editBtn}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(exp.id)}
+                  className={styles.deleteBtn}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Education Component
+function EducationSection({ talentId, education, onAdd, onUpdate, onDelete }) {
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({
+    degree: "",
+    institution: "",
+    year: "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingId) {
+        await onUpdate({
+          educationId: editingId,
+          data: formData,
+        }).unwrap();
+      } else {
+        await onAdd({ talentId, data: formData }).unwrap();
+      }
+      setShowForm(false);
+      setEditingId(null);
+      setFormData({ degree: "", institution: "", year: "" });
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to save education.");
+    }
+  };
+
+  const handleEdit = (edu) => {
+    setFormData({
+      degree: edu.degree,
+      institution: edu.institution,
+      year: edu.year,
+    });
+    setEditingId(edu.id);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm("Are you sure you want to delete this education?")) {
+      try {
+        await onDelete({ educationId: id }).unwrap();
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Failed to delete education.");
+      }
+    }
+  };
+
+  return (
+    <div>
+      <button
+        onClick={() => setShowForm(!showForm)}
+        className={styles.addEducationBtn}
+      >
+        {showForm ? "Cancel" : "+ Add Education"}
+      </button>
+
+      {showForm && (
+        <form onSubmit={handleSubmit} className={styles.eduForm}>
+          <div className={styles.formGroup}>
+            <label>Degree *</label>
+            <input
+              type="text"
+              value={formData.degree}
+              onChange={(e) =>
+                setFormData({ ...formData, degree: e.target.value })
+              }
+              placeholder="e.g., Bachelor of Science in Nursing"
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Institution *</label>
+            <input
+              type="text"
+              value={formData.institution}
+              onChange={(e) =>
+                setFormData({ ...formData, institution: e.target.value })
+              }
+              placeholder="e.g., University of Lagos"
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Graduation Year *</label>
+            <input
+              type="number"
+              value={formData.year}
+              onChange={(e) =>
+                setFormData({ ...formData, year: e.target.value })
+              }
+              min="1950"
+              max={new Date().getFullYear()}
+              required
+            />
+          </div>
+          <button type="submit" className={styles.saveBtn}>
+            {editingId ? "Update" : "Add"} Education
+          </button>
+        </form>
+      )}
+
+      <div className={styles.educationList}>
+        {education.length === 0 ? (
+          <p className={styles.emptyState}>No education added yet.</p>
+        ) : (
+          education.map((edu) => (
+            <div key={edu.id} className={styles.educationItem}>
+              <h4>{edu.degree}</h4>
+              <p className={styles.institution}>{edu.institution}</p>
+              <p className={styles.year}>Graduated: {edu.year}</p>
+              <div className={styles.actions}>
+                <button
+                  onClick={() => handleEdit(edu)}
+                  className={styles.editBtn}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(edu.id)}
+                  className={styles.deleteBtn}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

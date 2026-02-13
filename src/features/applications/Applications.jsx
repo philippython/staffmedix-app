@@ -1,86 +1,131 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import styles from "./Applications.module.css";
+import { useGetAppliedJobsQuery } from "../../services/jobsApi";
 
 export default function Applications() {
   const [filter, setFilter] = useState("all");
 
-  const applications = [
-    {
-      id: 1,
-      jobTitle: "Senior ICU Nurse",
-      hospital: "General Hospital Lagos",
-      status: "Under Review",
-      appliedDate: "Jan 15, 2026",
-      salary: "₦450,000",
-      location: "Lagos, Nigeria",
-      type: "Full Time",
-    },
-    {
-      id: 2,
-      jobTitle: "Pediatric Nurse",
-      hospital: "Federal Medical Centre",
-      status: "Interview Scheduled",
-      appliedDate: "Jan 10, 2026",
-      salary: "₦380,000",
-      location: "Abuja, Nigeria",
-      type: "Full Time",
-      interviewDate: "Jan 25, 2026",
-    },
-    {
-      id: 3,
-      jobTitle: "Emergency Room Nurse",
-      hospital: "National Hospital Abuja",
-      status: "Rejected",
-      appliedDate: "Jan 5, 2026",
-      salary: "₦420,000",
-      location: "Abuja, Nigeria",
-      type: "Full Time",
-    },
-    {
-      id: 4,
-      jobTitle: "Registered Nurse",
-      hospital: "St. Nicholas Hospital",
-      status: "Shortlisted",
-      appliedDate: "Jan 3, 2026",
-      salary: "₦400,000",
-      location: "Lagos, Nigeria",
-      type: "Full Time",
-    },
-    {
-      id: 5,
-      jobTitle: "ICU Nurse",
-      hospital: "Reddington Hospital",
-      status: "Under Review",
-      appliedDate: "Dec 28, 2025",
-      salary: "₦430,000",
-      location: "Lagos, Nigeria",
-      type: "Contract",
-    },
-  ];
+  // Get applied jobs from API
+  const {
+    data: appliedJobsData,
+    isLoading,
+    isError,
+  } = useGetAppliedJobsQuery({ limit: 100 }); // Get all applications
+
+  const applications = appliedJobsData?.results || [];
+
+  // Format status for display
+  const formatStatus = (status) => {
+    const statusMap = {
+      PENDING: "Pending",
+      REVIEWED: "Under Review",
+      INTERVIEW_SCHEDULED: "Interview Scheduled",
+      SHORTLISTED: "Shortlisted",
+      ACCEPTED: "Accepted",
+      REJECTED: "Rejected",
+      WITHDRAWN: "Withdrawn",
+    };
+    return statusMap[status] || status;
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Format salary
+  const formatSalary = (min, max) => {
+    if (!min && !max) return "Negotiable";
+    if (min && max)
+      return `₦${min.toLocaleString()} - ₦${max.toLocaleString()}`;
+    if (min) return `₦${min.toLocaleString()}`;
+    return `₦${max.toLocaleString()}`;
+  };
+
+  // Format employment type
+  const formatEmploymentType = (type) => {
+    const typeMap = {
+      FULL_TIME: "Full Time",
+      PART_TIME: "Part Time",
+      CONTRACT: "Contract",
+      TEMPORARY: "Temporary",
+      INTERNSHIP: "Internship",
+    };
+    return typeMap[type] || type;
+  };
 
   const filteredApplications = applications.filter((app) => {
+    const displayStatus = formatStatus(app.status);
     if (filter === "active") {
-      return ["Under Review", "Interview Scheduled", "Shortlisted"].includes(
-        app.status,
-      );
+      return [
+        "Pending",
+        "Under Review",
+        "Interview Scheduled",
+        "Shortlisted",
+      ].includes(displayStatus);
     }
     if (filter === "archived") {
-      return ["Rejected", "Withdrawn"].includes(app.status);
+      return ["Rejected", "Withdrawn"].includes(displayStatus);
     }
     return true;
   });
 
   const getStatusClass = (status) => {
+    const displayStatus = formatStatus(status);
     const statusMap = {
+      Pending: "pending",
       "Under Review": "underreview",
       "Interview Scheduled": "interview",
       Shortlisted: "shortlisted",
       Rejected: "rejected",
       Withdrawn: "withdrawn",
+      Accepted: "accepted",
     };
-    return statusMap[status] || "";
+    return statusMap[displayStatus] || "";
   };
+
+  // Count applications by filter
+  const activeCount = applications.filter((a) =>
+    ["Pending", "Under Review", "Interview Scheduled", "Shortlisted"].includes(
+      formatStatus(a.status),
+    ),
+  ).length;
+
+  const archivedCount = applications.filter((a) =>
+    ["Rejected", "Withdrawn"].includes(formatStatus(a.status)),
+  ).length;
+
+  if (isLoading) {
+    return (
+      <div className={styles.applicationsPage}>
+        <div className={styles.header}>
+          <div>
+            <h1>My Applications</h1>
+            <p>Loading your applications...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={styles.applicationsPage}>
+        <div className={styles.header}>
+          <div>
+            <h1>My Applications</h1>
+            <p>Error loading applications. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.applicationsPage}>
@@ -106,27 +151,13 @@ export default function Applications() {
             className={filter === "active" ? styles.active : ""}
             onClick={() => setFilter("active")}
           >
-            Active (
-            {
-              applications.filter((a) =>
-                ["Under Review", "Interview Scheduled", "Shortlisted"].includes(
-                  a.status,
-                ),
-              ).length
-            }
-            )
+            Active ({activeCount})
           </button>
           <button
             className={filter === "archived" ? styles.active : ""}
             onClick={() => setFilter("archived")}
           >
-            Archived (
-            {
-              applications.filter((a) =>
-                ["Rejected", "Withdrawn"].includes(a.status),
-              ).length
-            }
-            )
+            Archived ({archivedCount})
           </button>
         </div>
       </div>
@@ -137,15 +168,17 @@ export default function Applications() {
             <div key={app.id} className={styles.applicationCard}>
               <div className={styles.cardHeader}>
                 <div>
-                  <h3>{app.jobTitle}</h3>
-                  <p className={styles.hospital}>{app.hospital}</p>
+                  <h3>{app.job?.title || "Job Title"}</h3>
+                  <p className={styles.hospital}>
+                    {app["company"].company_name || "Company"}
+                  </p>
                 </div>
                 <span
                   className={`${styles.statusBadge} ${
                     styles[getStatusClass(app.status)]
                   }`}
                 >
-                  {app.status}
+                  {formatStatus(app.status)}
                 </span>
               </div>
 
@@ -153,32 +186,41 @@ export default function Applications() {
                 <div className={styles.infoGrid}>
                   <div className={styles.infoItem}>
                     <span className={styles.label}>📍 Location:</span>
-                    <span className={styles.value}>{app.location}</span>
+                    <span className={styles.value}>
+                      {app.job?.location || "Location"}
+                    </span>
                   </div>
                   <div className={styles.infoItem}>
                     <span className={styles.label}>💰 Salary:</span>
-                    <span className={styles.value}>{app.salary}/month</span>
+                    <span className={styles.value}>
+                      {formatSalary(app.job?.salary_min, app.job?.salary_max)}
+                      /month
+                    </span>
                   </div>
                   <div className={styles.infoItem}>
                     <span className={styles.label}>⏰ Type:</span>
-                    <span className={styles.value}>{app.type}</span>
+                    <span className={styles.value}>
+                      {formatEmploymentType(app.job?.employment_type)}
+                    </span>
                   </div>
                   <div className={styles.infoItem}>
                     <span className={styles.label}>📅 Applied:</span>
-                    <span className={styles.value}>{app.appliedDate}</span>
+                    <span className={styles.value}>
+                      {formatDate(app.applied_at)}
+                    </span>
                   </div>
                 </div>
 
-                {app.interviewDate && (
+                {app.status === "INTERVIEW_SCHEDULED" && app.interview_date && (
                   <div className={styles.interviewAlert}>
-                    📅 Interview scheduled for {app.interviewDate}
+                    📅 Interview scheduled for {formatDate(app.interview_date)}
                   </div>
                 )}
               </div>
 
               <div className={styles.cardFooter}>
                 <Link
-                  to={`/jobs/${app.id}`}
+                  to={`/jobs/${app.job?.id}`}
                   className={styles.viewDetailsButton}
                 >
                   View Job Details

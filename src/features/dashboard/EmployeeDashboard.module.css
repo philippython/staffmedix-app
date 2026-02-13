@@ -158,6 +158,10 @@
   font-weight: 600;
 }
 
+.pending {
+  background-color: #da6252;
+  color: #fff;
+}
 .underreview {
   background-color: #fff3cd;
   color: #856404;

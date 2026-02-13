@@ -90,7 +90,7 @@ function App() {
             element={<ApplicationsPageLayout />}
           />
           <Route
-            path="/employee-dashboard/profile/edit"
+            path="/employee-dashboard/profile/edit/:talentId"
             element={
               <>
                 <AppNav />
@@ -191,39 +191,6 @@ function App() {
           />
         </Route>
 
-        <Route
-          path="/talents"
-          element={
-            <>
-              <AppNav />
-              <BrowseTalents />
-              <Footer />
-            </>
-          }
-        />
-
-        <Route
-          path="/talent/:id"
-          element={
-            <>
-              <AppNav />
-              <TalentDetailView />
-              <Footer />
-            </>
-          }
-        />
-
-        <Route
-          path="/organization/:id"
-          element={
-            <>
-              <AppNav />
-              <EmployerDetail />
-              <Footer />
-            </>
-          }
-        />
-
         {/* Admin Routes */}
         <Route element={<ProtectedRoutes group="employer" />}>
           <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
@@ -293,6 +260,38 @@ function App() {
         <Route path="/chat" element={<ChatPageLayout />} />
         <Route path="/notifications" element={<NotificationsPageLayout />} />
         <Route path="/ads" element={<AdsPageLayout />} />
+        <Route
+          path="/talents"
+          element={
+            <>
+              <AppNav />
+              <BrowseTalents />
+              <Footer />
+            </>
+          }
+        />
+
+        <Route
+          path="/talent/:id"
+          element={
+            <>
+              <AppNav />
+              <TalentDetailView />
+              <Footer />
+            </>
+          }
+        />
+
+        <Route
+          path="/organization/:id"
+          element={
+            <>
+              <AppNav />
+              <EmployerDetail />
+              <Footer />
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

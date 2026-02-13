@@ -2,9 +2,11 @@ import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useWhoAmIQuery } from "../services/userApi";
+import { useLocation } from "react-router";
 
 export function useAuthRedirect() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const token = useSelector((state) => state.auth.token);
   const userRole = useSelector((state) => state.auth.role);
@@ -28,15 +30,17 @@ export function useAuthRedirect() {
   useEffect(() => {
     if (!user?.role || loginErrorMsg) return;
 
+    // 🚨 ONLY redirect if user is on /auth
+    if (location.pathname !== "/auth") return;
+
     const roleRoutes = {
       talent: "/employee-dashboard",
       employer: "/employer-dashboard",
       admin: "/admin",
     };
-    console.log(user.role);
 
     navigate(roleRoutes[user.role.toLowerCase()] ?? "/auth");
-  }, [user, loginErrorMsg, navigate]);
+  }, [user, loginErrorMsg, navigate, location.pathname]);
 
   return {
     user,
