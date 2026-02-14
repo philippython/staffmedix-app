@@ -2,8 +2,11 @@ import Button from "../../components/Button";
 import Card from "../../components/Card";
 import styles from "./Hero.module.css";
 import Tag from "../../components/Tag";
+import { useNavigate } from "react-router";
 
 export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <header className={styles.hero}>
       <div className={styles.heroTextContainer}>
@@ -33,8 +36,18 @@ export default function Hero() {
           verified before appearing on the platform. Safe hiring, guaranteed.
         </p>
         <div className={styles.actionButtons}>
-          <Button variant="mediumColoredButton">Hire Talent →</Button>
-          <Button variant="mediumPlainButton">Create Worker Profile</Button>
+          <Button
+            variant="mediumColoredButton"
+            onClick={() => navigate("/talents")}
+          >
+            Hire Talent →
+          </Button>
+          <Button
+            variant="mediumPlainButton"
+            onClick={() => navigate("/auth/employee-signup")}
+          >
+            Create Worker Profile
+          </Button>
         </div>
       </div>
       <div className={styles.circleDiv}>

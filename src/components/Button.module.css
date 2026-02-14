@@ -6,6 +6,9 @@
   text-align: center;
   display: inline-block;
   cursor: pointer;
+
+  text-decoration: none;
+  box-sizing: border-box;
 }
 .outlinedButton {
   background-color: transparent;

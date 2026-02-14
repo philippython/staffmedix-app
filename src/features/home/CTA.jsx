@@ -1,8 +1,11 @@
 import CtaCard from "./CtaCard";
 import Button from "../../components/Button";
 import styles from "./CTA.module.css";
+import { useNavigate } from "react-router";
 
 export default function CTA() {
+  const navigate = useNavigate();
+
   return (
     <section className={styles.cta}>
       <h3>Ready to Transform Your Healthcare Hiring?</h3>
@@ -37,7 +40,10 @@ export default function CTA() {
             Post jobs and hire from our pool of pre-verified healthcare
             professionals. Reduce hiring risks and save time.
           </p>
-          <Button variant={"plainButton"}>
+          <Button
+            variant={"plainButton"}
+            onClick={() => navigate("/employer-signup")}
+          >
             Start Hiring <bold>&rarr;</bold>
           </Button>
         </CtaCard>
@@ -64,7 +70,12 @@ export default function CTA() {
             Get your credentials verified and unlock access to top healthcare
             facilities across Nigeria.
           </p>
-          <Button variant={"plainButton"}>Create a Profile &rarr;</Button>
+          <Button
+            variant={"plainButton"}
+            onClick={() => navigate("/auth/employee-signup")}
+          >
+            Create a Profile &rarr;
+          </Button>
         </CtaCard>
       </div>
     </section>
