@@ -5,6 +5,7 @@ const professions = [
   "Allied Health",
   "Physicians",
   "Administrative",
+  "Medical Lab Scientist",
   "Pharmacy",
   "Therapy",
   "Other",
@@ -16,6 +17,7 @@ const employment_type = [
   "Full time",
   "Part time",
   "Contract",
+  "Locum",
   "Temporary",
   "Internship",
 ];

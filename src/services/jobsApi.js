@@ -47,13 +47,10 @@ export const jobsApi = createApi({
     }),
 
     applyToJob: builder.mutation({
-      query: ({ jobId, companyId }) => ({
+      query: (jobId) => ({
         url: "applied-jobs/",
         method: "POST",
-        body: {
-          job: jobId,
-          company: companyId,
-        },
+        body: { job: jobId },
       }),
       invalidatesTags: ["AppliedJobs"],
     }),

@@ -136,9 +136,9 @@ export default function EmployeeDashboard() {
               applications.map((app) => (
                 <div key={app.id} className={styles.applicationCard}>
                   <div className={styles.applicationInfo}>
-                    <h3>{app.job?.title || "Job Title"}</h3>
+                    <h3>{app["job"]?.title || "Job Title"}</h3>
                     <p className={styles.hospital}>
-                      {app["company"].company_name || "Company"}
+                      {app["company"]?.company_name || "Company"}
                     </p>
                     <p className={styles.appliedDate}>
                       Applied on {formatDate(app.applied_at)}
