@@ -42,7 +42,7 @@ export default function CTA() {
           </p>
           <Button
             variant={"plainButton"}
-            onClick={() => navigate("/employer-signup")}
+            onClick={() => navigate("auth/employer-signup")}
           >
             Start Hiring <bold>&rarr;</bold>
           </Button>
