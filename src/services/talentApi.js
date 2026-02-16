@@ -15,14 +15,7 @@ export const talentApi = createApi({
       return headers;
     },
   }),
-  tagTypes: [
-    "TalentProfile",
-    "Applications",
-    "WorkExperience",
-    "Education",
-    "Skills",
-    "Credentials",
-  ],
+  tagTypes: ["TalentProfile", "Applications"],
   endpoints: (builder) => ({
     talentSignUp: builder.mutation({
       query: (credentials) => ({
@@ -32,148 +25,152 @@ export const talentApi = createApi({
       }),
     }),
 
-    // Get talent profile by ID
+    // Get talent profile by ID - Returns FULL profile with nested data
+    // Backend response structure:
+    // {
+    //   id, full_name, profession, location, etc.,
+    //   user: { id, username, email, ... },
+    //   skill: [{id, name, talent}, ...],           ← Note: "skill" not "skills"
+    //   work_experience: [{id, job_title, ...}, ...],
+    //   education: [{id, degree, institution, year}, ...],
+    //   credentials: [{id, file, type, upload_date}, ...]
+    // }
     getTalentProfile: builder.query({
-      query: (talentId) => `${talentId}/`,
-      providesTags: ["TalentProfile"],
+      query: (talentId) => `talent/${talentId}/`,
+      providesTags: (result, error, talentId) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
-    // Get current talent's profile (requires auth)
+    // Get current talent's profile (alias for getTalentProfile)
     getMyProfile: builder.query({
-      query: (talentId) => ({
-        url: `${talentId}/`,
-        method: "GET",
-      }),
-      providesTags: ["TalentProfile"],
+      query: (talentId) => `talent/${talentId}/`,
+      providesTags: (result, error, talentId) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
     // Update talent profile
     updateTalentProfile: builder.mutation({
       query: ({ talentId, data }) => ({
-        url: `${talentId}/`,
+        url: `talent/${talentId}/`,
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["TalentProfile"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
     // Get talent's applications
     getTalentApplications: builder.query({
-      query: (talentId) => `${talentId}/applications/`,
+      query: (talentId) => `talent/${talentId}/applications/`,
       providesTags: ["Applications"],
     }),
 
     // Get talent's stats/dashboard data
     getTalentStats: builder.query({
-      query: (talentId) => `${talentId}/stats/`,
+      query: (talentId) => `talent/${talentId}/stats/`,
     }),
 
     // ============ WORK EXPERIENCE ============
-    // Get work experience - uses talent ID in path
-    getWorkExperience: builder.query({
-      query: (talentId) => `work-experience/${talentId}/`,
-      providesTags: ["WorkExperience"],
-    }),
-
-    // Add work experience - POST to base URL with talent in body
+    // Add work experience
     addWorkExperience: builder.mutation({
       query: ({ talentId, data }) => ({
         url: "work-experience/",
         method: "POST",
         body: { ...data, talent: talentId },
       }),
-      invalidatesTags: ["WorkExperience"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
-    // Update work experience - PATCH to specific work ID
+    // Update work experience
     updateWorkExperience: builder.mutation({
       query: ({ workId, data }) => ({
         url: `work-experience/${workId}/`,
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["WorkExperience"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
-    // Delete work experience - DELETE specific work ID
+    // Delete work experience
     deleteWorkExperience: builder.mutation({
       query: ({ workId }) => ({
         url: `work-experience/${workId}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["WorkExperience"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
     // ============ EDUCATION ============
-    // Get education - uses talent ID in path
-    getEducation: builder.query({
-      query: (talentId) => `education/${talentId}/`,
-      providesTags: ["Education"],
-    }),
-
-    // Add education - POST to base URL with talent in body
+    // Add education
     addEducation: builder.mutation({
       query: ({ talentId, data }) => ({
         url: "education/",
         method: "POST",
         body: { ...data, talent: talentId },
       }),
-      invalidatesTags: ["Education"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
-    // Update education - PATCH to specific education ID
+    // Update education
     updateEducation: builder.mutation({
       query: ({ educationId, data }) => ({
         url: `education/${educationId}/`,
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["Education"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
-    // Delete education - DELETE specific education ID
+    // Delete education
     deleteEducation: builder.mutation({
       query: ({ educationId }) => ({
         url: `education/${educationId}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Education"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
     // ============ SKILLS ============
-    // Get skills - uses talent ID in path
-    getSkills: builder.query({
-      query: (talentId) => `skill/${talentId}/`,
-      providesTags: ["Skills"],
-    }),
-
-    // Add skill - POST to base URL with talent in body
+    // Add skill
     addSkill: builder.mutation({
       query: ({ talentId, data }) => ({
         url: "skill/",
         method: "POST",
         body: { ...data, talent: talentId },
       }),
-      invalidatesTags: ["Skills"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
-    // Delete skill - DELETE specific skill ID
+    // Delete skill
     deleteSkill: builder.mutation({
       query: ({ skillId }) => ({
         url: `skill/${skillId}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Skills"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
     // ============ CREDENTIALS/DOCUMENTS ============
-    // Get credentials - uses talent ID in path
-    getCredentials: builder.query({
-      query: (talentId) => `credential/${talentId}/`,
-      providesTags: ["Credentials"],
-    }),
-
-    // Upload credential - POST to base URL with talent in FormData
+    // Upload credential
     uploadCredential: builder.mutation({
       query: ({ talentId, data }) => {
         // data is FormData, append talent to it
@@ -184,27 +181,37 @@ export const talentApi = createApi({
           body: data,
         };
       },
-      invalidatesTags: ["Credentials"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
-    // Delete credential - DELETE specific credential ID
+    // Delete credential
     deleteCredential: builder.mutation({
       query: ({ credentialId }) => ({
         url: `credential/${credentialId}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Credentials"],
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
 
     // ============ PROFILE IMAGE ============
     // Upload profile image
+    // talentApi.js
     uploadProfileImage: builder.mutation({
-      query: ({ talentId, formData }) => ({
-        url: `${talentId}/upload-image/`,
-        method: "POST",
-        body: formData,
-      }),
-      invalidatesTags: ["TalentProfile"],
+      query: ({ talentId, formData }) => {
+        formData.append("talent", talentId);
+        return {
+          url: `talent-profile-image/`,
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: (result, error, { talentId }) => [
+        { type: "TalentProfile", id: talentId },
+      ],
     }),
   }),
 });
@@ -216,18 +223,14 @@ export const {
   useUpdateTalentProfileMutation,
   useGetTalentApplicationsQuery,
   useGetTalentStatsQuery,
-  useGetWorkExperienceQuery,
   useAddWorkExperienceMutation,
   useUpdateWorkExperienceMutation,
   useDeleteWorkExperienceMutation,
-  useGetEducationQuery,
   useAddEducationMutation,
   useUpdateEducationMutation,
   useDeleteEducationMutation,
-  useGetSkillsQuery,
   useAddSkillMutation,
   useDeleteSkillMutation,
-  useGetCredentialsQuery,
   useUploadCredentialMutation,
   useDeleteCredentialMutation,
   useUploadProfileImageMutation,

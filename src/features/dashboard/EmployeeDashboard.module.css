@@ -29,10 +29,13 @@
   border-radius: 0.5rem;
   font-weight: 600;
   transition: all var(--transition-speed);
+  text-decoration: none;
 }
 
 .editProfile:hover {
   background-color: var(--dark-teal);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(9, 146, 104, 0.2);
 }
 
 .statsGrid {
@@ -107,6 +110,7 @@
   font-weight: 600;
   font-size: 0.9rem;
   transition: color var(--transition-speed);
+  text-decoration: none;
 }
 
 .sectionHeader a:hover {
@@ -162,6 +166,7 @@
   background-color: #da6252;
   color: #fff;
 }
+
 .underreview {
   background-color: #fff3cd;
   color: #856404;
@@ -175,6 +180,11 @@
 .rejected {
   background-color: #f8d7da;
   color: #721c24;
+}
+
+.accepted {
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .sidebar {
@@ -192,12 +202,30 @@
   box-shadow: var(--soft-shadow);
 }
 
+/* Profile Completion Styles */
+.completionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .profileCompletion h3,
 .recommendedJobs h3,
 .quickActions h3 {
   font-size: 1.1rem;
   color: var(--dark-grey);
-  margin-bottom: 1rem;
+  margin: 0;
+}
+
+.verifiedBadge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
 
 .progressBar {
@@ -207,18 +235,50 @@
   border-radius: 1rem;
   overflow: hidden;
   margin-bottom: 0.5rem;
+  margin-top: 1rem;
 }
 
 .progress {
   height: 100%;
-  background-color: var(--primary-bg-color);
-  transition: width var(--transition-speed);
+  transition:
+    width 0.5s ease,
+    background-color 0.3s ease;
+  border-radius: 1rem;
 }
 
 .completionText {
   font-size: 0.85rem;
   color: var(--dark-grey);
   margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.missingItemsSmall {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
+  border-left: 3px solid #f59e0b;
+}
+
+.missingTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.missingItemSmall {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.moreItems {
+  font-size: 0.8rem;
+  color: var(--dark-teal);
+  font-weight: 600;
+  margin-top: 0.3rem;
 }
 
 .completeProfile {
@@ -230,11 +290,23 @@
   border-radius: 0.5rem;
   font-weight: 600;
   transition: all var(--transition-speed);
+  text-decoration: none;
 }
 
 .completeProfile:hover {
   background-color: var(--dark-teal);
   color: var(--primary-color);
+  transform: translateY(-1px);
+}
+
+/* Recommended Jobs Styles */
+.noJobs {
+  color: var(--dark-grey);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
 }
 
 .jobCard {
@@ -242,10 +314,17 @@
   border: 1px solid var(--light-grey);
   border-radius: 0.5rem;
   margin-bottom: 1rem;
+  transition: all var(--transition-speed);
 }
 
 .jobCard:last-child {
   margin-bottom: 0;
+}
+
+.jobCard:hover {
+  border-color: var(--primary-bg-color);
+  box-shadow: var(--light-shadow);
+  transform: translateX(4px);
 }
 
 .jobCard h4 {
@@ -260,10 +339,24 @@
   margin-bottom: 0.5rem;
 }
 
+.jobLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--dark-teal);
+  font-weight: 500;
+}
+
 .jobCard a {
   color: var(--primary-bg-color);
   font-size: 0.85rem;
   font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+.jobCard a:hover {
+  color: var(--dark-teal);
 }
 
 .actionButton {
@@ -276,6 +369,7 @@
   font-weight: 500;
   margin-bottom: 0.8rem;
   transition: all var(--transition-speed);
+  text-decoration: none;
 }
 
 .actionButton:last-child {
@@ -285,6 +379,7 @@
 .actionButton:hover {
   background-color: var(--primary-bg-color);
   color: var(--primary-color);
+  transform: translateY(-1px);
 }
 
 /* Tablet */
@@ -310,6 +405,11 @@
     gap: 1rem;
   }
 
+  .editProfile {
+    width: 100%;
+    text-align: center;
+  }
+
   .statsGrid {
     grid-template-columns: 1fr;
   }
@@ -318,6 +418,12 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  .completionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
 

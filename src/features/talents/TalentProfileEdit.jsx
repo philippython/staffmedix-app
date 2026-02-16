@@ -1,21 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router";
 import styles from "./TalentProfileEdit.module.css";
 import {
   useGetMyProfileQuery,
   useUpdateTalentProfileMutation,
-  useGetSkillsQuery,
   useAddSkillMutation,
   useDeleteSkillMutation,
-  useGetWorkExperienceQuery,
   useAddWorkExperienceMutation,
   useUpdateWorkExperienceMutation,
   useDeleteWorkExperienceMutation,
-  useGetEducationQuery,
   useAddEducationMutation,
   useUpdateEducationMutation,
   useDeleteEducationMutation,
-  useGetCredentialsQuery,
   useUploadCredentialMutation,
   useDeleteCredentialMutation,
   useUploadProfileImageMutation,
@@ -25,17 +21,108 @@ export default function TalentProfileEdit() {
   const { talentId } = useParams();
   const [activeSection, setActiveSection] = useState("basic");
 
-  // Fetch profile data
-  const { data: profile, isLoading: profileLoading } =
-    useGetMyProfileQuery(talentId);
-  const { data: skills = [], isLoading: skillsLoading } =
-    useGetSkillsQuery(talentId);
-  const { data: workExperience = [], isLoading: workLoading } =
-    useGetWorkExperienceQuery(talentId);
-  const { data: education = [], isLoading: educationLoading } =
-    useGetEducationQuery(talentId);
-  const { data: credentials = [], isLoading: credentialsLoading } =
-    useGetCredentialsQuery(talentId);
+  // Fetch complete profile with nested data
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useGetMyProfileQuery(talentId);
+
+  // Extract nested data from profile
+  const skills = profile?.skill || [];
+  const workExperience = profile?.work_experience || [];
+  const education = profile?.education || [];
+  const credentials = profile?.credentials || [];
+
+  // Calculate profile completeness
+  const profileCompleteness = useMemo(() => {
+    if (!profile) return { percentage: 0, missing: [] };
+
+    const checks = [
+      {
+        name: "Profile Photo",
+        completed: !!profile.img?.image,
+        weight: 15,
+      },
+      {
+        name: "Full Name",
+        completed: !!profile.full_name?.trim(),
+        weight: 10,
+      },
+      {
+        name: "Profession",
+        completed: !!profile.profession,
+        weight: 10,
+      },
+      {
+        name: "Specialization",
+        completed: !!profile.specialization?.trim(),
+        weight: 10,
+      },
+      {
+        name: "Phone Number",
+        completed: !!profile.phone_number?.trim(),
+        weight: 5,
+      },
+      {
+        name: "Location",
+        completed: !!profile.location?.trim(),
+        weight: 5,
+      },
+      {
+        name: "Biography",
+        completed: !!profile.biography?.trim() && profile.biography.length > 50,
+        weight: 10,
+      },
+      {
+        name: "Years of Experience",
+        completed:
+          profile.years_of_experience !== null &&
+          profile.years_of_experience >= 0,
+        weight: 5,
+      },
+      {
+        name: "At least 3 Skills",
+        completed: skills.length >= 3,
+        weight: 10,
+      },
+      {
+        name: "At least 1 Work Experience",
+        completed: workExperience.length >= 1,
+        weight: 10,
+      },
+      {
+        name: "At least 1 Education",
+        completed: education.length >= 1,
+        weight: 5,
+      },
+      {
+        name: "Resume/CV Uploaded",
+        completed: credentials.some((c) => c.type === "RESUME"),
+        weight: 5,
+      },
+      {
+        name: "Professional License",
+        completed: credentials.some((c) => c.type === "LICENSE"),
+        weight: 5,
+      },
+      {
+        name: "At least 1 Certification",
+        completed: credentials.some((c) => c.type === "CERTIFICATE"),
+        weight: 5,
+      },
+    ];
+
+    const totalWeight = checks.reduce((sum, check) => sum + check.weight, 0);
+    const completedWeight = checks
+      .filter((check) => check.completed)
+      .reduce((sum, check) => sum + check.weight, 0);
+
+    const percentage = Math.round((completedWeight / totalWeight) * 100);
+    const missing = checks.filter((check) => !check.completed);
+
+    return { percentage, missing, checks };
+  }, [profile, skills, workExperience, education, credentials]);
 
   // Mutations
   const [updateProfile, { isLoading: updating }] =
@@ -93,7 +180,9 @@ export default function TalentProfileEdit() {
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Failed to update profile:", error);
-      alert("Failed to update profile. Please try again.");
+      alert(
+        error?.data?.detail || "Failed to update profile. Please try again.",
+      );
     }
   };
 
@@ -107,17 +196,20 @@ export default function TalentProfileEdit() {
         setNewSkill("");
       } catch (error) {
         console.error("Failed to add skill:", error);
-        alert("Failed to add skill.");
+        alert(error?.data?.detail || "Failed to add skill.");
       }
     }
   };
 
   const handleRemoveSkill = async (skillId) => {
     try {
-      await deleteSkill({ skillId }).unwrap();
+      await deleteSkill({
+        talentId,
+        skillId,
+      }).unwrap();
     } catch (error) {
       console.error("Failed to delete skill:", error);
-      alert("Failed to delete skill.");
+      alert(error?.data?.detail || "Failed to delete skill.");
     }
   };
 
@@ -135,9 +227,10 @@ export default function TalentProfileEdit() {
         data: formData,
       }).unwrap();
       alert("File uploaded successfully!");
+      e.target.value = "";
     } catch (error) {
       console.error("Failed to upload file:", error);
-      alert("Failed to upload file.");
+      alert(error?.data?.detail || "Failed to upload file.");
     }
   };
 
@@ -151,14 +244,23 @@ export default function TalentProfileEdit() {
     try {
       await uploadImage({ talentId, formData }).unwrap();
       alert("Profile image uploaded successfully!");
+      e.target.value = "";
     } catch (error) {
       console.error("Failed to upload image:", error);
-      alert("Failed to upload image.");
+      alert(error?.data?.detail || "Failed to upload image.");
     }
   };
 
   if (profileLoading) {
     return <div className={styles.loading}>Loading profile...</div>;
+  }
+
+  if (profileError) {
+    return (
+      <div className={styles.error}>
+        Failed to load profile. Please try again.
+      </div>
+    );
   }
 
   if (!talentId) {
@@ -173,12 +275,66 @@ export default function TalentProfileEdit() {
     <div className={styles.profileEdit}>
       <div className={styles.header}>
         <div>
-          <h1>Edit Profile</h1>
+          <div className={styles.titleRow}>
+            <h1>Edit Profile</h1>
+            {profile?.verified ? (
+              <span className={styles.verifiedBadge}>✓ Verified</span>
+            ) : (
+              <span className={styles.unverifiedBadge}>ⓘ Unverified</span>
+            )}
+          </div>
           <p>Keep your profile up to date</p>
         </div>
         <Link to="/employee-dashboard" className={styles.backBtn}>
           Back to Dashboard
         </Link>
+      </div>
+
+      {/* Profile Completeness Card */}
+      <div className={styles.completenessCard}>
+        <div className={styles.completenessHeader}>
+          <div>
+            <h3>Profile Completeness</h3>
+            <p className={styles.completenessText}>
+              {profileCompleteness.percentage === 100
+                ? "🎉 Your profile is complete!"
+                : `Complete your profile to stand out to employers`}
+            </p>
+          </div>
+          <div className={styles.completenessPercentage}>
+            {profileCompleteness.percentage}%
+          </div>
+        </div>
+
+        <div className={styles.progressBarContainer}>
+          <div
+            className={styles.progressBar}
+            style={{
+              width: `${profileCompleteness.percentage}%`,
+              backgroundColor:
+                profileCompleteness.percentage === 100
+                  ? "#10b981"
+                  : profileCompleteness.percentage >= 75
+                    ? "#059669"
+                    : profileCompleteness.percentage >= 50
+                      ? "#f59e0b"
+                      : "#ef4444",
+            }}
+          ></div>
+        </div>
+
+        {profileCompleteness.missing.length > 0 && (
+          <div className={styles.missingItems}>
+            <p className={styles.missingTitle}>Missing items:</p>
+            <div className={styles.missingList}>
+              {profileCompleteness.missing.map((item, index) => (
+                <span key={index} className={styles.missingItem}>
+                  • {item.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.mainContent}>
@@ -193,25 +349,25 @@ export default function TalentProfileEdit() {
             className={activeSection === "skills" ? styles.active : ""}
             onClick={() => setActiveSection("skills")}
           >
-            🎯 Skills
+            🎯 Skills ({skills.length})
           </button>
           <button
             className={activeSection === "work" ? styles.active : ""}
             onClick={() => setActiveSection("work")}
           >
-            📋 Work History
+            📋 Work History ({workExperience.length})
           </button>
           <button
             className={activeSection === "education" ? styles.active : ""}
             onClick={() => setActiveSection("education")}
           >
-            🎓 Education
+            🎓 Education ({education.length})
           </button>
           <button
             className={activeSection === "documents" ? styles.active : ""}
             onClick={() => setActiveSection("documents")}
           >
-            📄 Documents
+            📄 Documents ({credentials.length})
           </button>
         </aside>
 
@@ -224,8 +380,8 @@ export default function TalentProfileEdit() {
                   <label>Profile Photo</label>
                   <div className={styles.photoUpload}>
                     <div className={styles.currentPhoto}>
-                      {profile?.image ? (
-                        <img src={profile.image} alt="Profile" />
+                      {profile?.images ? (
+                        <img src={profile.images[0]} alt="Profile" />
                       ) : (
                         "👩‍⚕️"
                       )}
@@ -268,6 +424,9 @@ export default function TalentProfileEdit() {
                       <option value="nurse">Nurse</option>
                       <option value="pharmacist">Pharmacist</option>
                       <option value="lab-tech">Lab Technician</option>
+                      <option value="lab-scientist">
+                        Medical Lab Scientist
+                      </option>
                       <option value="radiographer">Radiographer</option>
                       <option value="physiotherapist">Physiotherapist</option>
                       <option value="dentist">Dentist</option>
@@ -338,14 +497,17 @@ export default function TalentProfileEdit() {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label>Professional Summary</label>
+                  <label>Professional Summary *</label>
                   <textarea
                     name="biography"
                     value={basicInfo.biography}
                     onChange={handleBasicChange}
                     rows="6"
-                    placeholder="Write a brief summary of your professional background..."
+                    placeholder="Write a brief summary of your professional background (at least 50 characters)..."
                   ></textarea>
+                  <p className={styles.hint}>
+                    {basicInfo.biography.length}/50 characters minimum
+                  </p>
                 </div>
 
                 <button
@@ -381,23 +543,32 @@ export default function TalentProfileEdit() {
                     type="button"
                     onClick={handleAddSkill}
                     className={styles.addBtn}
+                    disabled={!newSkill.trim()}
                   >
                     Add
                   </button>
                 </div>
 
                 <div className={styles.skillTags}>
-                  {skills.map((skill) => (
-                    <div key={skill.id} className={styles.skillTag}>
-                      <span>{skill.name}</span>
-                      <button
-                        onClick={() => handleRemoveSkill(skill.id)}
-                        className={styles.removeBtn}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
+                  {skills.length === 0 ? (
+                    <p className={styles.emptyState}>
+                      No skills added yet. Add at least 3 skills to improve your
+                      profile!
+                    </p>
+                  ) : (
+                    skills.map((skill) => (
+                      <div key={skill.id} className={styles.skillTag}>
+                        <span>{skill.name}</span>
+                        <button
+                          onClick={() => handleRemoveSkill(skill.id)}
+                          className={styles.removeBtn}
+                          title="Remove skill"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -433,7 +604,7 @@ export default function TalentProfileEdit() {
             <div className={styles.section}>
               <h2>Documents</h2>
               <div className={styles.uploadSection}>
-                <h3>Resume/CV</h3>
+                <h3>📄 Resume/CV</h3>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
@@ -443,7 +614,7 @@ export default function TalentProfileEdit() {
               </div>
 
               <div className={styles.uploadSection}>
-                <h3>Professional License</h3>
+                <h3>📜 Professional License</h3>
                 <input
                   type="file"
                   accept=".pdf,.jpg,.png"
@@ -453,7 +624,7 @@ export default function TalentProfileEdit() {
               </div>
 
               <div className={styles.uploadSection}>
-                <h3>Certifications</h3>
+                <h3>🏆 Certifications</h3>
                 <input
                   type="file"
                   accept=".pdf,.jpg,.png"
@@ -466,7 +637,8 @@ export default function TalentProfileEdit() {
                 <h3>Uploaded Documents</h3>
                 {credentials.length === 0 ? (
                   <p className={styles.emptyState}>
-                    No documents uploaded yet.
+                    No documents uploaded yet. Upload your resume, license, and
+                    certifications!
                   </p>
                 ) : (
                   credentials.map((doc) => (
@@ -477,7 +649,10 @@ export default function TalentProfileEdit() {
                       </span>
                       <button
                         onClick={() =>
-                          deleteCredentialMutation({ credentialId: doc.id })
+                          deleteCredentialMutation({
+                            talentId,
+                            credentialId: doc.id,
+                          })
                         }
                         className={styles.deleteBtn}
                       >
@@ -513,59 +688,80 @@ function WorkExperienceSection({
     description: "",
   });
 
+  const resetForm = () => {
+    setFormData({
+      job_title: "",
+      facility: "",
+      start_date: "",
+      end_date: "",
+      description: "",
+    });
+    setEditingId(null);
+    setShowForm(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const payload = {
+      ...formData,
+      end_date: formData.end_date ? formData.end_date : null,
+    };
+
     try {
       if (editingId) {
         await onUpdate({
+          talentId,
           workId: editingId,
-          data: formData,
+          data: payload,
         }).unwrap();
       } else {
-        await onAdd({ talentId, data: formData }).unwrap();
+        await onAdd({
+          talentId,
+          data: payload,
+        }).unwrap();
       }
-      setShowForm(false);
-      setEditingId(null);
-      setFormData({
-        job_title: "",
-        facility: "",
-        start_date: "",
-        end_date: "",
-        description: "",
-      });
+      resetForm();
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to save work experience.");
+      alert(error?.data?.detail || "Failed to save work experience.");
     }
   };
 
   const handleEdit = (exp) => {
     setFormData({
-      job_title: exp.job_title,
-      facility: exp.facility,
-      start_date: exp.start_date,
+      job_title: exp.job_title || "",
+      facility: exp.facility || "",
+      start_date: exp.start_date || "",
       end_date: exp.end_date || "",
-      description: exp.description,
+      description: exp.description || "",
     });
     setEditingId(exp.id);
     setShowForm(true);
   };
 
   const handleDelete = async (id) => {
-    if (confirm("Are you sure you want to delete this work experience?")) {
-      try {
-        await onDelete({ workId: id }).unwrap();
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Failed to delete work experience.");
-      }
+    if (!confirm("Are you sure you want to delete this work experience?")) {
+      return;
+    }
+
+    try {
+      await onDelete({ talentId, workId: id }).unwrap();
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert(error?.data?.detail || "Failed to delete work experience.");
     }
   };
 
   return (
     <div>
       <button
-        onClick={() => setShowForm(!showForm)}
+        onClick={() => {
+          setShowForm(!showForm);
+          if (showForm) {
+            resetForm();
+          }
+        }}
         className={styles.addWorkBtn}
       >
         {showForm ? "Cancel" : "+ Add Work Experience"}
@@ -577,29 +773,36 @@ function WorkExperienceSection({
             <label>Job Title *</label>
             <input
               type="text"
+              name="job_title"
               value={formData.job_title}
               onChange={(e) =>
                 setFormData({ ...formData, job_title: e.target.value })
               }
+              placeholder="e.g., Senior ICU Nurse"
               required
             />
           </div>
+
           <div className={styles.formGroup}>
             <label>Facility/Hospital *</label>
             <input
               type="text"
+              name="facility"
               value={formData.facility}
               onChange={(e) =>
                 setFormData({ ...formData, facility: e.target.value })
               }
+              placeholder="e.g., Lagos General Hospital"
               required
             />
           </div>
+
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label>Start Date *</label>
               <input
                 type="date"
+                name="start_date"
                 value={formData.start_date}
                 onChange={(e) =>
                   setFormData({ ...formData, start_date: e.target.value })
@@ -607,10 +810,12 @@ function WorkExperienceSection({
                 required
               />
             </div>
+
             <div className={styles.formGroup}>
               <label>End Date (Leave blank if current)</label>
               <input
                 type="date"
+                name="end_date"
                 value={formData.end_date}
                 onChange={(e) =>
                   setFormData({ ...formData, end_date: e.target.value })
@@ -618,17 +823,21 @@ function WorkExperienceSection({
               />
             </div>
           </div>
+
           <div className={styles.formGroup}>
             <label>Description *</label>
             <textarea
+              name="description"
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
               rows="4"
+              placeholder="Describe your responsibilities and achievements..."
               required
             />
           </div>
+
           <button type="submit" className={styles.saveBtn}>
             {editingId ? "Update" : "Add"} Experience
           </button>
@@ -637,7 +846,9 @@ function WorkExperienceSection({
 
       <div className={styles.experienceList}>
         {experiences.length === 0 ? (
-          <p className={styles.emptyState}>No work history added yet.</p>
+          <p className={styles.emptyState}>
+            No work history added yet. Add at least 1 work experience!
+          </p>
         ) : (
           experiences.map((exp) => (
             <div key={exp.id} className={styles.experienceItem}>
@@ -687,18 +898,22 @@ function EducationSection({ talentId, education, onAdd, onUpdate, onDelete }) {
     try {
       if (editingId) {
         await onUpdate({
+          talentId,
           educationId: editingId,
           data: formData,
         }).unwrap();
       } else {
-        await onAdd({ talentId, data: formData }).unwrap();
+        await onAdd({
+          talentId,
+          data: formData,
+        }).unwrap();
       }
       setShowForm(false);
       setEditingId(null);
       setFormData({ degree: "", institution: "", year: "" });
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to save education.");
+      alert(error?.data?.detail || "Failed to save education.");
     }
   };
 
@@ -715,10 +930,13 @@ function EducationSection({ talentId, education, onAdd, onUpdate, onDelete }) {
   const handleDelete = async (id) => {
     if (confirm("Are you sure you want to delete this education?")) {
       try {
-        await onDelete({ educationId: id }).unwrap();
+        await onDelete({
+          talentId,
+          educationId: id,
+        }).unwrap();
       } catch (error) {
         console.error("Error:", error);
-        alert("Failed to delete education.");
+        alert(error?.data?.detail || "Failed to delete education.");
       }
     }
   };
@@ -726,7 +944,13 @@ function EducationSection({ talentId, education, onAdd, onUpdate, onDelete }) {
   return (
     <div>
       <button
-        onClick={() => setShowForm(!showForm)}
+        onClick={() => {
+          setShowForm(!showForm);
+          if (showForm) {
+            setEditingId(null);
+            setFormData({ degree: "", institution: "", year: "" });
+          }
+        }}
         className={styles.addEducationBtn}
       >
         {showForm ? "Cancel" : "+ Add Education"}
@@ -779,7 +1003,9 @@ function EducationSection({ talentId, education, onAdd, onUpdate, onDelete }) {
 
       <div className={styles.educationList}>
         {education.length === 0 ? (
-          <p className={styles.emptyState}>No education added yet.</p>
+          <p className={styles.emptyState}>
+            No education added yet. Add at least 1 educational qualification!
+          </p>
         ) : (
           education.map((edu) => (
             <div key={edu.id} className={styles.educationItem}>
