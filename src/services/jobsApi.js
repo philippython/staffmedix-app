@@ -76,6 +76,15 @@ export const jobsApi = createApi({
       query: (appliedJobId) => `applied-jobs/${appliedJobId}/`,
       providesTags: ["AppliedJobs"],
     }),
+
+    // Delete/Withdraw applied job
+    deleteAppliedJob: builder.mutation({
+      query: (appliedJobId) => ({
+        url: `applied-jobs/${appliedJobId}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AppliedJobs"],
+    }),
   }),
 });
 
@@ -86,4 +95,5 @@ export const {
   useApplyToJobMutation,
   useGetAppliedJobsQuery,
   useGetAppliedJobByIdQuery,
+  useDeleteAppliedJobMutation,
 } = jobsApi;

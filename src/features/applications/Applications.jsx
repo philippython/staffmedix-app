@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import styles from "./Applications.module.css";
-import { useGetAppliedJobsQuery } from "../../services/jobsApi";
+import {
+  useGetAppliedJobsQuery,
+  useDeleteAppliedJobMutation,
+} from "../../services/jobsApi";
 import { useWhoAmIQuery } from "../../services/userApi";
 
 export default function Applications() {
@@ -25,7 +28,30 @@ export default function Applications() {
     },
   );
 
+  // Withdraw mutation
+  const [deleteAppliedJob, { isLoading: isWithdrawing }] =
+    useDeleteAppliedJobMutation();
+
   const applications = appliedJobsData?.results || [];
+
+  // Handle withdraw application
+  const handleWithdraw = async (appId, jobTitle) => {
+    if (
+      !confirm(
+        `Are you sure you want to withdraw your application for "${jobTitle}"? This action cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await deleteAppliedJob(appId).unwrap();
+      alert("Application withdrawn successfully");
+    } catch (error) {
+      console.error("Failed to withdraw application:", error);
+      alert(error?.data?.detail || "Failed to withdraw application");
+    }
+  };
 
   // Format status for display
   const formatStatus = (status) => {
@@ -292,9 +318,19 @@ export default function Applications() {
                     View Interview Details
                   </Link>
                 )}
-                <button className={styles.withdrawButton}>
-                  Withdraw Application
-                </button>
+                {app.status !== "WITHDRAWN" &&
+                  app.status !== "REJECTED" &&
+                  app.status !== "ACCEPTED" && (
+                    <button
+                      onClick={() => handleWithdraw(app.id, app.job?.title)}
+                      className={styles.withdrawButton}
+                      disabled={isWithdrawing}
+                    >
+                      {isWithdrawing
+                        ? "Withdrawing..."
+                        : "Withdraw Application"}
+                    </button>
+                  )}
               </div>
             </div>
           ))
