@@ -1,79 +1,141 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router";
 import styles from "./Interviews.module.css";
+import { useGetAppliedJobsQuery } from "../../services/jobsApi";
+import { useWhoAmIQuery } from "../../services/userApi";
 
 export default function Interviews() {
   const [activeTab, setActiveTab] = useState("upcoming");
 
-  // This would come from props or context to determine user role
-  const userRole = "employer"; // or "talent"
+  // Get current user to determine role
+  const { data: user } = useWhoAmIQuery();
+  const userRole = user?.role?.toLowerCase(); // 'talent' or 'employer'
 
-  const interviews = {
-    upcoming: [
-      {
-        id: 1,
-        candidateName: "Dr. Sarah Okonkwo",
-        jobTitle: "Senior ICU Nurse",
-        organization: "General Hospital Lagos",
-        date: "Jan 28, 2026",
-        time: "10:00 AM",
-        type: "Video Call",
-        status: "confirmed",
-        meetingLink: "https://meet.example.com/xyz123",
-      },
-      {
-        id: 2,
-        candidateName: "Nurse Chioma Eze",
-        jobTitle: "Registered Nurse",
-        organization: "General Hospital Lagos",
-        date: "Jan 30, 2026",
-        time: "2:00 PM",
-        type: "In-Person",
-        status: "pending",
-        location: "Hospital Admin Block, Lagos",
-      },
-    ],
-    past: [
-      {
-        id: 3,
-        candidateName: "Dr. James Adebayo",
-        jobTitle: "Senior ICU Nurse",
-        organization: "General Hospital Lagos",
-        date: "Jan 20, 2026",
-        time: "11:00 AM",
-        type: "Video Call",
-        status: "completed",
-        outcome: "Hired",
-      },
-      {
-        id: 4,
-        candidateName: "Nurse Amina Bello",
-        jobTitle: "Pediatric Nurse",
-        organization: "General Hospital Lagos",
-        date: "Jan 15, 2026",
-        time: "3:00 PM",
-        type: "Phone Call",
-        status: "completed",
-        outcome: "Not Selected",
-      },
-    ],
-    cancelled: [
-      {
-        id: 5,
-        candidateName: "Dr. Ibrahim Yusuf",
-        jobTitle: "Emergency Nurse",
-        organization: "General Hospital Lagos",
-        date: "Jan 18, 2026",
-        time: "9:00 AM",
-        type: "Video Call",
-        status: "cancelled",
-        reason: "Candidate accepted another offer",
-        cancelledBy: "Candidate",
-      },
-    ],
-  };
+  // Fetch all applied jobs (which contain interview data)
+  // Backend filters by current talent automatically via talent_id
+  const {
+    data: appliedJobsData,
+    isLoading,
+    error,
+  } = useGetAppliedJobsQuery(
+    {
+      limit: 100,
+      talent: user?.talent_id,
+    },
+    {
+      skip: !user?.talent_id,
+    },
+  );
+
+  // Extract and organize interviews from applied jobs
+  const interviews = useMemo(() => {
+    if (!appliedJobsData?.results) {
+      return { upcoming: [], past: [], cancelled: [] };
+    }
+
+    const now = new Date();
+    const upcoming = [];
+    const past = [];
+    const cancelled = [];
+
+    // Filter only applied jobs that have interviews
+    const jobsWithInterviews = appliedJobsData.results.filter(
+      (appliedJob) => appliedJob.interview !== null,
+    );
+
+    jobsWithInterviews.forEach((appliedJob) => {
+      const interview = appliedJob.interview;
+      const interviewDate = new Date(interview.scheduled_at);
+
+      // Build interview object with all needed data from applied job
+      const interviewData = {
+        id: interview.id,
+        scheduled_at: interview.scheduled_at,
+        status: interview.status,
+        notes: interview.notes,
+        duration: interview.duration,
+        interview_link: interview.interview_link,
+        created_at: interview.created_at,
+        updated_at: interview.updated_at,
+        // Add data from applied job
+        applied_job_id: appliedJob.id,
+        talent_name: appliedJob.talent?.full_name,
+        job_title: appliedJob.job?.title,
+        company_name: appliedJob.company?.company_name,
+        company_logo: appliedJob.company?.logo,
+        job_location: appliedJob.job?.location,
+        // Keep full objects for reference
+        talent: appliedJob.talent,
+        job: appliedJob.job,
+        company: appliedJob.company,
+      };
+
+      if (interview.status === "CANCELLED") {
+        cancelled.push(interviewData);
+      } else if (interviewDate < now && interview.status === "COMPLETED") {
+        past.push(interviewData);
+      } else {
+        // Upcoming (SCHEDULED, CONFIRMED, UPCOMING)
+        upcoming.push(interviewData);
+      }
+    });
+
+    return { upcoming, past, cancelled };
+  }, [appliedJobsData]);
 
   const currentInterviews = interviews[activeTab];
+
+  // Format date and time from scheduled_at
+  const formatDateTime = (scheduledAt) => {
+    if (!scheduledAt) return { date: "N/A", time: "N/A" };
+
+    const dateObj = new Date(scheduledAt);
+
+    const date = dateObj.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const displayHour = hours % 12 || 12;
+    const displayMinutes = minutes.toString().padStart(2, "0");
+    const time = `${displayHour}:${displayMinutes} ${ampm}`;
+
+    return { date, time };
+  };
+
+  // Get status badge text
+  const getStatusText = (status) => {
+    const statusMap = {
+      UPCOMING: "⏳ Upcoming",
+      SCHEDULED: "⏳ Scheduled",
+      CONFIRMED: "✓ Confirmed",
+      COMPLETED: "Completed",
+      CANCELLED: "Cancelled",
+    };
+    return statusMap[status] || status;
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.interviewsPage}>
+        <div className={styles.loading}>Loading interviews...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.interviewsPage}>
+        <div className={styles.error}>
+          Failed to load interviews. Please try again.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.interviewsPage}>
@@ -111,35 +173,22 @@ export default function Interviews() {
                 <div className={styles.interviewInfo}>
                   <h3>
                     {userRole === "employer"
-                      ? interview.candidateName
-                      : interview.jobTitle}
+                      ? interview.talent_name || "Candidate"
+                      : interview.job_title || "Job Title"}
                   </h3>
                   <p className={styles.subtitle}>
                     {userRole === "employer"
-                      ? interview.jobTitle
-                      : interview.organization}
+                      ? interview.job_title || "Position"
+                      : interview.company_name || "Company"}
                   </p>
                 </div>
-                {activeTab === "past" && interview.outcome && (
-                  <span
-                    className={`${styles.outcomeBadge} ${
-                      interview.outcome === "Hired"
-                        ? styles.hired
-                        : styles.notSelected
-                    }`}
-                  >
-                    {interview.outcome}
-                  </span>
-                )}
                 {activeTab === "upcoming" && (
                   <span
                     className={`${styles.statusBadge} ${
-                      styles[interview.status]
+                      styles[interview.status?.toLowerCase()]
                     }`}
                   >
-                    {interview.status === "confirmed"
-                      ? "✓ Confirmed"
-                      : "⏳ Pending"}
+                    {getStatusText(interview.status)}
                   </span>
                 )}
               </div>
@@ -150,50 +199,48 @@ export default function Interviews() {
                     <span className={styles.icon}>📅</span>
                     <div>
                       <span className={styles.label}>Date</span>
-                      <span className={styles.value}>{interview.date}</span>
+                      <span className={styles.value}>
+                        {formatDateTime(interview.scheduled_at).date}
+                      </span>
                     </div>
                   </div>
                   <div className={styles.detailItem}>
                     <span className={styles.icon}>🕒</span>
                     <div>
                       <span className={styles.label}>Time</span>
-                      <span className={styles.value}>{interview.time}</span>
+                      <span className={styles.value}>
+                        {formatDateTime(interview.scheduled_at).time}
+                      </span>
                     </div>
                   </div>
                   <div className={styles.detailItem}>
-                    <span className={styles.icon}>
-                      {interview.type === "Video Call"
-                        ? "📹"
-                        : interview.type === "In-Person"
-                          ? "🏥"
-                          : "📞"}
-                    </span>
+                    <span className={styles.icon}>⏱️</span>
                     <div>
-                      <span className={styles.label}>Type</span>
-                      <span className={styles.value}>{interview.type}</span>
+                      <span className={styles.label}>Duration</span>
+                      <span className={styles.value}>
+                        {interview.duration || "N/A"} mins
+                      </span>
                     </div>
                   </div>
-                  {interview.location && (
+                  {interview.job_location && (
                     <div className={styles.detailItem}>
                       <span className={styles.icon}>📍</span>
                       <div>
                         <span className={styles.label}>Location</span>
                         <span className={styles.value}>
-                          {interview.location}
+                          {interview.job_location}
                         </span>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {activeTab === "cancelled" && interview.reason && (
-                  <div className={styles.cancellationInfo}>
-                    <p className={styles.cancelReason}>
-                      <strong>Reason:</strong> {interview.reason}
+                {interview.notes && (
+                  <div className={styles.notesSection}>
+                    <p className={styles.notesLabel}>
+                      <strong>Notes:</strong>
                     </p>
-                    <p className={styles.cancelledBy}>
-                      Cancelled by: {interview.cancelledBy}
-                    </p>
+                    <p className={styles.notesText}>{interview.notes}</p>
                   </div>
                 )}
               </div>
@@ -201,41 +248,37 @@ export default function Interviews() {
               <div className={styles.cardActions}>
                 {activeTab === "upcoming" && (
                   <>
-                    {interview.meetingLink && (
+                    {interview.interview_link && (
                       <a
-                        href={interview.meetingLink}
+                        href={interview.interview_link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.joinBtn}
                       >
-                        🎥 Join Meeting
+                        🎥 Join Interview
                       </a>
                     )}
-                    <button className={styles.rescheduleBtn}>
-                      📅 Reschedule
-                    </button>
-                    <button className={styles.cancelBtn}>✗ Cancel</button>
-                    <Link to="/chat" className={styles.messageBtn}>
-                      💬 Message
+                    <Link
+                      to={`/jobs/${interview.job?.id}`}
+                      className={styles.viewJobBtn}
+                    >
+                      📋 View Job
                     </Link>
                   </>
                 )}
 
                 {activeTab === "past" && (
                   <>
-                    <button className={styles.viewNotesBtn}>
-                      📝 View Notes
-                    </button>
+                    <Link
+                      to={`/jobs/${interview.job?.id}`}
+                      className={styles.viewJobBtn}
+                    >
+                      📋 View Job
+                    </Link>
                     <Link to="/chat" className={styles.messageBtn}>
                       💬 Message
                     </Link>
                   </>
-                )}
-
-                {activeTab === "cancelled" && (
-                  <button className={styles.rescheduleBtn}>
-                    🔄 Reschedule
-                  </button>
                 )}
               </div>
             </div>
@@ -243,6 +286,11 @@ export default function Interviews() {
         ) : (
           <div className={styles.emptyState}>
             <p>No {activeTab} interviews</p>
+            {activeTab === "upcoming" && userRole === "talent" && (
+              <Link to="/jobs" className={styles.browseJobsBtn}>
+                Browse Jobs
+              </Link>
+            )}
           </div>
         )}
       </div>

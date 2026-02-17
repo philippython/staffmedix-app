@@ -10,28 +10,33 @@ import { useMemo } from "react";
 
 export default function EmployeeDashboard() {
   // Get current user info
-  const { data: user, isLoading: userLoading } = useWhoAmIQuery();
+  const { data: user } = useWhoAmIQuery();
 
   // Get talent profile for completeness calculation
-  const { data: profile, isLoading: profileLoading } = useGetMyProfileQuery(
-    user?.talent_id,
+  const { data: profile } = useGetMyProfileQuery(user?.talent_id, {
+    skip: !user?.talent_id,
+  });
+
+  // Get applied jobs for the current user (filtered by talent_id)
+  const {
+    data: appliedJobsData,
+    isLoading: applicationsLoading,
+    isError: applicationsError,
+  } = useGetAppliedJobsQuery(
+    {
+      limit: 3,
+      talent: user?.talent_id,
+    },
     {
       skip: !user?.talent_id,
     },
   );
 
-  // Get applied jobs for the current user
-  const {
-    data: appliedJobsData,
-    isLoading: applicationsLoading,
-    isError: applicationsError,
-  } = useGetAppliedJobsQuery({ limit: 3 });
-
-  // Get jobs for recommendations based on profession using API filters
+  // Get recommended jobs using API filters based on profession
   const { data: jobsData } = useGetJobsQuery(
     {
       limit: 2,
-      title__icontains: profile?.profession || "",
+      title: profile?.profession || "",
     },
     {
       skip: !profile?.profession,
@@ -50,7 +55,7 @@ export default function EmployeeDashboard() {
     const checks = [
       {
         name: "Profile Photo",
-        completed: !!profile.img?.image,
+        completed: !!profile.images && profile.images.length > 0,
         weight: 15,
       },
       {
@@ -133,12 +138,6 @@ export default function EmployeeDashboard() {
     return { percentage, missing };
   }, [profile]);
 
-  // Get recommended jobs - now filtered by API
-  const recommendedJobs = useMemo(() => {
-    if (!jobsData?.results) return [];
-    return jobsData.results.slice(0, 2);
-  }, [jobsData]);
-
   // Format status for display
   const formatStatus = (status) => {
     const statusMap = {
@@ -219,6 +218,7 @@ export default function EmployeeDashboard() {
   };
 
   const applications = appliedJobsData?.results || [];
+  const recommendedJobs = jobsData?.results || [];
   const userName = user?.fullname || user?.username || "User";
 
   return (
@@ -269,9 +269,9 @@ export default function EmployeeDashboard() {
               applications.map((app) => (
                 <div key={app.id} className={styles.applicationCard}>
                   <div className={styles.applicationInfo}>
-                    <h3>{app["job"]?.title || "Job Title"}</h3>
+                    <h3>{app.job?.title || "Job Title"}</h3>
                     <p className={styles.hospital}>
-                      {app["company"]?.company_name || "Company"}
+                      {app.company?.company_name || "Company"}
                     </p>
                     <p className={styles.appliedDate}>
                       Applied on {formatDate(app.applied_at)}
@@ -366,9 +366,6 @@ export default function EmployeeDashboard() {
               className={styles.actionButton}
             >
               Check Interviews
-            </Link>
-            <Link to="/notifications" className={styles.actionButton}>
-              View Notifications
             </Link>
             <Link to="/chat" className={styles.actionButton}>
               Messages

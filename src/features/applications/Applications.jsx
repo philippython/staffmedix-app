@@ -2,16 +2,28 @@ import { useState } from "react";
 import { Link } from "react-router";
 import styles from "./Applications.module.css";
 import { useGetAppliedJobsQuery } from "../../services/jobsApi";
+import { useWhoAmIQuery } from "../../services/userApi";
 
 export default function Applications() {
   const [filter, setFilter] = useState("all");
 
-  // Get applied jobs from API
+  // Get current user
+  const { data: user } = useWhoAmIQuery();
+
+  // Get applied jobs from API (filtered by current talent)
   const {
     data: appliedJobsData,
     isLoading,
     isError,
-  } = useGetAppliedJobsQuery({ limit: 100 }); // Get all applications
+  } = useGetAppliedJobsQuery(
+    {
+      limit: 100,
+      talent: user?.talent_id,
+    },
+    {
+      skip: !user?.talent_id,
+    },
+  );
 
   const applications = appliedJobsData?.results || [];
 
@@ -36,6 +48,20 @@ export default function Applications() {
       month: "short",
       day: "numeric",
       year: "numeric",
+    });
+  };
+
+  // Format datetime
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
@@ -170,7 +196,7 @@ export default function Applications() {
                 <div>
                   <h3>{app.job?.title || "Job Title"}</h3>
                   <p className={styles.hospital}>
-                    {app["company"].company_name || "Company"}
+                    {app.company?.company_name || "Company"}
                   </p>
                 </div>
                 <span
@@ -211,9 +237,42 @@ export default function Applications() {
                   </div>
                 </div>
 
-                {app.status === "INTERVIEW_SCHEDULED" && app.interview_date && (
+                {/* Show interview details if interview exists */}
+                {app.interview && (
                   <div className={styles.interviewAlert}>
-                    📅 Interview scheduled for {formatDate(app.interview_date)}
+                    <div className={styles.interviewHeader}>
+                      <span className={styles.interviewIcon}>📅</span>
+                      <span className={styles.interviewTitle}>
+                        Interview Scheduled
+                      </span>
+                    </div>
+                    <div className={styles.interviewDetails}>
+                      <p>
+                        <strong>Date & Time:</strong>{" "}
+                        {formatDateTime(app.interview.scheduled_at)}
+                      </p>
+                      {app.interview.duration > 0 && (
+                        <p>
+                          <strong>Duration:</strong> {app.interview.duration}{" "}
+                          minutes
+                        </p>
+                      )}
+                      {app.interview.notes && (
+                        <p>
+                          <strong>Notes:</strong> {app.interview.notes}
+                        </p>
+                      )}
+                      {app.interview.interview_link && (
+                        <a
+                          href={app.interview.interview_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.joinInterviewBtn}
+                        >
+                          🎥 Join Interview
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -225,6 +284,14 @@ export default function Applications() {
                 >
                   View Job Details
                 </Link>
+                {app.interview && (
+                  <Link
+                    to="/employee-dashboard/interviews"
+                    className={styles.viewInterviewButton}
+                  >
+                    View Interview Details
+                  </Link>
+                )}
                 <button className={styles.withdrawButton}>
                   Withdraw Application
                 </button>

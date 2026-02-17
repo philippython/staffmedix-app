@@ -41,7 +41,7 @@ export default function TalentProfileEdit() {
     const checks = [
       {
         name: "Profile Photo",
-        completed: !!profile.img?.image,
+        completed: !!profile.images && profile.images.length > 0,
         weight: 15,
       },
       {
@@ -381,7 +381,14 @@ export default function TalentProfileEdit() {
                   <div className={styles.photoUpload}>
                     <div className={styles.currentPhoto}>
                       {profile?.images ? (
-                        <img src={profile.images[0]} alt="Profile" />
+                        <img
+                          src={
+                            profile.images.length !== 0
+                              ? profile.images[profile.images.length - 1].image
+                              : ""
+                          }
+                          alt="Profile"
+                        />
                       ) : (
                         "👩‍⚕️"
                       )}

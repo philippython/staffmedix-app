@@ -47,21 +47,25 @@ export const jobsApi = createApi({
     }),
 
     applyToJob: builder.mutation({
-      query: (jobId) => ({
+      query: ({ jobId, companyId }) => ({
         url: "applied-jobs/",
         method: "POST",
-        body: { job: jobId },
+        body: {
+          job: jobId,
+          company: companyId,
+        },
       }),
       invalidatesTags: ["AppliedJobs"],
     }),
 
     // Get all applied jobs for current user
     getAppliedJobs: builder.query({
-      query: ({ limit = 10, offset = 0 } = {}) => ({
+      query: ({ limit = 10, offset = 0, talent } = {}) => ({
         url: "applied-jobs/",
         params: {
           limit,
           offset,
+          ...(talent && { talent }),
         },
       }),
       providesTags: ["AppliedJobs"],
