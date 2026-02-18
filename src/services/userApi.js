@@ -8,7 +8,6 @@ export const userApi = createApi({
     baseUrl: baseUrl,
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token;
-
       if (token) {
         headers.set("Authorization", `Token ${token}`);
       }
@@ -16,10 +15,18 @@ export const userApi = createApi({
     },
   }),
   endpoints: (builder) => ({
+    createUser: builder.mutation({
+      query: (credentials) => ({
+        url: "",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+
     whoAmI: builder.query({
-      query: () => "who-am-i",
+      query: () => "who-am-i/",
     }),
   }),
 });
 
-export const { useWhoAmIQuery } = userApi;
+export const { useCreateUserMutation, useWhoAmIQuery } = userApi;

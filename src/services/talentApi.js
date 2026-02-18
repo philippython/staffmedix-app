@@ -8,7 +8,6 @@ export const talentApi = createApi({
     baseUrl: baseUrl,
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token;
-
       if (token) {
         headers.set("Authorization", `Token ${token}`);
       }
@@ -17,12 +16,18 @@ export const talentApi = createApi({
   }),
   tagTypes: ["TalentProfile", "Applications"],
   endpoints: (builder) => ({
-    talentSignUp: builder.mutation({
-      query: (credentials) => ({
-        url: "register/",
+    /**
+     * POST /talents/talent/
+     * Uses queryFn with a raw fetch to guarantee the token is in the
+     * Authorization header even before Redux auth state is updated.
+     */
+    createTalentProfile: builder.mutation({
+      query: ({ data }) => ({
+        url: "talent/",
         method: "POST",
-        body: credentials,
+        body: data,
       }),
+      invalidatesTags: ["TalentProfile"],
     }),
 
     getTalentProfile: builder.query({
@@ -32,7 +37,6 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Get current talent's profile (alias for getTalentProfile)
     getMyProfile: builder.query({
       query: (talentId) => `talent/${talentId}/`,
       providesTags: (result, error, talentId) => [
@@ -40,7 +44,6 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Update talent profile
     updateTalentProfile: builder.mutation({
       query: ({ talentId, data }) => ({
         url: `talent/${talentId}/`,
@@ -52,19 +55,16 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Get talent's applications
     getTalentApplications: builder.query({
       query: (talentId) => `talent/${talentId}/applications/`,
       providesTags: ["Applications"],
     }),
 
-    // Get talent's stats/dashboard data
     getTalentStats: builder.query({
       query: (talentId) => `talent/${talentId}/stats/`,
     }),
 
-    // ============ WORK EXPERIENCE ============
-    // Add work experience
+    // ── Work Experience ──────────────────────────
     addWorkExperience: builder.mutation({
       query: ({ talentId, data }) => ({
         url: "work-experience/",
@@ -76,7 +76,6 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Update work experience
     updateWorkExperience: builder.mutation({
       query: ({ workId, data }) => ({
         url: `work-experience/${workId}/`,
@@ -88,7 +87,6 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Delete work experience
     deleteWorkExperience: builder.mutation({
       query: ({ workId }) => ({
         url: `work-experience/${workId}/`,
@@ -99,8 +97,7 @@ export const talentApi = createApi({
       ],
     }),
 
-    // ============ EDUCATION ============
-    // Add education
+    // ── Education ────────────────────────────────
     addEducation: builder.mutation({
       query: ({ talentId, data }) => ({
         url: "education/",
@@ -112,7 +109,6 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Update education
     updateEducation: builder.mutation({
       query: ({ educationId, data }) => ({
         url: `education/${educationId}/`,
@@ -124,7 +120,6 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Delete education
     deleteEducation: builder.mutation({
       query: ({ educationId }) => ({
         url: `education/${educationId}/`,
@@ -135,8 +130,7 @@ export const talentApi = createApi({
       ],
     }),
 
-    // ============ SKILLS ============
-    // Add skill
+    // ── Skills ───────────────────────────────────
     addSkill: builder.mutation({
       query: ({ talentId, data }) => ({
         url: "skill/",
@@ -148,7 +142,6 @@ export const talentApi = createApi({
       ],
     }),
 
-    // Delete skill
     deleteSkill: builder.mutation({
       query: ({ skillId }) => ({
         url: `skill/${skillId}/`,
@@ -159,24 +152,17 @@ export const talentApi = createApi({
       ],
     }),
 
-    // ============ CREDENTIALS/DOCUMENTS ============
-    // Upload credential
+    // ── Credentials ──────────────────────────────
     uploadCredential: builder.mutation({
       query: ({ talentId, data }) => {
-        // data is FormData, append talent to it
         data.append("talent", talentId);
-        return {
-          url: "credential/",
-          method: "POST",
-          body: data,
-        };
+        return { url: "credential/", method: "POST", body: data };
       },
       invalidatesTags: (result, error, { talentId }) => [
         { type: "TalentProfile", id: talentId },
       ],
     }),
 
-    // Delete credential
     deleteCredential: builder.mutation({
       query: ({ credentialId }) => ({
         url: `credential/${credentialId}/`,
@@ -187,17 +173,11 @@ export const talentApi = createApi({
       ],
     }),
 
-    // ============ PROFILE IMAGE ============
-    // Upload profile image
-    // talentApi.js
+    // ── Profile Image ────────────────────────────
     uploadProfileImage: builder.mutation({
       query: ({ talentId, formData }) => {
         formData.append("talent", talentId);
-        return {
-          url: `talent-profile-image/`,
-          method: "POST",
-          body: formData,
-        };
+        return { url: "talent-profile-image/", method: "POST", body: formData };
       },
       invalidatesTags: (result, error, { talentId }) => [
         { type: "TalentProfile", id: talentId },
@@ -207,7 +187,7 @@ export const talentApi = createApi({
 });
 
 export const {
-  useTalentSignUpMutation,
+  useCreateTalentProfileMutation,
   useGetTalentProfileQuery,
   useGetMyProfileQuery,
   useUpdateTalentProfileMutation,
