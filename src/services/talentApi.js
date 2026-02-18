@@ -25,16 +25,6 @@ export const talentApi = createApi({
       }),
     }),
 
-    // Get talent profile by ID - Returns FULL profile with nested data
-    // Backend response structure:
-    // {
-    //   id, full_name, profession, location, etc.,
-    //   user: { id, username, email, ... },
-    //   skill: [{id, name, talent}, ...],           ← Note: "skill" not "skills"
-    //   work_experience: [{id, job_title, ...}, ...],
-    //   education: [{id, degree, institution, year}, ...],
-    //   credentials: [{id, file, type, upload_date}, ...]
-    // }
     getTalentProfile: builder.query({
       query: (talentId) => `talent/${talentId}/`,
       providesTags: (result, error, talentId) => [

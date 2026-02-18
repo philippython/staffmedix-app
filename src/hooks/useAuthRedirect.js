@@ -36,7 +36,7 @@ export function useAuthRedirect() {
     const roleRoutes = {
       talent: "/employee-dashboard",
       employer: "/employer-dashboard",
-      admin: "/admin",
+      admin: "/admin-dashboard",
     };
 
     navigate(roleRoutes[user.role.toLowerCase()] ?? "/auth");
