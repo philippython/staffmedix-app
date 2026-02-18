@@ -1,73 +1,43 @@
 import { Link } from "react-router";
 import styles from "./EmployerDashboard.module.css";
+import { useGetJobsQuery } from "../../services/jobsApi";
+import { useWhoAmIQuery } from "../../services/userApi";
+import { useGetCompanyProfileByIdQuery } from "../../services/employerApi";
 
 export default function EmployerDashboard() {
+  const { data: user } = useWhoAmIQuery();
+  const { data: company } = useGetCompanyProfileByIdQuery(user?.company_id, {
+    skip: !user?.company_id,
+  });
+  const { data: jobsData, isLoading } = useGetJobsQuery(
+    { company: user?.company_id, limit: 100 },
+    { skip: !user?.company_id },
+  );
+
+  const jobPosts = jobsData?.results ?? [];
+
   const stats = [
-    { label: "Active Job Posts", value: "8", icon: "💼" },
-    { label: "Total Applications", value: "156", icon: "📄" },
-    { label: "Shortlisted", value: "23", icon: "⭐" },
-    { label: "Interviews Scheduled", value: "12", icon: "📅" },
-  ];
-
-  const jobPosts = [
     {
-      id: 1,
-      title: "Senior ICU Nurse",
-      applicants: 45,
-      status: "Active",
-      postedDate: "Jan 10, 2026",
-      deadline: "Feb 10, 2026",
+      label: "Total Job Posts",
+      value: jobPosts.length.toString(),
+      icon: "💼",
     },
     {
-      id: 2,
-      title: "Registered Nurse",
-      applicants: 38,
-      status: "Active",
-      postedDate: "Jan 8, 2026",
-      deadline: "Feb 8, 2026",
+      label: "Total Applications",
+      value: jobPosts
+        .reduce((sum, j) => sum + (j.applications_count ?? 0), 0)
+        .toString(),
+      icon: "📄",
     },
-    {
-      id: 3,
-      title: "Pediatric Nurse",
-      applicants: 27,
-      status: "Closed",
-      postedDate: "Dec 20, 2025",
-      deadline: "Jan 20, 2026",
-    },
-  ];
-
-  const recentApplications = [
-    {
-      id: 1,
-      candidateName: "Dr. Sarah Okonkwo",
-      position: "Senior ICU Nurse",
-      appliedDate: "2 hours ago",
-      experience: "8 years",
-      status: "New",
-    },
-    {
-      id: 2,
-      candidateName: "Nurse Chioma Eze",
-      position: "Registered Nurse",
-      appliedDate: "5 hours ago",
-      experience: "5 years",
-      status: "New",
-    },
-    {
-      id: 3,
-      candidateName: "Dr. James Adebayo",
-      position: "Senior ICU Nurse",
-      appliedDate: "1 day ago",
-      experience: "10 years",
-      status: "Reviewed",
-    },
+    { label: "Shortlisted", value: "0", icon: "⭐" },
+    { label: "Interviews Scheduled", value: "0", icon: "📅" },
   ];
 
   return (
     <div className={styles.dashboard}>
       <div className={styles.dashboardHeader}>
         <div>
-          <h1>Welcome back, General Hospital Lagos!</h1>
+          <h1>Welcome back, {company?.company_name ?? "Employer"}!</h1>
           <p>Manage your job postings and candidate applications</p>
         </div>
         <div className={styles.headerActionButtons}>
@@ -101,70 +71,61 @@ export default function EmployerDashboard() {
       <div className={styles.mainContent}>
         <section className={styles.jobPostsSection}>
           <div className={styles.sectionHeader}>
-            <h2>Active Job Posts</h2>
+            <h2>Job Posts</h2>
             <Link to="/employer-dashboard/all-job-posts">View All</Link>
           </div>
 
           <div className={styles.jobPostsList}>
-            {jobPosts.map((job) => (
-              <div key={job.id} className={styles.jobPostCard}>
-                <div className={styles.jobPostHeader}>
-                  <h3>{job.title}</h3>
-                  <span
-                    className={`${styles.statusBadge} ${
-                      job.status === "Active" ? styles.active : styles.closed
-                    }`}
-                  >
-                    {job.status}
-                  </span>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : jobPosts.length === 0 ? (
+              <p>No job posts yet.</p>
+            ) : (
+              jobPosts.slice(0, 3).map((job) => (
+                <div key={job.id} className={styles.jobPostCard}>
+                  <div className={styles.jobPostHeader}>
+                    <h3>{job.title}</h3>
+                  </div>
+                  <div className={styles.jobPostDetails}>
+                    <span>👥 {job.applications_count ?? 0} applicants</span>
+                    <span>
+                      📅 Posted:{" "}
+                      {new Date(job.created_at).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                    <span>
+                      ⏰ Deadline:{" "}
+                      {new Date(job.deadline).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className={styles.jobPostActions}>
+                    <Link
+                      to={`/employer-dashboard/view-applications/${job.id}`}
+                      className={styles.viewButton}
+                    >
+                      View Applications
+                    </Link>
+                    <Link to={`/employer-dashboard/job-edit/${job.id}`}>
+                      <button className={styles.editButton}>Edit</button>
+                    </Link>
+                  </div>
                 </div>
-                <div className={styles.jobPostDetails}>
-                  <span>👥 {job.applicants} applicants</span>
-                  <span>📅 Posted: {job.postedDate}</span>
-                  <span>⏰ Deadline: {job.deadline}</span>
-                </div>
-                <div className={styles.jobPostActions}>
-                  <Link
-                    to={`/employer-dashboard/view-applications/1`}
-                    className={styles.viewButton}
-                  >
-                    View Applications
-                  </Link>
-                  <Link to={"/employer-dashboard/job-edit/1"}>
-                    <button className={styles.editButton}>Edit</button>
-                  </Link>
-                  <button className={styles.closeButton}>
-                    {job.status === "Active" ? "Close" : "Reopen"}
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
 
         <aside className={styles.sidebar}>
           <div className={styles.recentApplications}>
             <h3>Recent Applications</h3>
-            {recentApplications.map((app) => (
-              <div key={app.id} className={styles.applicationItem}>
-                <div className={styles.applicantInfo}>
-                  <h4>{app.candidateName}</h4>
-                  <p className={styles.position}>{app.position}</p>
-                  <div className={styles.applicantMeta}>
-                    <span>{app.experience} experience</span>
-                    <span>•</span>
-                    <span>{app.appliedDate}</span>
-                  </div>
-                </div>
-                <span
-                  className={`${styles.appStatusBadge} ${
-                    app.status === "New" ? styles.new : styles.reviewed
-                  }`}
-                >
-                  {app.status}
-                </span>
-              </div>
-            ))}
+            <p>No recent applications.</p>
             <Link
               to="/employer-dashboard/applications"
               className={styles.viewAllApps}

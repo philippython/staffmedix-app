@@ -19,7 +19,7 @@ export const talentApi = createApi({
   endpoints: (builder) => ({
     talentSignUp: builder.mutation({
       query: (credentials) => ({
-        url: "register",
+        url: "register/",
         method: "POST",
         body: credentials,
       }),

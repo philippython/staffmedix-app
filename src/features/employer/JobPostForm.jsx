@@ -177,7 +177,7 @@ export default function JobPostForm() {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
-                placeholder="e.g., Lagos, Nigeria"
+                placeholder="e.g., Lagos"
                 required
               />
             </div>

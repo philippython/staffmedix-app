@@ -27,7 +27,7 @@ export const employerApi = createApi({
     // Employer registration
     employerSignUp: builder.mutation({
       query: (credentials) => ({
-        url: "register",
+        url: "register/",
         method: "POST",
         body: credentials,
       }),
