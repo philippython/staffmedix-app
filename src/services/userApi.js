@@ -24,7 +24,7 @@ export const userApi = createApi({
     }),
 
     whoAmI: builder.query({
-      query: () => "who-am-i/",
+      query: () => "who-am-i",
     }),
   }),
 });

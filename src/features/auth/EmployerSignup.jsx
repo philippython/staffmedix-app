@@ -99,7 +99,7 @@ export default function EmployerSignup() {
     e.preventDefault();
     setErrMsg("");
     try {
-      const res = await createCompanyProfile({ data: profileForm }).unwrap();
+      const res = await createCompanyProfile({ ...profileForm }).unwrap();
       setCompanyId(res.id);
       setStep(3);
     } catch (err) {
@@ -112,7 +112,7 @@ export default function EmployerSignup() {
     setErrMsg("");
     try {
       await createCompanyContactPerson({
-        data: { ...contactForm, company: companyId },
+        data: { ...contactForm },
       }).unwrap();
       setSuccess(true);
     } catch (err) {
