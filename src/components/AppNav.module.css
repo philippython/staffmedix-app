@@ -105,7 +105,21 @@
 .signup:hover {
   background-color: var(--dark-teal);
 }
+.logoutBtn {
+  padding: 0.5rem 1.25rem;
+  background-color: #e53e3e;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
 
+.logoutBtn:hover {
+  background-color: #c53030;
+}
 /* Tablet */
 @media (max-width: 1024px) {
   .appNav {

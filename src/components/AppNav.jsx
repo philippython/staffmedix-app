@@ -1,17 +1,28 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
 import styles from "./AppNav.module.css";
 import Logo from "./Logo";
 import logo from "../assets/Logo.png";
+import { logout } from "../store/slices/authSlice";
 
 export default function AppNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const token = useSelector((state) => state.auth.token);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
-
   const isActive = (path) => location.pathname === path;
+
+  function handleLogout() {
+    dispatch(logout());
+    closeMenu();
+    navigate("/");
+  }
 
   return (
     <nav className={styles.appNav}>
@@ -88,16 +99,24 @@ export default function AppNav() {
             </Link>
           </li>
           <li className={styles.authButtons}>
-            <Link to="/auth" className={styles.login} onClick={closeMenu}>
-              Login
-            </Link>
-            <Link
-              to="/auth/employee-signup"
-              className={styles.signup}
-              onClick={closeMenu}
-            >
-              Get Started
-            </Link>
+            {token ? (
+              <button className={styles.logoutBtn} onClick={handleLogout}>
+                Logout
+              </button>
+            ) : (
+              <>
+                <Link to="/auth" className={styles.login} onClick={closeMenu}>
+                  Login
+                </Link>
+                <Link
+                  to="/auth/employee-signup"
+                  className={styles.signup}
+                  onClick={closeMenu}
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </li>
         </ul>
       </div>
