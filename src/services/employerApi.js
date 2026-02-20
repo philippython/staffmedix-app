@@ -112,13 +112,6 @@ export const employerApi = createApi({
 
     // ── Company Contact Person ───────────────────
 
-    /**
-     * POST /organizations/contact-person/
-     * Creates the contact person for a company right after company profile creation.
-     * Accepts a `token` arg to override auth header before Redux is updated.
-     * Body: { company (uuid), full_name, email, phone_number, address, city, state }
-     * Returns: { id, full_name, ... }
-     */
     createCompanyContactPerson: builder.mutation({
       query: ({ data }) => ({
         url: "contact-person/",

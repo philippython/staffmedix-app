@@ -99,7 +99,8 @@ export default function EmployerSignup() {
     e.preventDefault();
     setErrMsg("");
     try {
-      const res = await createCompanyProfile({ ...profileForm }).unwrap();
+      const res = await createCompanyProfile({ data: profileForm }).unwrap();
+      console.log(res);
       setCompanyId(res.id);
       setStep(3);
     } catch (err) {
@@ -112,7 +113,7 @@ export default function EmployerSignup() {
     setErrMsg("");
     try {
       await createCompanyContactPerson({
-        data: { ...contactForm },
+        data: { ...contactForm, company: companyId },
       }).unwrap();
       setSuccess(true);
     } catch (err) {
@@ -131,7 +132,7 @@ export default function EmployerSignup() {
               Your healthcare organization account has been created. Our team
               will verify your details shortly.
             </p>
-            <Link to="/auth" className={styles.loginLink}>
+            <Link to="/employer-dashboard" className={styles.loginLink}>
               Go to Login
             </Link>
           </div>

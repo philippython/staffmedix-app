@@ -126,7 +126,7 @@ export default function EmployeeSignup() {
               Your healthcare professional account has been created
               successfully.
             </p>
-            <Link to="/auth" className={styles.loginLink}>
+            <Link to="/employee-dashboard" className={styles.loginLink}>
               Go to Login
             </Link>
           </div>
