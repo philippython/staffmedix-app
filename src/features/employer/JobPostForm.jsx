@@ -49,7 +49,6 @@ export default function JobPostForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const jobData = {
       title: formData.title,
       description: formData.description,
@@ -64,7 +63,7 @@ export default function JobPostForm() {
       requirements: formatBulletText(formData.requirements),
       responsibilities: formatBulletText(formData.responsibilities),
       benefits: formatBulletText(formData.benefits),
-      company: user?.company_id, // ✅ fixed
+      company: user?.company_id,
     };
 
     try {
@@ -127,8 +126,8 @@ export default function JobPostForm() {
                 required
               >
                 <option value="">Select type</option>
-                <option value="FULL_TIME">Full Time</option>
-                <option value="PART_TIME">Part Time</option>
+                <option value="FULLTIME">Full Time</option>
+                <option value="PARTTIME">Part Time</option>
                 <option value="CONTRACT">Contract</option>
                 <option value="TEMPORARY">Temporary</option>
                 <option value="INTERNSHIP">Internship</option>
