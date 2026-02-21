@@ -9,6 +9,7 @@ import { jobsApi } from "../services/jobsApi";
 import { userApi } from "../services/userApi";
 import { talentApi } from "../services/talentApi";
 import { employerApi } from "../services/employerApi";
+import { useWhoAmIQuery } from "../services/userApi";
 
 export default function AppNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,13 +19,21 @@ export default function AppNav() {
 
   const token = useSelector((state) => state.auth.token);
 
+  const { data: whoAmI } = useWhoAmIQuery(undefined, { skip: !token });
+
+  const dashboardRoute =
+    whoAmI?.role === "EMPLOYER"
+      ? "/employer-dashboard"
+      : whoAmI?.role === "TALENT"
+        ? "/employee-dashboard"
+        : null;
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
   const isActive = (path) => location.pathname === path;
 
   function handleLogout() {
     dispatch(logout());
-    // Reset all RTK Query caches
     dispatch(jobsApi.util.resetApiState());
     dispatch(userApi.util.resetApiState());
     dispatch(talentApi.util.resetApiState());
@@ -80,9 +89,9 @@ export default function AppNav() {
           </li>
           <li>
             <Link
-              to="/employer-dashboard"
+              to="/auth/employer-signup"
               className={
-                isActive("/employer-dashboard") ? styles.activeLink : ""
+                isActive("/auth/employer-signup") ? styles.activeLink : ""
               }
               onClick={closeMenu}
             >
@@ -109,9 +118,20 @@ export default function AppNav() {
           </li>
           <li className={styles.authButtons}>
             {token ? (
-              <button className={styles.logoutBtn} onClick={handleLogout}>
-                Logout
-              </button>
+              <>
+                {dashboardRoute && (
+                  <Link
+                    to={dashboardRoute}
+                    className={styles.dashboardBtn}
+                    onClick={closeMenu}
+                  >
+                    Dashboard
+                  </Link>
+                )}
+                <button className={styles.logoutBtn} onClick={handleLogout}>
+                  Logout
+                </button>
+              </>
             ) : (
               <>
                 <Link to="/auth" className={styles.login} onClick={closeMenu}>
