@@ -1,10 +1,15 @@
-import Tag from "../../components/Tag";
 import styles from "./JobOpening.module.css";
 import Button from "../../components/Button";
 import { daysAgo } from "../../utils/timelineCalculator";
 import { Link } from "react-router";
 
-export default function JobOpening({ job, isLoading, onApply }) {
+export default function JobOpening({
+  job,
+  isApplying,
+  hasApplied,
+  onApply,
+  truncateDescription,
+}) {
   return (
     <Link to={`/jobs/${job.id}`}>
       <div className={styles.jobOpening}>
@@ -20,10 +25,9 @@ export default function JobOpening({ job, isLoading, onApply }) {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-building2 w-4 h-4 text-muted-foreground"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
               <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
               <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
@@ -35,19 +39,39 @@ export default function JobOpening({ job, isLoading, onApply }) {
             </svg>
             <p>{job.company["company_name"]}</p>
           </div>
-          <p>{job.description}</p>
+
+          <p
+            style={
+              truncateDescription
+                ? {
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }
+                : {}
+            }
+          >
+            {job.description}
+          </p>
         </div>
+
         <div className={styles.applyWages}>
           <h5>{`₦${job?.salary_min.toLocaleString()} - ₦${job?.salary_max.toLocaleString()}`}</h5>
           <p>{daysAgo(job.created_at)}</p>
           <Button
-            variant={"coloredButton"}
+            variant={hasApplied ? "outlinedButton" : "coloredButton"}
+            disabled={hasApplied || isApplying}
             onClick={(e) => {
-              e.preventDefault(); // prevents Link navigation
-              onApply(job.id);
+              e.preventDefault();
+              if (!hasApplied) onApply(job.id);
             }}
           >
-            {isLoading ? "Applying..." : "Apply Now"}
+            {isApplying
+              ? "Applying..."
+              : hasApplied
+                ? "Applied ✓"
+                : "Apply Now"}
           </Button>
         </div>
       </div>

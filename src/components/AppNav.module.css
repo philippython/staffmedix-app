@@ -137,6 +137,7 @@
   background: var(--primary-bg-color);
   color: var(--primary-color);
 }
+
 /* Tablet */
 @media (max-width: 1024px) {
   .appNav {

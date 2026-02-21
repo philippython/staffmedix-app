@@ -42,6 +42,13 @@ export default function AppNav() {
     navigate("/");
   }
 
+  function handleDashboardRedirect() {
+    if (dashboardRoute) {
+      navigate(dashboardRoute);
+      closeMenu();
+    }
+  }
+
   return (
     <nav className={styles.appNav}>
       <div className={styles.navContainer}>
@@ -120,13 +127,12 @@ export default function AppNav() {
             {token ? (
               <>
                 {dashboardRoute && (
-                  <Link
-                    to={dashboardRoute}
+                  <button
                     className={styles.dashboardBtn}
-                    onClick={closeMenu}
+                    onClick={handleDashboardRedirect}
                   >
                     Dashboard
-                  </Link>
+                  </button>
                 )}
                 <button className={styles.logoutBtn} onClick={handleLogout}>
                   Logout

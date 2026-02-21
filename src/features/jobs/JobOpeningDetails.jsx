@@ -11,7 +11,7 @@ import {
   useGetJobByIdQuery,
   useApplyToJobMutation,
 } from "../../services/jobsApi";
-import { useGetTalentApplicationsQuery } from "../../services/talentApi";
+import { useGetTalentProfileQuery } from "../../services/talentApi";
 import { useWhoAmIQuery } from "../../services/userApi";
 import { useSelector } from "react-redux";
 import { useState } from "react";
@@ -21,41 +21,42 @@ export default function JobOpeningDetails() {
   const navigate = useNavigate();
   const [appliedOptimistic, setAppliedOptimistic] = useState(false);
 
-  const { data: job, isLoading, isError } = useGetJobByIdQuery(jobId);
+  const { data: job } = useGetJobByIdQuery(jobId);
 
   const token = useSelector((state) => state.auth.token);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const userRole = useSelector((state) => state.auth.role);
 
   const [applyToJob, { isLoading: isApplying }] = useApplyToJobMutation();
 
-  // Get talent_id from whoAmI
+  // whoAmI gives us role + talent_id
   const { data: whoAmI } = useWhoAmIQuery(undefined, { skip: !token });
   const talentId = whoAmI?.talent_id;
-  const isTalent = userRole === "talent" && !!talentId;
+  const isTalent = whoAmI?.role === "TALENT" && !!talentId;
 
-  // Fetch this talent's applications
-  const { data: applications } = useGetTalentApplicationsQuery(talentId, {
+  // Fetch talent profile which contains applied_jobs
+  const { data: talentProfile } = useGetTalentProfileQuery(talentId, {
     skip: !isTalent,
   });
 
-  // Check if this specific job has been applied to
-  const hasApplied =
-    appliedOptimistic ||
-    !!applications?.some((app) => (app.job?.id ?? app.job) === jobId);
+  // Check if this specific job was already applied to
+  const alreadyApplied = !!talentProfile?.applied_jobs?.some(
+    (app) => app.job === jobId,
+  );
+
+  const hasApplied = appliedOptimistic || alreadyApplied;
 
   async function handleApplyNow() {
     if (!isAuthenticated) {
       navigate("/auth");
       return;
     }
-    if (userRole !== "talent") {
+    if (!isTalent) {
       navigate("/auth");
       return;
     }
 
+    setAppliedOptimistic(true);
     try {
-      setAppliedOptimistic(true);
       await applyToJob(job.id).unwrap();
     } catch (error) {
       setAppliedOptimistic(false);
@@ -99,7 +100,8 @@ export default function JobOpeningDetails() {
             </li>
             <li>
               Respond to medical emergencies and participate in resuscitation
-              efforts Educate patients' families about care plans and procedures
+              efforts. Educate patients' families about care plans and
+              procedures
             </li>
           </JobUnorderedList>
           <JobUnorderedList title={"Qualifications"}>

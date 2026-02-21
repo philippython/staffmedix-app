@@ -9,7 +9,7 @@ import {
   useGetJobsQuery,
   useApplyToJobMutation,
 } from "../../services/jobsApi.js";
-import { useGetTalentApplicationsQuery } from "../../services/talentApi.js";
+import { useGetTalentProfileQuery } from "../../services/talentApi.js";
 import { useWhoAmIQuery } from "../../services/userApi.js";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,25 +27,26 @@ export default function JobListing() {
 
   const token = useSelector((state) => state.auth.token);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const userRole = useSelector((state) => state.auth.role);
 
-  const [applyToJob, { isLoading: isApplying }] = useApplyToJobMutation();
+  const [applyToJob] = useApplyToJobMutation();
 
-  // Get talent_id from whoAmI
+  // whoAmI gives us role + talent_id
   const { data: whoAmI } = useWhoAmIQuery(undefined, { skip: !token });
   const talentId = whoAmI?.talent_id;
-  const isTalent = userRole === "talent" && !!talentId;
+  const isTalent = whoAmI?.role === "TALENT" && !!talentId;
 
-  // Fetch talent's applied jobs — only if talent
-  const { data: talentData } = useGetTalentApplicationsQuery(talentId, {
+  // Fetch talent profile which contains applied_jobs
+  const { data: talentProfile } = useGetTalentProfileQuery(talentId, {
     skip: !isTalent,
   });
 
-  // Build a Set of applied job IDs for O(1) lookup
+  // Set of applied job IDs for O(1) lookup — merge server data + optimistic
   const appliedJobIds = new Set([
-    ...(talentData?.map((app) => app.job?.id ?? app.job) ?? []),
+    ...(talentProfile?.applied_jobs?.map((app) => app.job) ?? []),
     ...optimisticallyApplied,
   ]);
+
+  console.log(appliedJobIds);
 
   const { SHIFT_TYPE_MAP, EMPLOYMENT_TYPE_MAP, ORDERING_MAP } = FILTER_MAPS;
   const apiFilters = {
@@ -89,16 +90,18 @@ export default function JobListing() {
       navigate("/auth");
       return;
     }
-    if (userRole !== "talent") {
+    if (!isTalent) {
       navigate("/auth");
       return;
     }
 
+    // Optimistically mark as applied immediately
+    setOptimisticallyApplied((prev) => new Set(prev).add(jobId));
+
     try {
-      setOptimisticallyApplied((prev) => new Set(prev).add(jobId));
       await applyToJob(jobId).unwrap();
     } catch (error) {
-      // Revert optimistic update on failure
+      // Revert on failure
       setOptimisticallyApplied((prev) => {
         const next = new Set(prev);
         next.delete(jobId);
@@ -138,19 +141,24 @@ export default function JobListing() {
           Error loading jobs, Check your internet connection :(
         </div>
       ) : null}
+
       {jobs &&
         jobs.map((job) => {
           const hasApplied = appliedJobIds.has(job.id);
+          const isThisJobApplying =
+            optimisticallyApplied.has(job.id) && !appliedJobIds.has(job.id);
           return (
             <JobOpening
               key={job.id}
               job={job}
               onApply={() => handleApplyNow(job.id)}
-              isApplying={isApplying && optimisticallyApplied.has(job.id)}
+              isApplying={isThisJobApplying}
               hasApplied={hasApplied}
+              truncateDescription // tells JobOpening to clamp description to 2 lines
             />
           );
         })}
+
       {isError || isLoading ? null : (
         <Pagination
           pages={Math.ceil(count / 10) || 0}
