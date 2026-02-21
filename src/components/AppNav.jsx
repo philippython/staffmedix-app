@@ -5,6 +5,10 @@ import styles from "./AppNav.module.css";
 import Logo from "./Logo";
 import logo from "../assets/Logo.png";
 import { logout } from "../store/slices/authSlice";
+import { jobsApi } from "../services/jobsApi";
+import { userApi } from "../services/userApi";
+import { talentApi } from "../services/talentApi";
+import { employerApi } from "../services/employerApi";
 
 export default function AppNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,6 +24,11 @@ export default function AppNav() {
 
   function handleLogout() {
     dispatch(logout());
+    // Reset all RTK Query caches
+    dispatch(jobsApi.util.resetApiState());
+    dispatch(userApi.util.resetApiState());
+    dispatch(talentApi.util.resetApiState());
+    dispatch(employerApi.util.resetApiState());
     closeMenu();
     navigate("/");
   }

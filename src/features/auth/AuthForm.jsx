@@ -2,6 +2,8 @@ import Toggle from "../../components/Toggle";
 import styles from "./AuthForm.module.css";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
+import { userApi } from "../../services/userApi";
+import { talentApi } from "../../services/talentApi";
 import { useAuthRedirect } from "../../hooks/useAuthRedirect";
 import { useLoginMutation } from "../../services/authApi";
 import { loginSuccess } from "../../store/slices/authSlice";
@@ -30,6 +32,10 @@ export default function AuthForm() {
           expiry: response?.expiry,
         }),
       );
+
+      // Reset caches so queries re-fetch with new token
+      dispatch(userApi.util.resetApiState());
+      dispatch(talentApi.util.resetApiState());
     } catch (err) {
       console.error("Login failed:", err);
     }

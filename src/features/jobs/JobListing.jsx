@@ -9,6 +9,8 @@ import {
   useGetJobsQuery,
   useApplyToJobMutation,
 } from "../../services/jobsApi.js";
+import { useGetTalentApplicationsQuery } from "../../services/talentApi.js";
+import { useWhoAmIQuery } from "../../services/userApi.js";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateFilters } from "../../store/slices/jobFilterSlice";
@@ -17,41 +19,51 @@ import { useNavigate } from "react-router";
 export default function JobListing() {
   const [showFilter, setShowFilter] = useState(true);
   const [currentPage, setCurrPage] = useState(1);
+  const [optimisticallyApplied, setOptimisticallyApplied] = useState(new Set());
   const ordering = useSelector((state) => state.jobFilter.ordering);
   const rawFilters = useSelector((state) => state.jobFilter);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Get auth state
+  const token = useSelector((state) => state.auth.token);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userRole = useSelector((state) => state.auth.role);
 
-  // Apply to job mutation
   const [applyToJob, { isLoading: isApplying }] = useApplyToJobMutation();
+
+  // Get talent_id from whoAmI
+  const { data: whoAmI } = useWhoAmIQuery(undefined, { skip: !token });
+  const talentId = whoAmI?.talent_id;
+  const isTalent = userRole === "talent" && !!talentId;
+
+  // Fetch talent's applied jobs — only if talent
+  const { data: talentData } = useGetTalentApplicationsQuery(talentId, {
+    skip: !isTalent,
+  });
+
+  // Build a Set of applied job IDs for O(1) lookup
+  const appliedJobIds = new Set([
+    ...(talentData?.map((app) => app.job?.id ?? app.job) ?? []),
+    ...optimisticallyApplied,
+  ]);
 
   const { SHIFT_TYPE_MAP, EMPLOYMENT_TYPE_MAP, ORDERING_MAP } = FILTER_MAPS;
   const apiFilters = {
     title: rawFilters.title || undefined,
     location: rawFilters.location || undefined,
-
-    // Map multi-select arrays and join for DRF __in filtering
     employment_type:
       rawFilters.employment_type
         .map((val) => EMPLOYMENT_TYPE_MAP[val])
         .filter(Boolean)
         .join(",") || undefined,
-
     shift_type:
       rawFilters.shift_type
         .map((val) => SHIFT_TYPE_MAP[val])
         .filter(Boolean)
         .join(",") || undefined,
-
     experience: rawFilters.experience.length
       ? rawFilters.experience.join(",")
       : undefined,
-
-    // Map ordering from user-friendly option
     ordering: ORDERING_MAP[rawFilters.ordering] || "-created_at",
   };
 
@@ -73,23 +85,25 @@ export default function JobListing() {
   }
 
   async function handleApplyNow(jobId) {
-    // Check if user is authenticated
     if (!isAuthenticated) {
       navigate("/auth");
       return;
     }
-
-    // Check if user is a talent
     if (userRole !== "talent") {
       navigate("/auth");
       return;
     }
 
     try {
+      setOptimisticallyApplied((prev) => new Set(prev).add(jobId));
       await applyToJob(jobId).unwrap();
-      alert("Application submitted successfully!");
     } catch (error) {
-      console.error("Failed to apply:", error);
+      // Revert optimistic update on failure
+      setOptimisticallyApplied((prev) => {
+        const next = new Set(prev);
+        next.delete(jobId);
+        return next;
+      });
       alert(
         error?.data?.detail ||
           "Failed to submit application. Please try again.",
@@ -125,14 +139,18 @@ export default function JobListing() {
         </div>
       ) : null}
       {jobs &&
-        jobs.map((job) => (
-          <JobOpening
-            key={job.id}
-            job={job}
-            onApply={() => handleApplyNow(job.id)}
-            isApplying={isApplying}
-          />
-        ))}
+        jobs.map((job) => {
+          const hasApplied = appliedJobIds.has(job.id);
+          return (
+            <JobOpening
+              key={job.id}
+              job={job}
+              onApply={() => handleApplyNow(job.id)}
+              isApplying={isApplying && optimisticallyApplied.has(job.id)}
+              hasApplied={hasApplied}
+            />
+          );
+        })}
       {isError || isLoading ? null : (
         <Pagination
           pages={Math.ceil(count / 10) || 0}
