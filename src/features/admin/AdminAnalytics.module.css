@@ -1,0 +1,424 @@
+.analyticsPage {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+}
+
+.rangeSelect {
+  padding: 0.7rem 1.2rem;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--dark-grey);
+}
+
+.rangeSelect:focus {
+  outline: 2px solid var(--primary-bg-color);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metricCard {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  transition: transform var(--transition-speed);
+}
+
+.metricCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.metricHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.metricHeader h3 {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  font-weight: 600;
+}
+
+.changeIndicator {
+  padding: 0.3rem 0.7rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.positive {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.negative {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.metricValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-bg-color);
+  margin-bottom: 0.3rem;
+}
+
+.metricPrevious {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.chartsSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.chartCard {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.chartCard h2 {
+  font-size: 1.2rem;
+  color: var(--dark-grey);
+  margin-bottom: 1.5rem;
+}
+
+.chartPlaceholder {
+  padding: 2rem;
+  text-align: center;
+}
+
+.lineChart {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 200px;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.chartBar {
+  flex: 1;
+  background: linear-gradient(
+    to top,
+    var(--primary-bg-color),
+    var(--dark-teal)
+  );
+  border-radius: 0.3rem 0.3rem 0 0;
+  transition: all var(--transition-speed);
+}
+
+.chartBar:hover {
+  opacity: 0.8;
+  transform: translateY(-5px);
+}
+
+.chartLabel {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.distributionChart {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.statItem {
+  display: grid;
+  grid-template-columns: 2fr 3fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.statCategory {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  font-weight: 600;
+}
+
+.statCount {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.progressBar {
+  height: 0.8rem;
+  background-color: var(--light-grey);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--primary-bg-color);
+  border-radius: 1rem;
+  transition: width var(--transition-speed);
+}
+
+.percentage {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-bg-color);
+  min-width: 3rem;
+  text-align: right;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.activitySection {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.activitySection h2 {
+  font-size: 1.3rem;
+  color: var(--dark-grey);
+  margin-bottom: 1.5rem;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activityItem {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
+  align-items: center;
+}
+
+.activityIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--light-teal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.activityContent {
+  flex: 1;
+}
+
+.activityAction {
+  font-size: 0.95rem;
+  color: var(--dark-grey);
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.activityUser {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+}
+
+.activityTime {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+  white-space: nowrap;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.topEmployers,
+.exportSection {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+
+.topEmployers h3,
+.exportSection h3 {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 1rem;
+}
+
+.employerItem {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
+  margin-bottom: 0.8rem;
+  align-items: center;
+}
+
+.employerItem:last-child {
+  margin-bottom: 0;
+}
+
+.employerRank {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.employerInfo {
+  flex: 1;
+}
+
+.employerInfo h4 {
+  font-size: 0.95rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.employerStats {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+}
+
+.exportBtn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem;
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  text-align: left;
+}
+
+.exportBtn:last-child {
+  margin-bottom: 0;
+}
+
+.exportBtn:hover {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .analyticsPage {
+    padding: 1.5rem;
+  }
+
+  .chartsSection {
+    grid-template-columns: 1fr;
+  }
+
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .rangeSelect {
+    width: 100%;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chartCard {
+    padding: 1rem;
+  }
+
+  .lineChart {
+    height: 150px;
+  }
+
+  .activityItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .activityTime {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .analyticsPage {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.4rem;
+  }
+
+  .statItem {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

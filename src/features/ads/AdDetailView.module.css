@@ -1,0 +1,238 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap");
+
+.page {
+  --green: #0d9269;
+  --green-dark: #0a7554;
+  --green-pale: #f0fdf8;
+  --green-mid: #d1fae5;
+  --text: #0f1f17;
+  --text-2: #4b5563;
+  --text-3: #9ca3af;
+  --border: #e5e7eb;
+  --surface: #f9fafb;
+  font-family: "DM Sans", sans-serif;
+  background: var(--surface);
+  min-height: 100vh;
+}
+.topBar {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.backLink {
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--green);
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  padding: 0;
+}
+.backLink:hover {
+  text-decoration: underline;
+}
+.adLabel {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+/* Carousel */
+.carousel {
+  position: relative;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  height: 400px;
+  background: var(--surface);
+  margin-bottom: 1.75rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+.carouselImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.carouselPrev,
+.carouselNext {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.carouselPrev {
+  left: 1rem;
+}
+.carouselNext {
+  right: 1rem;
+}
+.carouselPrev:hover,
+.carouselNext:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+.carouselDots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.dotActive {
+  background: #fff;
+  transform: scale(1.25);
+}
+.expiredOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+/* Body */
+.expiredBanner {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 0.65rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.title {
+  font-family: "Sora", sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.9rem;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.metaChip {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-2);
+  padding: 0.3rem 0.8rem;
+}
+.metaChipGreen {
+  background: var(--green-pale);
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+}
+.metaChipGrey {
+  background: var(--surface);
+  color: var(--text-3);
+}
+.description p {
+  font-size: 0.95rem;
+  color: var(--text-2);
+  line-height: 1.8;
+  margin: 0 0 0.85rem;
+}
+
+/* States */
+.loadingPage,
+.errorPage {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--text-2);
+  font-family: "DM Sans", sans-serif;
+}
+.errorPage span {
+  font-size: 2.5rem;
+}
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--green-mid);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.backBtn {
+  padding: 0.6rem 1.5rem;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+}
+@media (max-width: 600px) {
+  .carousel {
+    height: 240px;
+  }
+  .inner {
+    padding: 0 1rem 3rem;
+  }
+}

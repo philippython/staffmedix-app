@@ -1,0 +1,17 @@
+.jobDescription {
+  padding: 1.5rem;
+  box-shadow: var(--soft-shadow);
+  grid-column: 1 / span 1;
+  border-radius: 0.8rem;
+}
+.jobDescription h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+.jobDescription p {
+  color: var(--dark-grey);
+  line-height: 1.6;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}

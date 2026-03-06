@@ -1,0 +1,47 @@
+.cta {
+  display: flex;
+  flex-direction: column;
+  padding: 4rem 2rem;
+  background: linear-gradient(
+    to bottom right,
+    var(--gradient-top),
+    var(--gradient-bottom)
+  );
+  justify-content: center;
+  text-align: center;
+}
+
+.cta h3 {
+  color: var(--primary-color);
+  font-size: 2.4rem;
+}
+
+.cta p {
+  color: var(--soft-grey);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.ctaCards {
+  display: flex;
+  justify-content: center;
+  margin: 1rem;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .ctaCards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .cta p {
+    font-size: 0.9rem;
+  }
+}

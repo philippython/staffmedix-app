@@ -1,0 +1,518 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+}
+
+.header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: var(--dark-grey);
+}
+.header p {
+  font-size: 0.9rem;
+  color: #777;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.exportBtn {
+  padding: 0.55rem 1.1rem;
+  background: var(--light-teal);
+  color: var(--dark-teal);
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.exportBtn:hover {
+  background: var(--dark-teal);
+  color: #fff;
+}
+
+.backBtn {
+  padding: 0.55rem 1.1rem;
+  background: var(--soft-grey);
+  color: var(--dark-grey);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+.backBtn:hover {
+  background: var(--light-grey);
+}
+
+/* ── Stats bar ───────────────────────────────────────────────────────────── */
+.statsBar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  background: #fff;
+  border: 2px solid var(--light-grey);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.statCard:hover {
+  border-color: var(--primary-bg-color);
+}
+.statCardActive {
+  border-color: var(--primary-bg-color);
+  background: var(--light-teal);
+}
+
+.statValue {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary-bg-color);
+}
+.statLabel {
+  font-size: 0.78rem;
+  color: #777;
+  font-weight: 600;
+}
+
+/* ── Filter row ──────────────────────────────────────────────────────────── */
+.filterRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  padding: 0.5rem 0.85rem;
+  border: 1.5px solid var(--light-grey);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background: #fff;
+  color: var(--dark-grey);
+  cursor: pointer;
+}
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--primary-bg-color);
+}
+
+.resultCount {
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #888;
+  font-weight: 600;
+}
+
+/* ── List ────────────────────────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border: 1px solid var(--light-grey);
+  border-radius: 0.85rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: var(--soft-shadow);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.card:hover {
+  border-color: var(--primary-bg-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.cardLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--primary-bg-color);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.info h3 {
+  font-size: 0.975rem;
+  font-weight: 700;
+  margin: 0 0 0.15rem;
+  color: var(--dark-grey);
+}
+.jobTitle {
+  font-size: 0.83rem;
+  color: var(--primary-bg-color);
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: #888;
+}
+.meta span {
+  background: var(--soft-grey);
+  padding: 0.1rem 0.45rem;
+  border-radius: 1rem;
+}
+
+/* ── Card right ──────────────────────────────────────────────────────────── */
+.cardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  padding: 0.22rem 0.75rem;
+  border-radius: 2rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.pending {
+  background: #fef9c3;
+  color: #92400e;
+}
+.underreview {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.selected {
+  background: #dcfce7;
+  color: #14532d;
+}
+.rejected {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+.actions {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.profileBtn,
+.jobBtn,
+.interviewBtn {
+  padding: 0.38rem 0.75rem;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.profileBtn {
+  background: var(--soft-grey);
+  color: var(--dark-grey);
+}
+.profileBtn:hover {
+  background: var(--light-grey);
+}
+.jobBtn {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.jobBtn:hover {
+  background: #dbeafe;
+}
+.interviewBtn {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.statusSelect {
+  padding: 0.35rem 0.6rem;
+  border: 1.5px solid var(--light-grey);
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  background: #fff;
+  cursor: pointer;
+  color: var(--dark-grey);
+}
+.statusSelect:focus {
+  outline: none;
+  border-color: var(--primary-bg-color);
+}
+.statusSelect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.saving {
+  font-size: 0.76rem;
+  color: #aaa;
+}
+
+/* ── Empty / loading ─────────────────────────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+}
+.error {
+  text-align: center;
+  padding: 3rem;
+  color: #e53e3e;
+}
+
+.clearBtn {
+  padding: 0.55rem 1.25rem;
+  background: var(--primary-bg-color);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── Modal ───────────────────────────────────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--light-grey);
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+.modalAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--primary-bg-color);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.modalHeader h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.15rem;
+}
+.modalHeader p {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+.closeBtn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #888;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.3rem;
+}
+.closeBtn:hover {
+  background: var(--soft-grey);
+}
+
+.modalBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.profileItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.profileLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.profileValue {
+  font-size: 0.875rem;
+  color: var(--dark-grey);
+  font-weight: 500;
+}
+
+.bioSection h4,
+.credentialsSection h4 {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--dark-grey);
+  margin: 0 0 0.5rem;
+}
+.bioSection p {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.downloadButtons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.downloadBtn {
+  padding: 0.6rem 1.1rem;
+  background: var(--primary-bg-color);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+  display: inline-block;
+}
+.downloadBtn:hover {
+  background: var(--dark-teal);
+}
+.noResume {
+  font-size: 0.83rem;
+  color: #aaa;
+  font-style: italic;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .statsBar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 1rem;
+  }
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .cardRight {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .actions {
+    justify-content: flex-start;
+  }
+  .statsBar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .resultCount {
+    margin-left: 0;
+  }
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    flex-direction: column;
+  }
+  .headerActions {
+    width: 100%;
+  }
+}

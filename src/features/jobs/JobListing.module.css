@@ -1,0 +1,51 @@
+.jobListing {
+  margin-top: 1.5rem;
+  margin-right: 2rem;
+}
+
+.searchFilterCount {
+  display: flex;
+  justify-content: space-between;
+}
+
+.searchFilterCount p {
+  color: var(--dark-grey);
+  font-size: 1rem;
+}
+
+.searchFilterCount p > strong {
+  color: black;
+  font-size: 1rem;
+}
+
+.jobListing a {
+  color: currentColor;
+}
+
+.error {
+  box-shadow: var(--light-shadow);
+  color: var(--primary-bg-color);
+  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+}
+.filter {
+  display: none;
+}
+
+@media (max-width: 988px) {
+  .jobListing {
+    margin: 1rem;
+    grid-column: span 2 / -1;
+  }
+  .filter {
+    display: block;
+    color: var(--primary-color);
+    background-color: var(--primary-bg-color);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+}

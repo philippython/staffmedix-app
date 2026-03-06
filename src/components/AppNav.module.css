@@ -1,0 +1,216 @@
+.appNav {
+  position: sticky;
+  top: 0;
+  background-color: var(--primary-color);
+  box-shadow: var(--soft-shadow);
+  z-index: 1000;
+  padding: 0.5rem 2rem;
+}
+
+.navContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo h2 {
+  color: var(--primary-bg-color);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.hamburger span {
+  width: 1.8rem;
+  height: 0.2rem;
+  background-color: var(--primary-bg-color);
+  transition: all var(--transition-speed);
+  border-radius: 0.2rem;
+}
+
+.hamburger span.active:nth-child(1) {
+  transform: rotate(45deg) translate(0.5rem, 0.5rem);
+}
+
+.hamburger span.active:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger span.active:nth-child(3) {
+  transform: rotate(-45deg) translate(0.5rem, -0.5rem);
+}
+
+.navLinks {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  align-items: center;
+}
+
+.navLinks li a {
+  color: var(--dark-grey);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color var(--transition-speed);
+  padding: 0.5rem 0;
+  position: relative;
+}
+
+.navLinks li a:hover {
+  color: var(--primary-bg-color);
+}
+
+.activeLink {
+  color: var(--primary-bg-color) !important;
+}
+
+.authButtons {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.login {
+  padding: 0.6rem 1.5rem !important;
+  color: var(--dark-teal);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.login:hover {
+  background-color: var(--light-teal);
+}
+
+.signup {
+  padding: 0.6rem 1.5rem !important;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color) !important;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.signup:hover {
+  background-color: var(--dark-teal);
+}
+.logoutBtn {
+  padding: 0.5rem 1.25rem;
+  background-color: #e53e3e;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #c53030;
+}
+
+.dashboardBtn {
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  color: var(--primary-bg-color);
+  border: 1.5px solid var(--primary-bg-color);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.dashboardBtn:hover {
+  background: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .appNav {
+    padding: 1rem 1.5rem;
+  }
+
+  .navLinks {
+    gap: 1.5rem;
+  }
+
+  .navLinks li a {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 1195px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .navLinks {
+    position: fixed;
+    top: 4.5rem;
+    right: -100%;
+    width: 70%;
+    max-width: 300px;
+    height: calc(100vh - 4.5rem);
+    background-color: var(--primary-color);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2rem;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right var(--transition-speed);
+    gap: 0;
+  }
+
+  .navLinks.open {
+    right: 0;
+  }
+
+  .navLinks li {
+    width: 100%;
+    border-bottom: 1px solid var(--light-grey);
+    padding: 1rem 0;
+  }
+
+  .navLinks li a {
+    display: block;
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .authButtons {
+    width: 100%;
+    flex-direction: column;
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+
+  .signup,
+  .login {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo h2 {
+    font-size: 1.2rem;
+  }
+
+  .navLinks {
+    width: 80%;
+  }
+}

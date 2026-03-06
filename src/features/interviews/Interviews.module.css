@@ -1,0 +1,625 @@
+.interviewsPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.header p {
+  color: var(--dark-grey);
+  font-size: 0.95rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--light-grey);
+}
+
+.tabs button {
+  padding: 0.8rem 1.5rem;
+  background: none;
+  border: none;
+  color: var(--dark-grey);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.tabs button:hover {
+  color: var(--dark-teal);
+}
+
+.activeTab {
+  color: var(--primary-bg-color) !important;
+  border-bottom-color: var(--primary-bg-color) !important;
+  font-weight: 600;
+}
+
+.interviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.interviewCard {
+  background-color: var(--primary-color);
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+  overflow: hidden;
+  transition: all var(--transition-speed);
+}
+
+.interviewCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--light-grey);
+  background: linear-gradient(135deg, #ffffff 0%, var(--soft-grey) 100%);
+}
+
+.interviewInfo h3 {
+  font-size: 1.2rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.3rem;
+}
+
+.subtitle {
+  color: var(--dark-teal);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.statusBadge {
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusBadge.confirmed {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.statusBadge.scheduled {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.outcomeBadge {
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.hired {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.notSelected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.cardBody {
+  padding: 1.5rem;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.icon {
+  font-size: 1.5rem;
+  background-color: var(--light-teal);
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+}
+
+.detailItem > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.8rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.2rem;
+}
+
+.value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dark-grey);
+}
+
+.cancellationInfo {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 0.5rem;
+}
+
+.cancelReason {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.cancelledBy {
+  font-size: 0.85rem;
+  color: var(--dark-grey);
+  font-style: italic;
+}
+
+.notesSection {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.5rem;
+}
+
+.notesLabel {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  margin-bottom: 0.5rem;
+}
+
+.notesText {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+  line-height: 1.6;
+}
+
+.companyInfo {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--light-teal) 0%, #ffffff 100%);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.companyLogo {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 2px solid var(--primary-color);
+}
+
+.companyName {
+  font-weight: 600;
+  color: var(--dark-teal);
+  margin-bottom: 0.3rem;
+}
+
+.jobTitle {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.8rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--light-grey);
+  background-color: var(--soft-grey);
+  flex-wrap: wrap;
+}
+
+.joinBtn,
+.rescheduleBtn,
+.cancelBtn,
+.messageBtn,
+.viewNotesBtn,
+.confirmBtn,
+.viewJobBtn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+}
+
+.viewJobBtn {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.viewJobBtn:hover {
+  background-color: var(--dark-teal);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(9, 146, 104, 0.2);
+}
+
+.joinBtn {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+}
+
+.joinBtn:hover {
+  background-color: var(--dark-teal);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(9, 146, 104, 0.2);
+}
+
+.rescheduleBtn {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.rescheduleBtn:hover {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.cancelBtn {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.cancelBtn:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.messageBtn {
+  background-color: var(--light-teal);
+  color: var(--dark-teal);
+}
+
+.messageBtn:hover {
+  background-color: var(--dark-teal);
+  color: var(--primary-color);
+}
+
+.viewNotesBtn {
+  background-color: var(--soft-grey);
+  color: var(--dark-grey);
+}
+
+.viewNotesBtn:hover {
+  background-color: var(--light-grey);
+}
+
+.confirmBtn {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.confirmBtn:hover {
+  background-color: #28a745;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--soft-grey);
+  border-radius: 0.8rem;
+}
+
+.emptyState p {
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+  margin-bottom: 1rem;
+}
+
+.browseJobsBtn {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-speed);
+}
+
+.browseJobsBtn:hover {
+  background-color: var(--dark-teal);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(9, 146, 104, 0.2);
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.1rem;
+  color: var(--dark-grey);
+}
+
+.error {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border-radius: 0.8rem;
+}
+.createBtn {
+  padding: 0.65rem 1.25rem;
+  background: var(--primary-bg-color);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.editBtn {
+  padding: 0.45rem 1rem;
+  background: transparent;
+  border: 1.5px solid var(--primary-bg-color);
+  color: var(--primary-bg-color);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+.modalTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+.modalSub {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 1.25rem;
+}
+.modalField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.modalField label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+}
+.modalField input,
+.modalField select,
+.modalField textarea {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+.modalRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.modalActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+.modalCancel {
+  flex: 1;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1.5px solid #ddd;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.modalConfirm {
+  flex: 2;
+  padding: 0.75rem;
+  background: var(--primary-bg-color);
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.formErr {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+.noApplicants {
+  text-align: center;
+  padding: 1rem 0;
+}
+.noApplicantsHint {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0.5rem 0 1.25rem;
+}
+.applicantSearch {
+  position: relative;
+}
+.applicantInput {
+  border: 1.5px solid #ddd;
+  border-radius: 0.5rem;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  cursor: text;
+}
+.applicantInput input {
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.95rem;
+  background: transparent;
+}
+.selectedApplicant {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.9rem;
+  gap: 0.5rem;
+}
+.clearApplicant {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+}
+.applicantDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #ddd;
+  border-radius: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.applicantOption {
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.applicantOption:hover {
+  background: #f0f7ff;
+}
+.applicantName {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.applicantJob {
+  font-size: 0.8rem;
+  color: #777;
+}
+.noResults {
+  padding: 0.75rem 1rem;
+  color: #999;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .interviewsPage {
+    padding: 1.5rem;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs button {
+    white-space: nowrap;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .cardActions > * {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .interviewsPage {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.3rem;
+  }
+}

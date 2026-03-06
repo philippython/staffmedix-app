@@ -1,0 +1,61 @@
+.card {
+  border-radius: 2rem;
+  padding: 1.5rem 1rem 2rem 1rem;
+}
+
+.card h3 {
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+  display: inline-block;
+}
+
+.card p {
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.card span {
+  display: block;
+  font-weight: normal;
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+
+.coloredCardSmall {
+  color: #fff;
+  width: 15vw;
+  background-color: var(--dark-teal);
+  z-index: 999;
+}
+
+.coloredCardSmall p {
+  color: var(--light-grey);
+  font-size: 0.9rem;
+}
+
+.plainCardMedium {
+  width: 20vw;
+  padding: 3rem 1.5rem;
+  background-color: #fff;
+  box-shadow: var(--soft-shadow);
+}
+
+.plainCardMedium p {
+  color: var(--dark-grey);
+}
+
+.absoluteCard {
+  position: absolute;
+  animation: bounce 3s infinite ease-in-out;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}

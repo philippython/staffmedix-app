@@ -1,0 +1,17 @@
+.logo {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  color: var(--primary-bg-color);
+}
+
+.appIcon {
+  height: 3.5rem;
+  width: 3.5rem;
+  padding: 0.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.appName {
+  font-size: 1.6rem;
+}

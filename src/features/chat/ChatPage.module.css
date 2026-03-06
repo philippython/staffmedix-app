@@ -1,0 +1,709 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap");
+
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+.page {
+  --green: #0d9269;
+  --green-d: #0a7554;
+  --green-pale: #f0fdf8;
+  --green-mid: #d1fae5;
+  --text: #0f1f17;
+  --text-2: #4b5563;
+  --text-3: #9ca3af;
+  --border: #e5e7eb;
+  --surface: #f8fafb;
+  display: flex;
+  height: calc(100vh - 4rem);
+  background: var(--surface);
+  overflow: hidden;
+  font-family: "DM Sans", sans-serif;
+  position: relative;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebarTitle {
+  font-family: "Sora", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.sidebarHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.newChatBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+  font-family: "DM Sans", sans-serif;
+}
+.newChatBtn:hover {
+  background: var(--green-d);
+  transform: scale(1.07);
+}
+
+/* New chat panel */
+.newChatPanel {
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.newChatLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  margin: 0 0 0.5rem;
+}
+.newChatInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.85rem;
+  border: 1.5px solid var(--border);
+  border-radius: 0.6rem;
+  font-size: 0.875rem;
+  font-family: "DM Sans", sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+  background: #fff;
+}
+.newChatInput:focus {
+  border-color: var(--green);
+}
+
+.searchDropdown {
+  margin-top: 0.5rem;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+.searchItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0.85rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+  font-family: "DM Sans", sans-serif;
+}
+.searchItem:last-child {
+  border-bottom: none;
+}
+.searchItem:hover {
+  background: var(--green-pale);
+}
+.searchItem:disabled {
+  opacity: 0.5;
+}
+.searchAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--green-d));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.searchInfo {
+  flex: 1;
+  min-width: 0;
+}
+.searchName {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.searchSub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-3);
+}
+.verBadge {
+  margin-left: auto;
+  background: var(--green-pale);
+  border: 1px solid var(--green-mid);
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 1rem;
+  flex-shrink: 0;
+}
+.noResults {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-3);
+  text-align: center;
+  margin: 0;
+}
+
+/* Conversation search */
+.convSearch {
+  position: relative;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.convSearchIcon {
+  position: absolute;
+  left: 1.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+.convSearch input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.85rem 0.5rem 2.25rem;
+  border: 1.5px solid var(--border);
+  border-radius: 2rem;
+  font-size: 0.82rem;
+  font-family: "DM Sans", sans-serif;
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.convSearch input:focus {
+  border-color: var(--green);
+  background: #fff;
+}
+
+/* Conversations list */
+.convList {
+  flex: 1;
+  overflow-y: auto;
+}
+.convState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 3rem 1.5rem;
+  color: var(--text-3);
+  font-size: 0.85rem;
+  text-align: center;
+}
+.convEmptyIcon {
+  font-size: 2rem;
+}
+.startFirstBtn {
+  margin-top: 0.25rem;
+  padding: 0.5rem 1.1rem;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+}
+
+.convItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+  font-family: "DM Sans", sans-serif;
+}
+.convItem:hover {
+  background: var(--surface);
+}
+.convItemActive {
+  background: var(--green-pale) !important;
+  border-left: 3px solid var(--green);
+}
+.convAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--green-d));
+  color: #fff;
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.convInfo {
+  flex: 1;
+  min-width: 0;
+}
+.convTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-bottom: 0.2rem;
+}
+.convName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.convTime {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.convPreview {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+/* ── Chat area ───────────────────────────────────────────────────────────── */
+.chatArea {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+
+/* Chat header */
+.chatHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1.5rem;
+  background: #fff;
+  border-bottom: 1.5px solid var(--border);
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+.mobileBack {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--green);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem 0.25rem 0;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+}
+.chatHeaderAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--green-d));
+  color: #fff;
+  font-family: "Sora", sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.chatHeaderName {
+  font-family: "Sora", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.chatHeaderStatus {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  margin: 0.1rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.onlineDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+}
+
+/* Messages */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.messagesEmpty {
+  margin: auto;
+  text-align: center;
+  color: var(--text-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 2.5rem;
+}
+.messagesEmpty p {
+  font-size: 0.875rem;
+  color: var(--text-3);
+  margin: 0;
+}
+
+.msgRow {
+  display: flex;
+  width: 100%;
+}
+.msgRowMine {
+  justify-content: flex-end;
+}
+.msgRowTheirs {
+  justify-content: flex-start;
+}
+
+.bubble {
+  padding: 0.65rem 1rem;
+  border-radius: 1.25rem;
+  word-break: break-word;
+  max-width: 68%;
+}
+.bubbleMine {
+  background: var(--green);
+  color: #fff;
+  border-bottom-right-radius: 0.3rem;
+  box-shadow: 0 2px 8px rgba(13, 146, 105, 0.2);
+}
+.bubbleTheirs {
+  background: #fff;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-bottom-left-radius: 0.3rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+.bubbleText {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  margin: 0 0 0.2rem;
+}
+.bubbleTime {
+  font-size: 0.68rem;
+  display: block;
+}
+.bubbleMine .bubbleTime {
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
+}
+.bubbleTheirs .bubbleTime {
+  color: var(--text-3);
+  text-align: left;
+}
+
+/* Input */
+.inputBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  background: #fff;
+  border-top: 1.5px solid var(--border);
+  flex-shrink: 0;
+}
+.inputField {
+  flex: 1;
+  padding: 0.65rem 1.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-family: "DM Sans", sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+  background: var(--surface);
+}
+.inputField:focus {
+  border-color: var(--green);
+  background: #fff;
+}
+.sendBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+.sendBtn:hover:not(:disabled) {
+  background: var(--green-d);
+  transform: scale(1.05);
+}
+.sendBtn:disabled {
+  background: var(--border);
+  cursor: not-allowed;
+}
+
+/* Empty state */
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-3);
+}
+.emptyIcon {
+  font-size: 3rem;
+}
+.emptyState h3 {
+  font-family: "Sora", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #555;
+  margin: 0;
+}
+.emptyState p {
+  font-size: 0.875rem;
+  max-width: 260px;
+  line-height: 1.65;
+  margin: 0;
+}
+.emptyNewBtn {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  transition: background 0.15s;
+}
+.emptyNewBtn:hover {
+  background: var(--green-d);
+}
+
+/* Spinner */
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--green-mid);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── FAB ─────────────────────────────────────────────────────────────────── */
+.fab {
+  display: none; /* hidden on desktop */
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(13, 146, 105, 0.4);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+.fab:hover {
+  background: var(--green-d);
+  transform: scale(1.08);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .page {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Sidebar fills full screen on mobile */
+  .sidebar {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    z-index: 10;
+    transform: translateX(0);
+    border-right: none;
+  }
+  .sidebarHidden {
+    transform: translateX(-100%);
+  }
+  .sidebarVisible {
+    transform: translateX(0);
+  }
+
+  /* Chat area fills full screen on mobile */
+  .chatArea {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+  }
+  .chatAreaVisible {
+    transform: translateX(0);
+  }
+  .chatAreaHidden {
+    transform: translateX(100%);
+  }
+
+  /* Show back button on mobile */
+  .mobileBack {
+    display: block;
+  }
+
+  /* Show FAB on mobile */
+  .fab {
+    display: flex;
+  }
+
+  .messages {
+    padding: 1rem;
+  }
+  .inputBar {
+    padding: 0.75rem 1rem;
+  }
+  .bubble {
+    max-width: 82%;
+  }
+}
+
+/* ── Day separator ───────────────────────────────────────────────────────── */
+.daySep {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0 0.5rem;
+}
+.daySepLine {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.daySepLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface);
+  padding: 0.2rem 0.65rem;
+  border-radius: 2rem;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* ── Active conv item tweaks ─────────────────────────────────────────────── */
+.convAvatarActive {
+  background: linear-gradient(135deg, var(--green-d), #064e38) !important;
+}
+.convNameActive {
+  color: var(--green-d) !important;
+  font-weight: 700 !important;
+}
+
+/* ── Day dividers ────────────────────────────────────────────────────────── */
+.dayDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0 0.6rem;
+}
+.dayLabel {
+  background: #e9ecef;
+  color: #6b7280;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.75rem;
+  border-radius: 2rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

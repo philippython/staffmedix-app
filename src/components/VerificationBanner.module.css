@@ -1,0 +1,189 @@
+/* ── Base banner ─────────────────────────────────────────────────────────── */
+.banner {
+  border-radius: 0.85rem;
+  padding: 1.1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border: 1.5px solid transparent;
+}
+
+.icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+.text strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.text span {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+/* ── States ──────────────────────────────────────────────────────────────── */
+.verified {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.warning {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #78350f;
+}
+
+.pending {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1e3a5f;
+}
+
+.blocked {
+  background: #fff7ed;
+  border-color: #fdba74;
+  color: #7c2d12;
+}
+
+/* ── Progress bar ────────────────────────────────────────────────────────── */
+.progressWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.progressTrack {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 99px;
+  position: relative;
+  overflow: visible;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.marker {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1px;
+  transform: translateX(-50%);
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  opacity: 0.7;
+}
+
+.milestone {
+  font-size: 0.68rem;
+}
+
+/* ── Missing fields ──────────────────────────────────────────────────────── */
+.missing {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.missingList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.missingTitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.chip {
+  background: rgba(0, 0, 0, 0.07);
+  padding: 0.2rem 0.6rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ── Action buttons ──────────────────────────────────────────────────────── */
+.actionBtn {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1.5px solid currentColor;
+  padding-bottom: 1px;
+  align-self: flex-start;
+  transition: opacity 0.15s;
+}
+.actionBtn:hover {
+  opacity: 0.7;
+}
+
+.actionBtnPrimary {
+  padding: 0.55rem 1.1rem;
+  background: #0d9269;
+  color: #fff;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.actionBtnPrimary:hover {
+  background: #0b7a57;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .banner {
+    padding: 1rem;
+  }
+  .topRow {
+    flex-direction: column;
+  }
+  .actionBtnPrimary {
+    align-self: flex-start;
+  }
+}

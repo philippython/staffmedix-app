@@ -1,0 +1,533 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap");
+
+.page {
+  --green: #0d9269;
+  --green-dark: #0a7554;
+  --green-pale: #f0fdf8;
+  --green-mid: #d1fae5;
+  --text: #0f1f17;
+  --text-2: #4b5563;
+  --text-3: #9ca3af;
+  --border: #e5e7eb;
+  --surface: #f9fafb;
+  font-family: "DM Sans", sans-serif;
+  background: var(--surface);
+  min-height: 100vh;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #0a7554 0%, #0d9269 55%, #10b981 100%);
+  padding: 3rem 1.5rem 3.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 70% at 80% 20%,
+    rgba(255, 255, 255, 0.07),
+    transparent
+  );
+  pointer-events: none;
+}
+.heroInner {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 0.75rem;
+}
+.heroTitle {
+  font-family: "Sora", sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.75rem;
+  line-height: 1.15;
+}
+.heroSub {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* Section commons */
+.adsSection,
+.orgsSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+.orgsSection {
+  margin-top: 0;
+  border-top: 1.5px solid var(--border);
+  padding-top: 2.5rem;
+}
+.sectionHead {
+  margin-bottom: 1.75rem;
+}
+.sectionTitle {
+  font-family: "Sora", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+.sectionSub {
+  font-size: 0.875rem;
+  color: var(--text-2);
+  margin: 0;
+}
+.sectionPill {
+  background: #fff3cd;
+  color: #b45309;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sectionPillGreen {
+  background: var(--green-pale);
+  color: var(--green-dark);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Ad cards ────────────────────────────────────────────────────────────── */
+.adsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+.adCard {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.adCard:hover {
+  box-shadow: 0 8px 28px rgba(13, 146, 105, 0.1);
+  transform: translateY(-2px);
+}
+
+.adImageWrap {
+  position: relative;
+  height: 200px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.adImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.adImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--green-pale), var(--green-mid));
+}
+.adBadge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.adPrev,
+.adNext {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.adPrev {
+  left: 0.5rem;
+}
+.adNext {
+  right: 0.5rem;
+}
+.adPrev:hover,
+.adNext:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+.adDots {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.35rem;
+}
+.adDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s;
+}
+.adDotActive {
+  background: #fff;
+}
+
+.adBody {
+  padding: 1.1rem 1.25rem 1.25rem;
+}
+.adTitle {
+  font-family: "Sora", sans-serif;
+  font-size: 0.975rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.45rem;
+}
+.adDesc {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin: 0 0 0.5rem;
+}
+.adExpiry {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  margin: 0 0 0.75rem;
+}
+.adCta {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--green);
+  text-decoration: none;
+}
+.adCta:hover {
+  text-decoration: underline;
+}
+
+/* ── Org cards ───────────────────────────────────────────────────────────── */
+.orgsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1rem;
+}
+.orgCard {
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.25rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s,
+    border-color 0.2s;
+  gap: 0.6rem;
+}
+.orgCard:hover {
+  box-shadow: 0 8px 28px rgba(13, 146, 105, 0.1);
+  transform: translateY(-2px);
+  border-color: var(--green-mid);
+}
+.orgLogoWrap {
+  margin-bottom: 0;
+}
+.orgLogo {
+  width: 56px;
+  height: 56px;
+  border-radius: 0.75rem;
+  object-fit: contain;
+  border: 1.5px solid var(--border);
+  padding: 4px;
+  background: #fff;
+}
+.orgLogoInitials {
+  width: 56px;
+  height: 56px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: #fff;
+  font-family: "Sora", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orgCardBody {
+  flex: 1;
+}
+.orgName {
+  font-family: "Sora", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.3;
+}
+.orgType {
+  font-size: 0.78rem;
+  color: var(--green);
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+}
+.orgDesc {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin: 0 0 0.6rem;
+}
+.orgMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+}
+.orgChip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.2rem 0.55rem;
+  border-radius: 2rem;
+}
+.orgChipGreen {
+  background: var(--green-pale);
+  border-color: var(--green-mid);
+  color: var(--green-dark);
+}
+.orgArrow {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: var(--text-3);
+  font-size: 1rem;
+  transition:
+    color 0.15s,
+    transform 0.15s;
+}
+.orgCard:hover .orgArrow {
+  color: var(--green);
+  transform: translateX(3px);
+}
+
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+.pageBtn {
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  border-radius: 0.6rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--green);
+  background: var(--green-pale);
+}
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.pageNums {
+  display: flex;
+  gap: 0.3rem;
+}
+.pageNum {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  border-radius: 0.5rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.pageNum:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+.pageNumActive {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+.pageNumActive:hover {
+  background: var(--green-dark);
+}
+.ellipsis {
+  width: 28px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.85rem;
+}
+.orgCount {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-3);
+  margin-top: 0.65rem;
+}
+
+/* ── CTA ─────────────────────────────────────────────────────────────────── */
+.cta {
+  background: linear-gradient(135deg, #0a7554, #0d9269);
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+.ctaInner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+.cta h2 {
+  font-family: "Sora", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+.cta p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem;
+}
+.ctaBtn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  background: #fff;
+  color: var(--green-dark);
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+.ctaBtn:hover {
+  background: var(--green-pale);
+  transform: translateY(-1px);
+}
+
+/* ── States ──────────────────────────────────────────────────────────────── */
+.loadingWrap {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 4rem 2rem;
+  color: var(--text-2);
+  font-size: 0.95rem;
+}
+.emptyState span {
+  font-size: 2.5rem;
+}
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--green-mid);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .adsGrid,
+  .orgsGrid {
+    grid-template-columns: 1fr;
+  }
+  .hero {
+    padding: 3rem 1rem 4rem;
+  }
+  .adsSection,
+  .orgsSection {
+    padding: 0 1rem 2rem;
+  }
+}

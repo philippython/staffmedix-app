@@ -1,0 +1,80 @@
+.searchFilter {
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--light-shadow);
+  height: fit-content;
+  padding: 2rem;
+  border-radius: 1rem;
+  margin: 1rem 2rem;
+  grid-column: 1 / span 1;
+}
+
+.searchFilter ul {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.searchFilter .filter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.searchFilter .filter p {
+  color: var(--dark-teal);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.radio {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 0.2rem;
+  cursor: pointer;
+}
+.radio svg {
+  display: none;
+}
+.radio p {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+.radioSelect {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 0.2rem;
+  cursor: pointer;
+}
+.radio div {
+  background-color: var(--primary-color);
+  box-shadow: inset 0 0 0 0.1rem var(--dark-teal);
+  height: 0.8rem;
+  width: 0.8rem;
+  border-radius: 50%;
+}
+.radio svg {
+  height: 12px;
+  width: 12px;
+}
+.radioSelect div {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-color);
+  height: 0.8rem;
+  width: 0.8rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+}
+
+.radioSelect p {
+  font-size: 0.9rem;
+  color: var(--dark-grey);
+}
+
+@media (max-width: 988px) {
+  .searchFilterResponsive {
+    display: none;
+  }
+}

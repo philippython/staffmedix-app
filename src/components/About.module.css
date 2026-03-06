@@ -1,0 +1,639 @@
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+.page {
+  font-family: "Instrument Serif", Georgia, serif;
+  color: #0f1a14;
+  background: #f7faf8;
+  overflow-x: hidden;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: "DM Mono", "Courier New", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0d9269;
+  margin-bottom: 0.75rem;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+.hero {
+  min-height: 88vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 4rem;
+  padding: 7rem 6rem 5rem;
+  background: linear-gradient(135deg, #0a1f16 0%, #0d2e1e 60%, #0f3d28 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230d9269' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+}
+
+.hero .eyebrow {
+  color: #4ade80;
+}
+
+.heroTitle {
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  font-weight: 400;
+  color: #f0faf5;
+  line-height: 1.1;
+  margin: 0 0 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.heroTitle em {
+  font-style: italic;
+  color: #4ade80;
+}
+
+.heroSub {
+  font-family: "DM Sans", sans-serif;
+  font-size: 1.05rem;
+  color: #a7d9bc;
+  line-height: 1.7;
+  max-width: 480px;
+  margin-bottom: 2.5rem;
+}
+
+.heroCtas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ctaPrimary {
+  padding: 0.8rem 1.75rem;
+  background: #0d9269;
+  color: #fff;
+  border-radius: 0.5rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.ctaPrimary:hover {
+  background: #0b7a57;
+  transform: translateY(-2px);
+}
+
+.ctaSecondary {
+  padding: 0.8rem 1.75rem;
+  background: transparent;
+  color: #4ade80;
+  border: 1.5px solid #4ade80;
+  border-radius: 0.5rem;
+  font-family: "DM Sans", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.ctaSecondary:hover {
+  background: rgba(74, 222, 128, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Hero visual */
+.heroVisual {
+  position: relative;
+  z-index: 1;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroOrb {
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 40% 40%,
+    #1db87a33,
+    #0d926911,
+    transparent 70%
+  );
+  border: 1px solid #0d926930;
+  position: absolute;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.heroPulse {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #0d926940, transparent 70%);
+  position: absolute;
+  animation: breathe 4s ease-in-out infinite reverse;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+.heroCard,
+.heroCard2 {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  padding: 0.9rem 1.25rem;
+  color: #e8f8f0;
+  font-family: "DM Sans", sans-serif;
+}
+
+.heroCard {
+  top: 10%;
+  right: 0;
+  animation: floatA 6s ease-in-out infinite;
+}
+.heroCard2 {
+  bottom: 12%;
+  left: 0;
+  animation: floatB 6s ease-in-out infinite;
+}
+
+@keyframes floatA {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes floatB {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.heroCard div,
+.heroCard2 div {
+  display: flex;
+  flex-direction: column;
+}
+.heroCard strong,
+.heroCard2 strong {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.heroCard span,
+.heroCard2 span {
+  font-size: 0.75rem;
+  color: #a7d9bc;
+}
+.heroCardIcon {
+  font-size: 1.4rem;
+}
+
+/* ── Stats ────────────────────────────────────────────────────────────────── */
+.statsSection {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #0d9269;
+  padding: 3.5rem 6rem;
+  gap: 2rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding-right: 2rem;
+}
+.statItem:last-child {
+  border-right: none;
+}
+
+.statValue {
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.statLabel {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+}
+
+/* ── Mission ──────────────────────────────────────────────────────────────── */
+.mission {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  padding: 7rem 6rem;
+  align-items: center;
+  background: #f7faf8;
+}
+
+.missionText h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 400;
+  color: #0a1f16;
+  margin: 0.5rem 0 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.missionText p {
+  font-family: "DM Sans", sans-serif;
+  font-size: 1rem;
+  color: #3d5a45;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+
+.missionCard {
+  background: #fff;
+  border: 1px solid #d4e8db;
+  border-radius: 1.25rem;
+  padding: 2.5rem;
+  box-shadow: 0 8px 40px rgba(13, 146, 105, 0.08);
+}
+
+.missionIcon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.missionCard h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #0a1f16;
+  margin-bottom: 1.25rem;
+}
+
+.missionCard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.missionCard li {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  color: #3d5a45;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.5;
+}
+
+.missionCard li::before {
+  content: "✕";
+  position: absolute;
+  left: 0;
+  color: #e53e3e;
+  font-size: 0.75rem;
+  top: 2px;
+}
+
+/* ── Values ───────────────────────────────────────────────────────────────── */
+.values {
+  padding: 7rem 6rem;
+  background: #0a1f16;
+}
+
+.sectionHead {
+  margin-bottom: 3.5rem;
+}
+
+.sectionHead h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 400;
+  color: #f0faf5;
+  margin: 0.5rem 0 0;
+  letter-spacing: -0.02em;
+}
+
+.values .eyebrow {
+  color: #4ade80;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.valueCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 1rem;
+  padding: 2rem 1.75rem;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.valueCard:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-4px);
+}
+
+.valueIcon {
+  font-size: 1.75rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.valueCard h3 {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #e8f8f0;
+  margin: 0 0 0.75rem;
+}
+
+.valueCard p {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #8ab89a;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Story ────────────────────────────────────────────────────────────────── */
+.story {
+  padding: 7rem 6rem;
+  max-width: 900px;
+  margin: 0 auto;
+  background: #f7faf8;
+}
+
+.story h2 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 400;
+  color: #0a1f16;
+  margin: 0.5rem 0 2.5rem;
+  letter-spacing: -0.02em;
+}
+
+.storyBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.storyBody p {
+  font-family: "DM Sans", sans-serif;
+  font-size: 1.05rem;
+  color: #3d5a45;
+  line-height: 1.85;
+  margin: 0;
+}
+
+/* ── Team ─────────────────────────────────────────────────────────────────── */
+.team {
+  padding: 7rem 6rem;
+  background: #fff;
+}
+
+.team .sectionHead h2 {
+  color: #0a1f16;
+}
+
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.teamCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  border: 1px solid #d4e8db;
+  border-radius: 1rem;
+  background: #f7faf8;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+.teamCard:hover {
+  box-shadow: 0 8px 32px rgba(13, 146, 105, 0.1);
+  transform: translateY(-4px);
+}
+
+.teamAvatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.05em;
+  font-family: "DM Mono", monospace;
+}
+
+.teamCard h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0a1f16;
+  margin: 0;
+}
+
+.teamCard p {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8rem;
+  color: #0d9269;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── CTA ──────────────────────────────────────────────────────────────────── */
+.ctaSection {
+  padding: 6rem;
+  background: #f7faf8;
+}
+
+.ctaBox {
+  background: linear-gradient(135deg, #0a1f16, #0f3d28);
+  border-radius: 1.5rem;
+  padding: 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaBox::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230d9269' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.ctaBox h2 {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  color: #f0faf5;
+  font-weight: 400;
+  margin: 0 0 1rem;
+  position: relative;
+  letter-spacing: -0.02em;
+}
+
+.ctaBox p {
+  font-family: "DM Sans", sans-serif;
+  color: #a7d9bc;
+  font-size: 1.05rem;
+  margin: 0 0 2.5rem;
+  position: relative;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .hero {
+    padding: 6rem 3rem 4rem;
+    gap: 3rem;
+  }
+  .statsSection {
+    padding: 3rem;
+  }
+  .mission {
+    padding: 5rem 3rem;
+    gap: 3rem;
+  }
+  .values {
+    padding: 5rem 3rem;
+  }
+  .story {
+    padding: 5rem 3rem;
+  }
+  .team {
+    padding: 5rem 3rem;
+  }
+  .ctaSection {
+    padding: 4rem 3rem;
+  }
+  .ctaBox {
+    padding: 4rem 3rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 5rem 2rem 3rem;
+  }
+  .heroVisual {
+    display: none;
+  }
+  .statsSection {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 3rem 2rem;
+  }
+  .statItem {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1.5rem;
+  }
+  .statItem:nth-child(odd) {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .statItem:last-child {
+    border-bottom: none;
+  }
+  .mission {
+    grid-template-columns: 1fr;
+    padding: 4rem 2rem;
+  }
+  .valuesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .teamGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 4rem 1.5rem 3rem;
+  }
+  .statsSection {
+    grid-template-columns: 1fr;
+    padding: 2.5rem 1.5rem;
+  }
+  .statItem {
+    border-right: none !important;
+  }
+  .values {
+    padding: 4rem 1.5rem;
+  }
+  .valuesGrid {
+    grid-template-columns: 1fr;
+  }
+  .story {
+    padding: 4rem 1.5rem;
+  }
+  .team {
+    padding: 4rem 1.5rem;
+  }
+  .teamGrid {
+    grid-template-columns: 1fr;
+  }
+  .ctaSection {
+    padding: 2rem 1.5rem;
+  }
+  .ctaBox {
+    padding: 3rem 1.5rem;
+  }
+}

@@ -1,0 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=Chivo:ital,wght@0,100..900;1,100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,opsz@0,14..32;1,14..32&family=Rubik:ital,wght@0,300..900;1,300..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap");
+:root {
+  --primary-bg-color: #178c75;
+  --primary-color: #ffffff;
+
+  --light-grey: #dee2e6;
+  --dark-grey: #495057be;
+  --soft-grey: #eff3f5;
+  --transparent-grey: rgba(255 255, 255, 0.2);
+
+  --light-green: #e6fcf539;
+  --light-teal: #ebfdf7;
+  --dark-teal: #099268;
+  --secondary-bg-color: #f4f6f64d;
+
+  --gradient-top: hsl(168 84% 32%);
+  --gradient-bottom: hsl(190 70% 45%);
+  --gradient-auth: linear-gradient(
+    135deg,
+    rgb(13, 150, 123) 0%,
+    rgb(34, 168, 195) 100%
+  );
+  --transparent-bg: rgba(255, 255, 255, 0.13);
+
+  --light-shadow: 0 0.1rem 015rem rgba(0, 0, 0, 0.05);
+  --soft-shadow: 0 0.5rem 0.7rem rgba(0, 0, 0, 0.07);
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 18px;
+}
+
+body {
+  line-height: 1.1;
+  font-size: 1.2rem;
+  font-family: "Source Sans 3", sans-serif;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--dark-teal);
+}
+
+a:link,
+a:active {
+  text-decoration: none;
+}
+
+a:hover,
+a:visited {
+  text-decoration: none;
+}
