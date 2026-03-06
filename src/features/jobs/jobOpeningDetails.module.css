@@ -18,6 +18,7 @@
   display: inline-block;
   color: var(--dark-grey) !important;
 }
+
 .backLink:hover {
   text-decoration: underline;
   color: var(--primary-bg-color) !important;
