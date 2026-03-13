@@ -52,9 +52,9 @@ import AdminAnalytics from "./features/admin/AdminAnalytics";
 import AdminAdsManager from "./features/admin/AdminAdsManager";
 import About from "./components/About";
 import Terms from "./components/Terms";
-// import EmployerVerification from "./features/admin/EmployerVerification";
-// import AdminViewAllUsers from "./features/admin/AdminViewAllUsers";
-// import AdminCreateUser from "./features/admin/AdminCreateUser";
+import EmployerVerification from "./features/admin/EmployerVerification";
+import AdminViewAllUsers from "./features/admin/AdminViewAllUsers";
+import AdminCreateUser from "./features/admin/AdminCreateUser";
 
 import AdDetailView from "./features/ads/AdDetailView";
 
@@ -204,7 +204,7 @@ function App() {
         </Route>
 
         {/* Admin Routes */}
-        <Route element={<ProtectedRoutes group="employer" />}>
+        <Route element={<ProtectedRoutes group="admin" />}>
           <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
 
           <Route
@@ -240,11 +240,10 @@ function App() {
             }
           />
 
-          {/* Uncomment when created
-          <Route path="hospital-verification" element={
+          <Route path="employer-verification" element={
             <>
               <AppNav />
-              <HospitalVerification />
+              <EmployerVerification />
               <Footer />
             </>
           } />
@@ -264,7 +263,6 @@ function App() {
               <Footer />
             </>
           } />
-          */}
         </Route>
 
         {/* General Routes */}

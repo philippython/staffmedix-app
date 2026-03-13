@@ -226,7 +226,7 @@ export default function JobSummary({ job }) {
           </div>
           <div>
             <p>Applicants</p>
-            <span>{job?.views} Applied</span>
+            <span>{job?.applied_count} Applied</span>
           </div>
           <div>
             <p>Experience</p>

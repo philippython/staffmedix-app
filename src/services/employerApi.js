@@ -69,7 +69,31 @@ export const employerApi = createApi({
       invalidatesTags: ["CompanyProfile"],
     }),
 
-    // ── Company Contact ──────────────────────────
+    // ── Admin: get all profiles + toggle verification ─────────────────────
+
+    getAllCompanyProfiles: builder.query({
+      query: ({ search, verified, limit = 20, offset = 0 } = {}) => ({
+        url: "profile/",
+        params: {
+          ...(search !== undefined && { search }),
+          ...(verified !== undefined && { verified }),
+          limit,
+          offset,
+        },
+      }),
+      providesTags: ["CompanyProfile"],
+    }),
+
+    setCompanyVerified: builder.mutation({
+      query: ({ profileId, verified }) => ({
+        url: `profile/${profileId}/`,
+        method: "PATCH",
+        body: { verified },
+      }),
+      invalidatesTags: ["CompanyProfile"],
+    }),
+
+    // ── Company Contact ───────────────────────────────────────────────────
 
     getCompanyContacts: builder.query({
       query: ({ companyId, limit = 10, offset = 0 } = {}) => ({
@@ -110,7 +134,7 @@ export const employerApi = createApi({
       invalidatesTags: ["CompanyContact"],
     }),
 
-    // ── Company Contact Person ───────────────────
+    // ── Company Contact Person ────────────────────────────────────────────
 
     createCompanyContactPerson: builder.mutation({
       query: ({ data }) => ({
@@ -158,7 +182,7 @@ export const employerApi = createApi({
       invalidatesTags: ["CompanyContactPerson"],
     }),
 
-    // ── Company Services ─────────────────────────
+    // ── Company Services ──────────────────────────────────────────────────
 
     getCompanyServices: builder.query({
       query: ({ companyId, limit = 100, offset = 0 } = {}) => ({
@@ -209,6 +233,10 @@ export const {
   useUpdateCompanyProfileMutation,
   useUploadCompanyLogoMutation,
   useDeleteCompanyProfileMutation,
+
+  // Admin
+  useGetAllCompanyProfilesQuery,
+  useSetCompanyVerifiedMutation,
 
   // Company Contact
   useGetCompanyContactsQuery,
