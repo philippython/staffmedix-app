@@ -3,6 +3,7 @@ import styles from "./AdminTalentVerification.module.css";
 import {
   useGetTalentsQuery,
   useUpdateTalentProfileMutation,
+  useGetTalentProfileQuery,
   useGetWorkExperiencesQuery,
   useGetEducationsQuery,
   useGetSkillsQuery,
@@ -34,15 +35,14 @@ function completionScore(t, work, edu, skills, creds) {
 
 // ── Detail panel ──────────────────────────────────────────────────────────
 function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAction }) {
-  const id = talent.id;
-  // DEBUG — remove after confirming correct IDs in console
-  console.log("[TalentDetail] opening panel, talent.id =", id, "| talent.user =", talent.user);
-  // refetchOnMountOrArgChange forces a fresh fetch every time a new talent is opened
-  // currentData prevents stale data from a previous talent flashing while loading
-  const { currentData: work,   isFetching: fw } = useGetWorkExperiencesQuery(id, { refetchOnMountOrArgChange: true });
-  const { currentData: edu,    isFetching: fe } = useGetEducationsQuery(id,    { refetchOnMountOrArgChange: true });
-  const { currentData: skills, isFetching: fs } = useGetSkillsQuery(id,        { refetchOnMountOrArgChange: true });
-  const { currentData: creds,  isFetching: fc } = useGetCredentialsQuery(id,   { refetchOnMountOrArgChange: true });
+  // Mirror TalentDetailView exactly — fetch profile first then use its id for sub-queries
+  const { data: profile } = useGetTalentProfileQuery(talent.id);
+  const id = profile?.id ?? talent.id;
+
+  const { data: workRaw,   isFetching: fw } = useGetWorkExperiencesQuery(id, { refetchOnMountOrArgChange: true, skip: !id });
+  const { data: eduRaw,    isFetching: fe } = useGetEducationsQuery(id,       { refetchOnMountOrArgChange: true, skip: !id });
+  const { data: skillsRaw, isFetching: fs } = useGetSkillsQuery(id,           { refetchOnMountOrArgChange: true, skip: !id });
+  const { data: credsRaw,  isFetching: fc } = useGetCredentialsQuery(id,      { refetchOnMountOrArgChange: true, skip: !id });
   const subLoading = fw || fe || fs || fc;
 
   const [queryMsg, setQueryMsg]       = useState("");
@@ -51,10 +51,10 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
   const score      = completionScore(talent, work, edu, skills, creds);
   const scoreColor = score >= 80 ? "#0d9269" : score >= 50 ? "#f59e0b" : "#ef4444";
 
-  const workList  = subLoading ? [] : (work?.results   ?? work   ?? []);
-  const eduList   = subLoading ? [] : (edu?.results    ?? edu    ?? []);
-  const skillList = subLoading ? [] : (skills?.results ?? skills ?? []);
-  const credList  = subLoading ? [] : (creds?.results  ?? creds  ?? []);
+  const workList  = workRaw?.results   ?? workRaw   ?? [];
+  const eduList   = eduRaw?.results    ?? eduRaw    ?? [];
+  const skillList = skillsRaw?.results ?? skillsRaw ?? [];
+  const credList  = credsRaw?.results  ?? credsRaw  ?? [];
 
   const missing = [];
   if (!talent.full_name)       missing.push("Full name");

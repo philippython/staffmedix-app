@@ -65,6 +65,7 @@ export default function EmployeeSignup() {
         username: userForm.username,
         email: userForm.email,
         password: userForm.password,
+        confirm_password: userForm.confirmPassword,
         role: "TALENT",
       }).unwrap();
 
