@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import AppNav from "../../components/AppNav";
-import Footer from "../../components/Footer";
 import Button from "../../components/Button";
 import CustomSelect from "../../components/CustomSelect";
 import Pagination from "../../components/Pagination";
@@ -78,7 +76,6 @@ export default function AdminViewAllUsers() {
 
   return (
     <>
-      <AppNav />
       <main className={styles.adminViewAllUsers}>
         <div className={styles.container}>
           <div className={styles.header}>
@@ -86,7 +83,7 @@ export default function AdminViewAllUsers() {
               <h1>User Management</h1>
               <p>View and manage all platform users</p>
             </div>
-            <Link to="/admin/users/create">
+            <Link to="/admin-dashboard/create-user">
               <Button variant="coloredButton">Create New User</Button>
             </Link>
           </div>
@@ -322,7 +319,6 @@ export default function AdminViewAllUsers() {
           )}
         </div>
       </main>
-      <Footer />
     </>
   );
 }

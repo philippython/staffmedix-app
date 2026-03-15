@@ -26,7 +26,7 @@ export default function AppNav() {
       ? "/employer-dashboard"
       : whoAmI?.role === "TALENT"
         ? "/employee-dashboard"
-        : null;
+        : whoAmI?.role === "ADMIN" ? "/admin-dashboard" : null;
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);

@@ -1,161 +1,285 @@
 import { Link } from "react-router";
 import styles from "./AdminDashboard.module.css";
+import { useGetAllUsersQuery } from "../../services/userApi";
+import { useGetJobsQuery, useGetAppliedJobsQuery } from "../../services/jobsApi";
+import { useGetSubscriptionsQuery } from "../../services/subscriptionApi";
+import { useGetTalentsQuery } from "../../services/talentApi";
+import { useGetAllCompanyProfilesQuery } from "../../services/employerApi";
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function StatCard({ label, value, icon, isLoading, sub }) {
+  return (
+    <div className={styles.statCard}>
+      <div className={styles.statIcon}>{icon}</div>
+      <div className={styles.statInfo}>
+        <p className={styles.statValue}>
+          {isLoading ? <span className={styles.shimmer} /> : value}
+        </p>
+        <p className={styles.statLabel}>{label}</p>
+        {sub && <span className={styles.statSub}>{sub}</span>}
+      </div>
+    </div>
+  );
+}
+
+function calcRevenue(subscriptions = []) {
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear  = now.getFullYear();
+  let total = 0, monthly = 0;
+  for (const sub of subscriptions) {
+    const amount = parseFloat(sub.amount ?? sub.price ?? sub.plan?.price ?? 0);
+    total += amount;
+    const start = sub.start_date ? new Date(sub.start_date) : null;
+    if (start && start.getMonth() === thisMonth && start.getFullYear() === thisYear)
+      monthly += amount;
+  }
+  const fmt = (n) =>
+    n >= 1_000_000 ? `₦${(n / 1_000_000).toFixed(1)}M`
+    : n >= 1_000   ? `₦${(n / 1_000).toFixed(1)}K`
+    : `₦${n.toLocaleString()}`;
+  return { total: fmt(total), monthly: fmt(monthly) };
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return "—";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins  = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days  = Math.floor(diff / 86400000);
+  if (mins  < 60)  return `${mins}m ago`;
+  if (hours < 24)  return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
+function getInitial(user) {
+  return (user?.first_name?.[0] || user?.username?.[0] || "U").toUpperCase();
+}
+
+function roleBg(role) {
+  const map = { talent: "#3b82f6", employer: "#10b981", admin: "#8b5cf6" };
+  return map[role?.toLowerCase()] ?? "#6b7280";
+}
+
+// ── Dashboard ──────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
-  const stats = [
-    { label: "Total Users", value: "2,543", change: "+12%", icon: "👥" },
-    { label: "Active Jobs", value: "156", change: "+8%", icon: "💼" },
-    { label: "Pending Verifications", value: "23", change: "-5%", icon: "⏳" },
-    { label: "Revenue (₦)", value: "12.5M", change: "+18%", icon: "💰" },
-  ];
 
-  const recentUsers = [
-    {
-      id: 1,
-      name: "Dr. Amaka Johnson",
-      type: "Employee",
-      status: "Pending",
-      date: "2 hours ago",
-    },
-    {
-      id: 2,
-      name: "General Hospital Lagos",
-      type: "Employer",
-      status: "Verified",
-      date: "5 hours ago",
-    },
-    {
-      id: 3,
-      name: "Nurse Chioma Obi",
-      type: "Employee",
-      status: "Pending",
-      date: "1 day ago",
-    },
-  ];
+  // ── Fetches ──────────────────────────────────────────────────────────────
+  const { data: usersData,     isLoading: loadingUsers }     = useGetAllUsersQuery({ limit: 6, offset: 0 });
+  const { data: allUsersCount, isLoading: loadingCount }     = useGetAllUsersQuery({ limit: 1 });
+  const { data: activeJobsData,isLoading: loadingJobs }      = useGetJobsQuery({ is_active: true, limit: 1 });
+  const { data: allJobsData,   isLoading: loadingAllJobs }   = useGetJobsQuery({ limit: 1 });
+  const { data: allSubsData,   isLoading: loadingSubs }      = useGetSubscriptionsQuery();
+  const { data: talentsData,   isLoading: loadingTalents }   = useGetTalentsQuery({ limit: 1000 });
+  const { data: companiesData, isLoading: loadingCompanies } = useGetAllCompanyProfilesQuery({ limit: 1000 });
+  const { data: appsData,      isLoading: loadingApps }      = useGetAppliedJobsQuery({ limit: 5 });
 
-  const pendingActions = [
-    { id: 1, action: "Verify Dr. Sarah credentials", priority: "High" },
-    { id: 2, action: "Review hospital registration", priority: "Medium" },
-    { id: 3, action: "Approve job posting", priority: "Low" },
-  ];
+  // ── Derived ───────────────────────────────────────────────────────────────
+  const totalUsers      = allUsersCount?.count     ?? "—";
+  const totalActiveJobs = activeJobsData?.count    ?? "—";
+  const totalJobs       = allJobsData?.count       ?? "—";
+
+  const allSubs         = allSubsData?.results ?? allSubsData ?? [];
+  const { total: revenueTotal, monthly: revenueMonthly } = calcRevenue(allSubs);
+  const totalSubs       = allSubs.length;
+
+  const allTalents       = talentsData?.results  ?? talentsData  ?? [];
+  const allCompanies     = companiesData?.results ?? companiesData ?? [];
+  const pendingTalents   = allTalents.filter((t) => !t.verified).length;
+  const pendingEmployers = allCompanies.filter((c) => !c.verified).length;
+  const verifiedTalents  = allTalents.filter((t) =>  t.verified).length;
+
+  const recentUsers   = usersData?.results ?? usersData ?? [];
+  const recentApps    = appsData?.results  ?? appsData  ?? [];
+
+  // Subscription plan breakdown
+  const planCounts = allSubs.reduce((acc, s) => {
+    const name = s.plan?.name ?? s.plan_name ?? "Unknown";
+    acc[name] = (acc[name] ?? 0) + 1;
+    return acc;
+  }, {});
 
   return (
     <div className={styles.dashboard}>
+
+      {/* ── Header ── */}
       <div className={styles.dashboardHeader}>
         <div>
           <h1>Admin Dashboard</h1>
           <p>System overview and management</p>
         </div>
         <div className={styles.headerActions}>
-          <Link to="/admin/analytics" className={styles.analyticsButton}>
-            📊 View Analytics
-          </Link>
-          <Link to="/admin/settings" className={styles.settingsButton}>
-            ⚙️ Settings
+          <Link to="/admin-dashboard/all-users" className={styles.analyticsButton}>
+            👥 Manage Users
           </Link>
         </div>
       </div>
 
+      {/* ── Stats ── */}
       <div className={styles.statsGrid}>
-        {stats.map((stat, index) => (
-          <div key={index} className={styles.statCard}>
-            <div className={styles.statIcon}>{stat.icon}</div>
-            <div className={styles.statInfo}>
-              <p className={styles.statValue}>{stat.value}</p>
-              <p className={styles.statLabel}>{stat.label}</p>
-              <span
-                className={`${styles.statChange} ${
-                  stat.change.startsWith("+")
-                    ? styles.positive
-                    : styles.negative
-                }`}
-              >
-                {stat.change} from last month
-              </span>
-            </div>
-          </div>
-        ))}
+        <StatCard label="Total Users"    value={totalUsers}      icon="👥" isLoading={loadingCount}   sub={`${totalSubs} active subscriptions`} />
+        <StatCard label="Active Jobs"    value={totalActiveJobs} icon="💼" isLoading={loadingJobs}    sub={`${totalJobs} total postings`} />
+        <StatCard label="Total Revenue"  value={revenueTotal}    icon="💰" isLoading={loadingSubs}    sub={`${revenueMonthly} this month`} />
       </div>
 
+      {/* ── Verification cards ── */}
+      <div className={styles.verificationGrid}>
+        <Link to="/admin-dashboard/employer-verification" className={styles.verifyCard}>
+          <div className={styles.verifyCardIcon}>🏥</div>
+          <div className={styles.verifyCardInfo}>
+            <p className={styles.verifyCardNum}>
+              {loadingCompanies ? <span className={styles.shimmer} /> : pendingEmployers}
+            </p>
+            <p className={styles.verifyCardLabel}>Pending Employer Verifications</p>
+            <span className={styles.verifyCardCta}>Review now →</span>
+          </div>
+        </Link>
+        <Link to="/admin-dashboard/talent-verification" className={styles.verifyCard}>
+          <div className={styles.verifyCardIcon}>👤</div>
+          <div className={styles.verifyCardInfo}>
+            <p className={styles.verifyCardNum}>
+              {loadingTalents ? <span className={styles.shimmer} /> : pendingTalents}
+            </p>
+            <p className={styles.verifyCardLabel}>Pending Talent Verifications</p>
+            <span className={styles.verifyCardCta}>Review now →</span>
+          </div>
+        </Link>
+      </div>
+
+      {/* ── Main content ── */}
       <div className={styles.mainContent}>
-        <section className={styles.recentActivity}>
-          <div className={styles.sectionHeader}>
-            <h2>Recent User Registrations</h2>
-            <Link to="/admin/users">View All Users</Link>
-          </div>
 
-          <div className={styles.activityList}>
-            {recentUsers.map((user) => (
-              <div key={user.id} className={styles.activityItem}>
-                <div className={styles.userInfo}>
-                  <h3>{user.name}</h3>
-                  <p className={styles.userType}>{user.type}</p>
-                  <p className={styles.userDate}>{user.date}</p>
-                </div>
-                <div className={styles.userActions}>
-                  <span
-                    className={`${styles.statusBadge} ${
-                      styles[user.status.toLowerCase()]
-                    }`}
-                  >
-                    {user.status}
-                  </span>
-                  <Link
-                    to={`/admin/verification/${user.id}`}
-                    className={styles.viewButton}
-                  >
-                    Review
-                  </Link>
-                </div>
+        {/* Left column */}
+        <div className={styles.leftCol}>
+
+          {/* Recent registrations */}
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2>Recent Registrations</h2>
+              <Link to="/admin-dashboard/all-users">View all →</Link>
+            </div>
+            {loadingUsers ? (
+              <div className={styles.loadingRows}>
+                {[...Array(4)].map((_, i) => <div key={i} className={styles.shimmerRow} />)}
               </div>
-            ))}
-          </div>
-        </section>
+            ) : recentUsers.length === 0 ? (
+              <p className={styles.empty}>No users yet.</p>
+            ) : (
+              <div className={styles.userList}>
+                {recentUsers.map((user) => (
+                  <div key={user.id} className={styles.userRow}>
+                    <div className={styles.userAvatar} style={{ background: roleBg(user.role) }}>
+                      {getInitial(user)}
+                    </div>
+                    <div className={styles.userMeta}>
+                      <span className={styles.userName}>
+                        {user.first_name && user.last_name
+                          ? `${user.first_name} ${user.last_name}`
+                          : user.username}
+                      </span>
+                      <span className={styles.userEmail}>{user.email}</span>
+                    </div>
+                    <span className={styles.rolePill} style={{ background: roleBg(user.role) }}>
+                      {user.role}
+                    </span>
+                    <span className={styles.timeAgo}>
+                      {timeAgo(user.date_joined ?? user.created_at)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
 
+        {/* Right sidebar */}
         <aside className={styles.sidebar}>
-          <div className={styles.quickActions}>
-            <h3>Quick Actions</h3>
-            <Link to="/admin/verification" className={styles.actionCard}>
-              <span>🔍</span>
-              <div>
-                <h4>Verify Credentials</h4>
-                <p>Review pending verifications</p>
+
+          {/* Platform overview */}
+          <div className={styles.card}>
+            <div className={styles.cardHeader}><h2>Platform Overview</h2></div>
+            <div className={styles.overviewList}>
+              <div className={styles.overviewRow}>
+                <span className={styles.overviewLabel}>Verified Talents</span>
+                <span className={styles.overviewValue}>
+                  {loadingTalents ? <span className={styles.shimmerSm} /> : verifiedTalents}
+                </span>
               </div>
-            </Link>
-            <Link to="/admin/ads-manager" className={styles.actionCard}>
-              <span>📢</span>
-              <div>
-                <h4>Manage Ads</h4>
-                <p>Approve organization ads</p>
+              <div className={styles.overviewRow}>
+                <span className={styles.overviewLabel}>Total Talents</span>
+                <span className={styles.overviewValue}>
+                  {loadingTalents ? <span className={styles.shimmerSm} /> : allTalents.length}
+                </span>
               </div>
-            </Link>
-            <Link to="/admin/reports" className={styles.actionCard}>
-              <span>📋</span>
-              <div>
-                <h4>Generate Reports</h4>
-                <p>System analytics & reports</p>
+              <div className={styles.overviewRow}>
+                <span className={styles.overviewLabel}>Total Employers</span>
+                <span className={styles.overviewValue}>
+                  {loadingCompanies ? <span className={styles.shimmerSm} /> : allCompanies.length}
+                </span>
               </div>
-            </Link>
+              <div className={styles.overviewRow}>
+                <span className={styles.overviewLabel}>Verified Employers</span>
+                <span className={styles.overviewValue}>
+                  {loadingCompanies ? <span className={styles.shimmerSm} /> : allCompanies.filter(c => c.verified).length}
+                </span>
+              </div>
+              <div className={styles.overviewRow}>
+                <span className={styles.overviewLabel}>Active Subscriptions</span>
+                <span className={styles.overviewValue}>
+                  {loadingSubs ? <span className={styles.shimmerSm} /> : totalSubs}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className={styles.pendingActions}>
-            <h3>Pending Actions</h3>
-            {pendingActions.map((item) => (
-              <div key={item.id} className={styles.pendingItem}>
-                <div>
-                  <p className={styles.actionText}>{item.action}</p>
-                  <span
-                    className={`${styles.priorityBadge} ${
-                      styles[item.priority.toLowerCase()]
-                    }`}
-                  >
-                    {item.priority}
-                  </span>
-                </div>
-                <button className={styles.actionButton}>Act</button>
+          {/* Subscription breakdown */}
+          {!loadingSubs && Object.keys(planCounts).length > 0 && (
+            <div className={styles.card}>
+              <div className={styles.cardHeader}><h2>Subscriptions by Plan</h2></div>
+              <div className={styles.overviewList}>
+                {Object.entries(planCounts).map(([plan, count]) => (
+                  <div key={plan} className={styles.overviewRow}>
+                    <span className={styles.overviewLabel}>{plan}</span>
+                    <span className={styles.overviewValue}>{count}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+          )}
+
+          {/* Quick actions */}
+          <div className={styles.card}>
+            <div className={styles.cardHeader}><h2>Quick Actions</h2></div>
+            <div className={styles.quickList}>
+              <Link to="/admin-dashboard/create-user" className={styles.quickItem}>
+                <span>➕</span><span>Create User</span>
+              </Link>
+              <Link to="/admin-dashboard/employer-verification" className={styles.quickItem}>
+                <span>🔍</span>
+                <span>
+                  Verify Employers
+                  {pendingEmployers > 0 && (
+                    <span className={styles.badge}>{pendingEmployers}</span>
+                  )}
+                </span>
+              </Link>
+              <Link to="/admin-dashboard/talent-verification" className={styles.quickItem}>
+                <span>👤</span>
+                <span>
+                  Verify Talents
+                  {pendingTalents > 0 && (
+                    <span className={styles.badge}>{pendingTalents}</span>
+                  )}
+                </span>
+              </Link>
+              <Link to="/admin-dashboard/ads-manager" className={styles.quickItem}>
+                <span>📢</span><span>Manage Ads</span>
+              </Link>
+            </div>
           </div>
+
         </aside>
       </div>
     </div>

@@ -208,7 +208,7 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
 
           <Route
-            path="/admin-dashboard/verification"
+            path="/admin-dashboard/talent-verification"
             element={
               <>
                 <AppNav />
@@ -240,7 +240,7 @@ function App() {
             }
           />
 
-          <Route path="employer-verification" element={
+          <Route path="/admin-dashboard/employer-verification" element={
             <>
               <AppNav />
               <EmployerVerification />
@@ -248,7 +248,7 @@ function App() {
             </>
           } />
           
-          <Route path="all-users" element={
+          <Route path="/admin-dashboard/all-users" element={
             <>
               <AppNav />
               <AdminViewAllUsers />
@@ -256,7 +256,7 @@ function App() {
             </>
           } />
           
-          <Route path="create-user" element={
+          <Route path="/admin-dashboard/create-user" element={
             <>
               <AppNav />
               <AdminCreateUser />

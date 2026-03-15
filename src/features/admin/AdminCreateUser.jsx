@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import AppNav from "../../components/AppNav";
-import Footer from "../../components/Footer";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import CustomSelect from "../../components/CustomSelect";
@@ -99,7 +97,7 @@ export default function AdminCreateUser() {
       }).unwrap();
 
       alert("User created successfully!");
-      navigate("/admin/users");
+      navigate("/admin-dasboard/all-users");
     } catch (error) {
       console.error("Failed to create user:", error);
 
@@ -121,7 +119,6 @@ export default function AdminCreateUser() {
 
   return (
     <>
-      <AppNav />
       <main className={styles.adminCreateUser}>
         <div className={styles.container}>
           <div className={styles.header}>
@@ -129,9 +126,7 @@ export default function AdminCreateUser() {
               <h1>Create New User</h1>
               <p>Add a new user to the platform</p>
             </div>
-            <Link to="/admin/users">
-              <Button variant="outline">Back to Users</Button>
-            </Link>
+           
           </div>
 
           <div className={styles.formContainer}>
@@ -369,7 +364,7 @@ export default function AdminCreateUser() {
               </div>
 
               <div className={styles.formActions}>
-                <Link to="/admin/users">
+                <Link to="/admin-dashboard/all-users">
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>
@@ -386,7 +381,6 @@ export default function AdminCreateUser() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

@@ -85,10 +85,14 @@ export const employerApi = createApi({
     }),
 
     setCompanyVerified: builder.mutation({
-      query: ({ profileId, verified }) => ({
+      query: ({ profileId, verified, rejected }) => ({
         url: `profile/${profileId}/`,
         method: "PATCH",
-        body: { verified },
+        body: {
+          verified,
+          // Only include rejected in body if explicitly provided
+          ...(rejected !== undefined && { rejected }),
+        },
       }),
       invalidatesTags: ["CompanyProfile"],
     }),

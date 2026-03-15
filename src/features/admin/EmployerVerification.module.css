@@ -322,3 +322,101 @@
   .statsBar { grid-template-columns: repeat(2, 1fr); }
   .filters { flex-direction: column; }
 }
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  top: 1.5rem; right: 1.5rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem; font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  animation: toastIn 0.2s ease;
+}
+.toast.success { background: #0d9269; color: #fff; }
+.toast.error   { background: #ef4444; color: #fff; }
+@keyframes toastIn { from { transform: translateY(-8px); opacity: 0; } }
+
+/* ── Query button in table ───────────────────────────────────────────────── */
+.queryBtn {
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid #fde68a;
+  background: #fffbeb;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1;
+}
+.queryBtn:hover { background: #fef3c7; }
+
+/* ── Query / message modal ───────────────────────────────────────────────── */
+.modalOverlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+  padding: 1rem;
+}
+.modal {
+  background: #fff;
+  border-radius: 1.25rem;
+  width: 100%; max-width: 520px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  overflow: hidden;
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn { from { transform: translateY(12px); opacity: 0; } }
+
+.modalHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1.5px solid #e5e7eb;
+}
+.modalHeader h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem; font-weight: 700; color: #0f1f17; margin: 0;
+}
+.modalClose {
+  background: none; border: none;
+  font-size: 1.1rem; color: #9ca3af;
+  cursor: pointer; padding: 0.25rem; line-height: 1;
+  transition: color 0.15s;
+}
+.modalClose:hover { color: #0f1f17; }
+
+.modalBody { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.modalLabel { font-size: 0.72rem; font-weight: 700; color: #4b5563; text-transform: uppercase; letter-spacing: 0.05em; }
+.modalSubject { font-size: 0.85rem; color: #4b5563; margin: 0; }
+.modalTextarea {
+  width: 100%; padding: 0.75rem;
+  border: 1.5px solid #e5e7eb; border-radius: 0.75rem;
+  font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+  color: #0f1f17; line-height: 1.6;
+  resize: vertical; background: #f8fafb; outline: none;
+  box-sizing: border-box;
+}
+.modalTextarea:focus { border-color: #0d9269; }
+
+.modalFooter {
+  display: flex; justify-content: flex-end; gap: 0.6rem;
+  padding: 1rem 1.5rem;
+  border-top: 1.5px solid #e5e7eb;
+  background: #f8fafb;
+}
+.modalCancel {
+  padding: 0.55rem 1.1rem; border-radius: 0.65rem;
+  border: 1.5px solid #e5e7eb; background: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.825rem; font-weight: 600;
+  color: #4b5563; cursor: pointer;
+}
+.modalSend {
+  padding: 0.55rem 1.25rem; border-radius: 0.65rem;
+  border: none; background: #f59e0b; color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.825rem; font-weight: 700;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.modalSend:disabled { opacity: 0.6; cursor: not-allowed; }
+.modalSend:hover:not(:disabled) { opacity: 0.9; }
