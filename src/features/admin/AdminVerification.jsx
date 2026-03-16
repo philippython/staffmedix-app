@@ -4,10 +4,6 @@ import {
   useGetTalentsQuery,
   useUpdateTalentProfileMutation,
   useGetTalentProfileQuery,
-  useGetWorkExperiencesQuery,
-  useGetEducationsQuery,
-  useGetSkillsQuery,
-  useGetCredentialsQuery,
 } from "../../services/talentApi";
 import { useSendNotificationMutation } from "../../services/notificationApi";
 
@@ -35,43 +31,39 @@ function completionScore(t, work, edu, skills, creds) {
 
 // ── Detail panel ──────────────────────────────────────────────────────────
 function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAction }) {
-  // Mirror TalentDetailView exactly — fetch profile first then use its id for sub-queries
-  const { data: profile } = useGetTalentProfileQuery(talent.id);
-  const id = profile?.id ?? talent.id;
+  // getTalentProfile returns nested skill/education/work_experience/credentials via TalentsSerializer
+  const { data: merged = talent, isFetching: subLoading } = useGetTalentProfileQuery(talent.id, {
+    refetchOnMountOrArgChange: true,
+  });
 
-  const { data: workRaw,   isFetching: fw } = useGetWorkExperiencesQuery(id, { refetchOnMountOrArgChange: true, skip: !id });
-  const { data: eduRaw,    isFetching: fe } = useGetEducationsQuery(id,       { refetchOnMountOrArgChange: true, skip: !id });
-  const { data: skillsRaw, isFetching: fs } = useGetSkillsQuery(id,           { refetchOnMountOrArgChange: true, skip: !id });
-  const { data: credsRaw,  isFetching: fc } = useGetCredentialsQuery(id,      { refetchOnMountOrArgChange: true, skip: !id });
-  const subLoading = fw || fe || fs || fc;
-
-  const [queryMsg, setQueryMsg]       = useState("");
+  const [queryMsg, setQueryMsg]         = useState("");
   const [showQueryBox, setShowQueryBox] = useState(false);
 
-  const score      = completionScore(talent, work, edu, skills, creds);
+  // TalentsSerializer field names: skill, work_experience, education, credentials
+  const workList  = merged?.work_experience ?? [];
+  const eduList   = merged?.education       ?? [];
+  const skillList = merged?.skill           ?? [];
+  const credList  = merged?.credentials     ?? [];
+
+  const score      = completionScore(merged, workList, eduList, skillList, credList);
   const scoreColor = score >= 80 ? "#0d9269" : score >= 50 ? "#f59e0b" : "#ef4444";
 
-  const workList  = workRaw?.results   ?? workRaw   ?? [];
-  const eduList   = eduRaw?.results    ?? eduRaw    ?? [];
-  const skillList = skillsRaw?.results ?? skillsRaw ?? [];
-  const credList  = credsRaw?.results  ?? credsRaw  ?? [];
-
   const missing = [];
-  if (!talent.full_name)       missing.push("Full name");
-  if (!talent.profession)      missing.push("Profession");
-  if (!talent.location)        missing.push("Location");
-  if (!talent.license_number)  missing.push("License number");
-  if (!talent.phone_number)    missing.push("Phone number");
-  if (!talent.biography)       missing.push("Biography");
-  if (!talent.specialization)  missing.push("Specialization");
+  if (!merged.full_name)       missing.push("Full name");
+  if (!merged.profession)      missing.push("Profession");
+  if (!merged.location)        missing.push("Location");
+  if (!merged.license_number)  missing.push("License number");
+  if (!merged.phone_number)    missing.push("Phone number");
+  if (!merged.biography)       missing.push("Biography");
+  if (!merged.specialization)  missing.push("Specialization");
   if (!workList.length)        missing.push("Work experience");
   if (!eduList.length)         missing.push("Education history");
   if (!skillList.length)       missing.push("Skills");
   if (!credList.length)        missing.push("Credentials / documents");
 
   const defaultQuery = missing.length
-    ? `Hi ${talent.full_name ?? "there"},\n\nYour profile is ${score}% complete. To be verified on StaffMedix, please complete the following:\n\n${missing.map(m => `• ${m}`).join("\n")}\n\nOnce these are added, we'll review your profile for verification.\n\nThe StaffMedix Admin Team`
-    : `Hi ${talent.full_name ?? "there"},\n\nYour profile looks great! We're currently reviewing your credentials and will get back to you shortly.\n\nThe StaffMedix Admin Team`;
+    ? `Hi ${merged.full_name ?? "there"},\n\nYour profile is ${score}% complete. To be verified on StaffMedix, please complete the following:\n\n${missing.map(m => `• ${m}`).join("\n")}\n\nOnce these are added, we'll review your profile for verification.\n\nThe StaffMedix Admin Team`
+    : `Hi ${merged.full_name ?? "there"},\n\nYour profile looks great! We're currently reviewing your credentials and will get back to you shortly.\n\nThe StaffMedix Admin Team`;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -81,13 +73,24 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
         <div className={styles.panelHead}>
           <div className={styles.panelAvatar}>{getInitial(talent)}</div>
           <div className={styles.panelHeadInfo}>
-            <h2>{talent.full_name || talent.user?.username || "Unknown"}</h2>
-            <p>{talent.profession || "No profession set"} {talent.specialization ? `· ${talent.specialization}` : ""}</p>
-            <span className={`${styles.verBadge} ${talent.verified ? styles.verified : talent.rejected ? styles.rejected : styles.unverified}`}>
-              {talent.verified ? "✓ Verified" : talent.rejected ? "✗ Rejected" : "⏳ Pending"}
+            <h2>{merged.full_name || merged.user?.username || talent.user?.username || "Unknown"}</h2>
+            <p>{merged.profession || "No profession set"} {merged.specialization ? `· ${merged.specialization}` : ""}</p>
+            <span className={`${styles.verBadge} ${merged.verified ? styles.verified : merged.rejected ? styles.rejected : styles.unverified}`}>
+              {merged.verified ? "✓ Verified" : merged.rejected ? "✗ Rejected" : "⏳ Pending"}
             </span>
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <div style={{display:'flex', gap:'0.5rem', alignItems:'center'}}>
+            <a
+              href={`/talents/${talent.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.viewFileBtn}
+              title="Open full profile page"
+            >
+              ↗ Full Profile
+            </a>
+            <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          </div>
         </div>
 
         {/* Completion bar */}
@@ -108,35 +111,35 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
         <div className={styles.infoGrid}>
           <div className={styles.infoBlock}>
             <span className={styles.infoLabel}>📧 Email</span>
-            <span className={styles.infoVal}>{talent.email || talent.user?.email || "—"}</span>
+            <span className={styles.infoVal}>{merged.email || merged.user?.email || "—"}</span>
           </div>
           <div className={styles.infoBlock}>
             <span className={styles.infoLabel}>📞 Phone</span>
-            <span className={styles.infoVal}>{talent.phone_number || "—"}</span>
+            <span className={styles.infoVal}>{merged.phone_number || "—"}</span>
           </div>
           <div className={styles.infoBlock}>
             <span className={styles.infoLabel}>📍 Location</span>
-            <span className={styles.infoVal}>{talent.location || "—"}</span>
+            <span className={styles.infoVal}>{merged.location || "—"}</span>
           </div>
           <div className={styles.infoBlock}>
             <span className={styles.infoLabel}>🪪 License No.</span>
-            <span className={styles.infoVal}>{talent.license_number || "—"}</span>
+            <span className={styles.infoVal}>{merged.license_number || "—"}</span>
           </div>
           <div className={styles.infoBlock}>
             <span className={styles.infoLabel}>⏱ Experience</span>
-            <span className={styles.infoVal}>{talent.years_of_experience != null ? `${talent.years_of_experience} yrs` : "—"}</span>
+            <span className={styles.infoVal}>{merged.years_of_experience != null ? `${merged.years_of_experience} yrs` : "—"}</span>
           </div>
           <div className={styles.infoBlock}>
             <span className={styles.infoLabel}>🎯 Specialization</span>
-            <span className={styles.infoVal}>{talent.specialization || "—"}</span>
+            <span className={styles.infoVal}>{merged.specialization || "—"}</span>
           </div>
         </div>
 
         {/* Bio */}
-        {talent.biography && (
+        {merged.biography && (
           <div className={styles.bioWrap}>
             <span className={styles.sectionTitle}>Biography</span>
-            <p className={styles.bioText}>{talent.biography}</p>
+            <p className={styles.bioText}>{merged.biography}</p>
           </div>
         )}
 
@@ -504,6 +507,7 @@ export default function AdminTalentVerification() {
       {/* Detail panel */}
       {selected && (
         <TalentDetail
+          key={selected.id}
           talent={selected}
           onClose={() => setSelected(null)}
           onVerify={handleVerify}
