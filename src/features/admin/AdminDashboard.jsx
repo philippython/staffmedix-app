@@ -117,9 +117,6 @@ export default function AdminDashboard() {
           <Link to="/admin-dashboard/monetization" className={styles.settingsButton}>
             💳 Monetization
           </Link>
-          <Link to="/admin-dashboard/verification" className={styles.settingsButton}>
-            🔍 Verifications
-          </Link>
         </div>
       </div>
 
