@@ -18,7 +18,6 @@ export default function PasswordResetConfirm() {
   const { token: token } = useParams("token");
 
   async function handleResetConfirm() {
-    console.log({ password, token });
     if (password === confirmPassword) {
       try {
         await resetPasswordConfirm({

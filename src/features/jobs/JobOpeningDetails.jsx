@@ -51,7 +51,6 @@ export default function JobOpeningDetails() {
       await applyToJob(job.id).unwrap();
       alert("Application submitted successfully!");
     } catch (error) {
-      console.error("Failed to apply:", error);
       alert(
         error?.data?.detail ||
           "Failed to submit application. Please try again.",

@@ -65,17 +65,10 @@ export default function AdminViewAllUsers() {
   const users      = usersData?.results ?? usersData ?? [];
   const totalCount = usersData?.count   ?? users.length;
 
-  // Log first user to debug is_active and date fields
+  // Log ALL keys of first user — reveals exactly what the serializer returns
   if (users.length > 0) {
     const u = users[0];
-    console.log("[AdminViewAllUsers] sample user →", {
-      id: u.id,
-      username: u.username,
-      is_active: u.is_active,
-      is_active_type: typeof u.is_active,
-      date_joined: u.date_joined,
-      created_at: u.created_at,
-    });
+ 
   }
 
   function showToast(msg, type = "success") {
@@ -213,7 +206,10 @@ export default function AdminViewAllUsers() {
                   <tbody>
                     {users.map(user => {
                       // AbstractUser.is_active is boolean true/false
-                      const active = user.is_active === true || user.is_active === 1;
+                      // If is_active is absent from serializer, default to true
+                      const active = user.is_active === undefined || user.is_active === null
+                        ? true
+                        : user.is_active === true || user.is_active === 1;
                       return (
                         <tr key={user.id}>
                           <td>
@@ -251,7 +247,10 @@ export default function AdminViewAllUsers() {
                             </span>
                           </td>
                           <td className={styles.tdDate}>
-                            {fmtDate(user.date_joined ?? user.created_at ?? user.joined ?? user.timestamp)}
+                            {(() => {
+                              const d = user.date_joined ?? user.created_at ?? user.joined ?? user.timestamp;
+                              return d ? fmtDate(d) : <span style={{color:'#9ca3af',fontSize:'0.72rem'}}>—</span>;
+                            })()}
                           </td>
                           <td>
                             <div className={styles.actions}>

@@ -100,7 +100,6 @@ export default function EmployerSignup() {
     setErrMsg("");
     try {
       const res = await createCompanyProfile({ data: profileForm }).unwrap();
-      console.log(res);
       setCompanyId(res.id);
       setStep(3);
     } catch (err) {

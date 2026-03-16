@@ -44,7 +44,6 @@ export default function ViewAllEmployerApplications() {
         await updateStatus({ applicationId, status: newStatus }).unwrap();
         alert(`Application ${newStatus} successfully!`);
       } catch (error) {
-        console.error("Failed to update status:", error);
         alert("Failed to update application status. Please try again.");
       }
     }

@@ -226,14 +226,6 @@ export default function AdminTalentVerification() {
   if (allTalents.length > 0 && !window.__talentLogDone) {
     window.__talentLogDone = true;
     const s = allTalents[0];
-    console.log("[AdminTalentVerification] sample talent from API →", {
-      id: s.id,
-      verified_raw: (talentsData?.results ?? talentsData ?? [])[0]?.verified,
-      rejected_raw: (talentsData?.results ?? talentsData ?? [])[0]?.rejected,
-      verified_normalised: s.verified,
-      rejected_normalised: s.rejected,
-      user: s.user,
-    });
   }
 
   const filtered = allTalents.filter(t => {
@@ -267,32 +259,26 @@ export default function AdminTalentVerification() {
 
   async function handleVerify(talentId) {
     const payload = { talentId, data: { verified: true, rejected: false } };
-    console.log("[AdminTalentVerification] PATCH verify →", payload);
     setLoadingId(talentId);
     try {
       const result = await updateTalent(payload).unwrap();
-      console.log("[AdminTalentVerification] verify response →", result);
       showToast("Talent verified successfully");
       setSelected(prev => prev?.id === talentId ? { ...prev, verified: true, rejected: false } : prev);
       refetch();
     } catch (err) {
-      console.error("[AdminTalentVerification] verify failed →", err?.data ?? err);
       showToast("Failed to verify talent", "error");
     } finally { setLoadingId(null); }
   }
 
   async function handleReject(talentId) {
     const payload = { talentId, data: { verified: false, rejected: true } };
-    console.log("[AdminTalentVerification] PATCH reject/revoke →", payload);
     setLoadingId(talentId);
     try {
       const result = await updateTalent(payload).unwrap();
-      console.log("[AdminTalentVerification] reject response →", result);
       showToast("Talent rejected");
       setSelected(prev => prev?.id === talentId ? { ...prev, verified: false, rejected: true } : prev);
       refetch();
     } catch (err) {
-      console.error("[AdminTalentVerification] reject failed →", err?.data ?? err);
       showToast("Failed to update talent", "error");
     } finally { setLoadingId(null); }
   }
@@ -305,7 +291,6 @@ export default function AdminTalentVerification() {
         (typeof talent.user === "object" ? talent.user?.id : talent.user) ??
         null;
 
-      console.log("[AdminTalentVerification] sendNotification →", { userId, talent_user: talent.user });
 
       if (!userId) {
         showToast("Cannot resolve user ID — check serializer.", "error");
@@ -319,7 +304,6 @@ export default function AdminTalentVerification() {
       }).unwrap();
       showToast("Message sent to talent");
     } catch (err) {
-      console.error("[AdminTalentVerification] sendNotification failed →", err?.data ?? err);
       showToast("Failed to send message", "error");
     } finally {
       setLoadingId(null);

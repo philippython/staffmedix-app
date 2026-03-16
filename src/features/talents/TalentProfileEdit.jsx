@@ -195,7 +195,6 @@ export default function TalentProfileEdit() {
         }).unwrap();
         setNewSkill("");
       } catch (error) {
-        console.error("Failed to add skill:", error);
         alert(error?.data?.detail || "Failed to add skill.");
       }
     }
@@ -208,7 +207,7 @@ export default function TalentProfileEdit() {
         skillId,
       }).unwrap();
     } catch (error) {
-      console.error("Failed to delete skill:", error);
+      .error("Failed to delete skill:", error);
       alert(error?.data?.detail || "Failed to delete skill.");
     }
   };
@@ -229,7 +228,6 @@ export default function TalentProfileEdit() {
       alert("File uploaded successfully!");
       e.target.value = "";
     } catch (error) {
-      console.error("Failed to upload file:", error);
       alert(error?.data?.detail || "Failed to upload file.");
     }
   };
@@ -246,7 +244,6 @@ export default function TalentProfileEdit() {
       alert("Profile image uploaded successfully!");
       e.target.value = "";
     } catch (error) {
-      console.error("Failed to upload image:", error);
       alert(error?.data?.detail || "Failed to upload image.");
     }
   };
@@ -730,7 +727,6 @@ function WorkExperienceSection({
       }
       resetForm();
     } catch (error) {
-      console.error("Error:", error);
       alert(error?.data?.detail || "Failed to save work experience.");
     }
   };
@@ -755,7 +751,6 @@ function WorkExperienceSection({
     try {
       await onDelete({ talentId, workId: id }).unwrap();
     } catch (error) {
-      console.error("Delete error:", error);
       alert(error?.data?.detail || "Failed to delete work experience.");
     }
   };
@@ -919,7 +914,6 @@ function EducationSection({ talentId, education, onAdd, onUpdate, onDelete }) {
       setEditingId(null);
       setFormData({ degree: "", institution: "", year: "" });
     } catch (error) {
-      console.error("Error:", error);
       alert(error?.data?.detail || "Failed to save education.");
     }
   };
@@ -942,7 +936,6 @@ function EducationSection({ talentId, education, onAdd, onUpdate, onDelete }) {
           educationId: id,
         }).unwrap();
       } catch (error) {
-        console.error("Error:", error);
         alert(error?.data?.detail || "Failed to delete education.");
       }
     }

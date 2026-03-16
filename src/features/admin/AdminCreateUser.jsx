@@ -12,9 +12,7 @@ export default function AdminCreateUser() {
     email: "",
     password: "",
     confirmPassword: "",
-    firstName: "",
-    lastName: "",
-    role: "TALENT",       // RoleType enum — send uppercase to match choices
+    role: "TALENT",
     isActive: true,
   });
   const [errors, setErrors]           = useState({});
@@ -44,8 +42,6 @@ export default function AdminCreateUser() {
     else if (formData.username.length < 3) e.username = "Username must be at least 3 characters";
     if (!formData.email.trim())           e.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email)) e.email = "Email is invalid";
-    if (!formData.firstName.trim())       e.firstName = "First name is required";
-    if (!formData.lastName.trim())        e.lastName  = "Last name is required";
     if (!formData.password)               e.password  = "Password is required";
     else if (formData.password.length < 8) e.password = "Password must be at least 8 characters";
     if (!formData.confirmPassword)        e.confirmPassword = "Please confirm password";
@@ -60,17 +56,15 @@ export default function AdminCreateUser() {
 
     try {
       const payload = {
-        username:   formData.username,
-        email:      formData.email,
-        password:   formData.password,
-        first_name: formData.firstName,
-        last_name:  formData.lastName,
-        role:       formData.role,
-        is_active:  formData.isActive,
+        username:         formData.username,
+        email:            formData.email,
+        password:         formData.password,
+        confirm_password: formData.confirmPassword,
+        role:             formData.role,
+        is_active:        formData.isActive,
       };
-      console.log("[AdminCreateUser] POST →", payload);
+     
       const result = await createUser(payload).unwrap();
-      console.log("[AdminCreateUser] response →", result);
 
       showToast("User created successfully!");
       setTimeout(() => navigate("/admin-dashboard/all-users"), 1500);
@@ -115,28 +109,6 @@ export default function AdminCreateUser() {
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.section}>
                 <h3>User Information</h3>
-
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="firstName">First Name <span className={styles.required}>*</span></label>
-                    <Input>
-                      <input type="text" id="firstName" name="firstName" value={formData.firstName}
-                        onChange={handleChange} placeholder="John"
-                        className={errors.firstName ? styles.errorInput : ""} />
-                    </Input>
-                    {errors.firstName && <span className={styles.errorMessage}>{errors.firstName}</span>}
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label htmlFor="lastName">Last Name <span className={styles.required}>*</span></label>
-                    <Input>
-                      <input type="text" id="lastName" name="lastName" value={formData.lastName}
-                        onChange={handleChange} placeholder="Doe"
-                        className={errors.lastName ? styles.errorInput : ""} />
-                    </Input>
-                    {errors.lastName && <span className={styles.errorMessage}>{errors.lastName}</span>}
-                  </div>
-                </div>
 
                 <div className={styles.formGroup}>
                   <label htmlFor="username">Username <span className={styles.required}>*</span></label>
