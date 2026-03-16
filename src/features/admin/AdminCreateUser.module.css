@@ -224,6 +224,7 @@
   border-radius: 0 0 1.25rem 1.25rem;
 }
 
+/* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .container { padding: 1.5rem 1rem; }
   .header { flex-direction: column; }
@@ -235,3 +236,48 @@
   }
   .formActions > * { width: 100%; }
 }
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  top: 1.5rem; right: 1.5rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem; font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  animation: toastIn2 0.2s ease;
+}
+.toast.success { background: #0d9269; color: #fff; }
+.toast.error   { background: #ef4444; color: #fff; }
+@keyframes toastIn2 { from { transform: translateY(-8px); opacity: 0; } }
+
+/* ── Form action buttons ─────────────────────────────────────────────────── */
+.cancelBtn {
+  padding: 0.65rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cancelBtn:hover { border-color: #d1d5db; background: var(--surface); }
+
+.submitBtn {
+  padding: 0.65rem 1.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: var(--green);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.submitBtn:hover:not(:disabled) { background: var(--green-d); }
+.submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }

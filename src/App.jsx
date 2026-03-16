@@ -47,9 +47,7 @@ import TalentDetailView from "./features/talents/TalentDetailView";
 import TalentProfileEdit from "./features/talents/TalentProfileEdit";
 
 // Admin Components
-import AdminVerification from "./features/admin/AdminVerification";
-import AdminAnalytics from "./features/admin/AdminAnalytics";
-import AdminAdsManager from "./features/admin/AdminAdsManager";
+import AdminVerification from "./features/admin/AdminTalentVerification";
 import About from "./components/About";
 import Terms from "./components/Terms";
 import EmployerVerification from "./features/admin/EmployerVerification";
@@ -57,6 +55,7 @@ import AdminViewAllUsers from "./features/admin/AdminViewAllUsers";
 import AdminCreateUser from "./features/admin/AdminCreateUser";
 
 import AdDetailView from "./features/ads/AdDetailView";
+import AdminMonetization from "./features/admin/AdminMonetization";
 
 function App() {
   return (
@@ -217,24 +216,12 @@ function App() {
               </>
             }
           />
-
           <Route
-            path="/admin-dashboard/analytics"
+            path="/admin-dashboard/monetization"
             element={
               <>
                 <AppNav />
-                <AdminAnalytics />
-                <Footer />
-              </>
-            }
-          />
-
-          <Route
-            path="/admin-dashboard/ads-manager"
-            element={
-              <>
-                <AppNav />
-                <AdminAdsManager />
+                <AdminMonetization/>
                 <Footer />
               </>
             }

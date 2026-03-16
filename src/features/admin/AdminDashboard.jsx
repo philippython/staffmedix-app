@@ -114,6 +114,12 @@ export default function AdminDashboard() {
           <Link to="/admin-dashboard/all-users" className={styles.analyticsButton}>
             👥 Manage Users
           </Link>
+          <Link to="/admin-dashboard/monetization" className={styles.settingsButton}>
+            💳 Monetization
+          </Link>
+          <Link to="/admin-dashboard/verification" className={styles.settingsButton}>
+            🔍 Verifications
+          </Link>
         </div>
       </div>
 
@@ -126,7 +132,7 @@ export default function AdminDashboard() {
 
       {/* ── Verification cards ── */}
       <div className={styles.verificationGrid}>
-        <Link to="/admin-dashboard/employer-verification" className={styles.verifyCard}>
+        <Link to="/admin-dashboard/verification" className={styles.verifyCard}>
           <div className={styles.verifyCardIcon}>🏥</div>
           <div className={styles.verifyCardInfo}>
             <p className={styles.verifyCardNum}>
@@ -187,6 +193,42 @@ export default function AdminDashboard() {
                     <span className={styles.timeAgo}>
                       {timeAgo(user.date_joined ?? user.created_at)}
                     </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Recent applications */}
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2>Recent Job Applications</h2>
+              <Link to="/admin-dashboard/applications">View all →</Link>
+            </div>
+            {loadingApps ? (
+              <div className={styles.loadingRows}>
+                {[...Array(3)].map((_, i) => <div key={i} className={styles.shimmerRow} />)}
+              </div>
+            ) : recentApps.length === 0 ? (
+              <p className={styles.empty}>No applications yet.</p>
+            ) : (
+              <div className={styles.appList}>
+                {recentApps.map((app) => (
+                  <div key={app.id} className={styles.appRow}>
+                    <div className={styles.appInfo}>
+                      <span className={styles.appTalent}>
+                        {app.talent?.full_name ?? app.talent?.user?.username ?? "Unknown"}
+                      </span>
+                      <span className={styles.appJob}>
+                        → {app.job?.title ?? "Unknown Job"}
+                      </span>
+                    </div>
+                    <div className={styles.appRight}>
+                      <span className={`${styles.appStatus} ${styles[app.status]}`}>
+                        {app.status}
+                      </span>
+                      <span className={styles.timeAgo}>{timeAgo(app.created_at)}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -253,10 +295,10 @@ export default function AdminDashboard() {
           <div className={styles.card}>
             <div className={styles.cardHeader}><h2>Quick Actions</h2></div>
             <div className={styles.quickList}>
-              <Link to="/admin-dashboard/create-user" className={styles.quickItem}>
+              <Link to="/admin-dashboard/all-users/create" className={styles.quickItem}>
                 <span>➕</span><span>Create User</span>
               </Link>
-              <Link to="/admin-dashboard/employer-verification" className={styles.quickItem}>
+              <Link to="/admin-dashboard/verification" className={styles.quickItem}>
                 <span>🔍</span>
                 <span>
                   Verify Employers
@@ -274,8 +316,8 @@ export default function AdminDashboard() {
                   )}
                 </span>
               </Link>
-              <Link to="/admin-dashboard/ads-manager" className={styles.quickItem}>
-                <span>📢</span><span>Manage Ads</span>
+              <Link to="/admin-dashboard/monetization" className={styles.quickItem}>
+                <span>💳</span><span>Subscriptions & Ads</span>
               </Link>
             </div>
           </div>

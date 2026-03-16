@@ -32,7 +32,7 @@ export default function Pricing() {
     },
     {
       name: "Enterprise",
-      price: "₦75,000",
+      price: "₦50,000",
       duration: "per month",
       features: [
         "Everything in Professional",

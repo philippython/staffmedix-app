@@ -14,13 +14,8 @@ function getInitial(t) {
 
 function completionScore(t, work, edu, skills, creds) {
   const checks = [
-    !!t.full_name,
-    !!t.profession,
-    !!t.location,
-    !!t.license_number,
-    !!t.phone_number,
-    !!t.biography,
-    !!t.specialization,
+    !!t.full_name, !!t.profession, !!t.location, !!t.license_number,
+    !!t.phone_number, !!t.biography, !!t.specialization,
     (work?.length  ?? 0) > 0,
     (edu?.length   ?? 0) > 0,
     (skills?.length ?? 0) > 0,
@@ -31,7 +26,6 @@ function completionScore(t, work, edu, skills, creds) {
 
 // ── Detail panel ──────────────────────────────────────────────────────────
 function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAction }) {
-  // getTalentProfile returns nested skill/education/work_experience/credentials via TalentsSerializer
   const { data: merged = talent, isFetching: subLoading } = useGetTalentProfileQuery(talent.id, {
     refetchOnMountOrArgChange: true,
   });
@@ -39,7 +33,6 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
   const [queryMsg, setQueryMsg]         = useState("");
   const [showQueryBox, setShowQueryBox] = useState(false);
 
-  // TalentsSerializer field names: skill, work_experience, education, credentials
   const workList  = merged?.work_experience ?? [];
   const eduList   = merged?.education       ?? [];
   const skillList = merged?.skill           ?? [];
@@ -80,13 +73,8 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
             </span>
           </div>
           <div style={{display:'flex', gap:'0.5rem', alignItems:'center'}}>
-            <a
-              href={`/talents/${talent.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.viewFileBtn}
-              title="Open full profile page"
-            >
+            <a href={`/talents/${talent.id}`} target="_blank" rel="noopener noreferrer"
+              className={styles.viewFileBtn} title="Open full profile page">
               ↗ Full Profile
             </a>
             <button className={styles.closeBtn} onClick={onClose}>✕</button>
@@ -109,30 +97,12 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
 
         {/* Info grid */}
         <div className={styles.infoGrid}>
-          <div className={styles.infoBlock}>
-            <span className={styles.infoLabel}>📧 Email</span>
-            <span className={styles.infoVal}>{merged.email || merged.user?.email || "—"}</span>
-          </div>
-          <div className={styles.infoBlock}>
-            <span className={styles.infoLabel}>📞 Phone</span>
-            <span className={styles.infoVal}>{merged.phone_number || "—"}</span>
-          </div>
-          <div className={styles.infoBlock}>
-            <span className={styles.infoLabel}>📍 Location</span>
-            <span className={styles.infoVal}>{merged.location || "—"}</span>
-          </div>
-          <div className={styles.infoBlock}>
-            <span className={styles.infoLabel}>🪪 License No.</span>
-            <span className={styles.infoVal}>{merged.license_number || "—"}</span>
-          </div>
-          <div className={styles.infoBlock}>
-            <span className={styles.infoLabel}>⏱ Experience</span>
-            <span className={styles.infoVal}>{merged.years_of_experience != null ? `${merged.years_of_experience} yrs` : "—"}</span>
-          </div>
-          <div className={styles.infoBlock}>
-            <span className={styles.infoLabel}>🎯 Specialization</span>
-            <span className={styles.infoVal}>{merged.specialization || "—"}</span>
-          </div>
+          <div className={styles.infoBlock}><span className={styles.infoLabel}>📧 Email</span><span className={styles.infoVal}>{merged.email || merged.user?.email || "—"}</span></div>
+          <div className={styles.infoBlock}><span className={styles.infoLabel}>📞 Phone</span><span className={styles.infoVal}>{merged.phone_number || "—"}</span></div>
+          <div className={styles.infoBlock}><span className={styles.infoLabel}>📍 Location</span><span className={styles.infoVal}>{merged.location || "—"}</span></div>
+          <div className={styles.infoBlock}><span className={styles.infoLabel}>🪪 License No.</span><span className={styles.infoVal}>{merged.license_number || "—"}</span></div>
+          <div className={styles.infoBlock}><span className={styles.infoLabel}>⏱ Experience</span><span className={styles.infoVal}>{merged.years_of_experience != null ? `${merged.years_of_experience} yrs` : "—"}</span></div>
+          <div className={styles.infoBlock}><span className={styles.infoLabel}>🎯 Specialization</span><span className={styles.infoVal}>{merged.specialization || "—"}</span></div>
         </div>
 
         {/* Bio */}
@@ -146,91 +116,63 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
         {/* Work experience */}
         <div className={styles.section}>
           <span className={styles.sectionTitle}>Work Experience ({subLoading ? "…" : workList.length})</span>
-          {subLoading ? (
-            <p className={styles.empty}>Loading…</p>
-          ) : workList.length === 0 ? (
-            <p className={styles.empty}>No work experience added</p>
-          ) : workList.map(w => (
-            <div key={w.id} className={styles.listItem}>
-              <span className={styles.listMain}>{w.job_title} · {w.facility}</span>
-              <span className={styles.listSub}>
-                {w.start_date} → {w.end_date || "Present"}
-                {w.description && ` · ${w.description}`}
-              </span>
-            </div>
-          ))}
+          {subLoading ? <p className={styles.empty}>Loading…</p>
+            : workList.length === 0 ? <p className={styles.empty}>No work experience added</p>
+            : workList.map(w => (
+              <div key={w.id} className={styles.listItem}>
+                <span className={styles.listMain}>{w.job_title} · {w.facility}</span>
+                <span className={styles.listSub}>{w.start_date} → {w.end_date || "Present"}{w.description && ` · ${w.description}`}</span>
+              </div>
+            ))}
         </div>
 
         {/* Education */}
         <div className={styles.section}>
           <span className={styles.sectionTitle}>Education ({subLoading ? "…" : eduList.length})</span>
-          {subLoading ? (
-            <p className={styles.empty}>Loading…</p>
-          ) : eduList.length === 0 ? (
-            <p className={styles.empty}>No education added</p>
-          ) : eduList.map(e => (
-            <div key={e.id} className={styles.listItem}>
-              <span className={styles.listMain}>{e.degree} · {e.institution}</span>
-              <span className={styles.listSub}>{e.year}</span>
-            </div>
-          ))}
+          {subLoading ? <p className={styles.empty}>Loading…</p>
+            : eduList.length === 0 ? <p className={styles.empty}>No education added</p>
+            : eduList.map(e => (
+              <div key={e.id} className={styles.listItem}>
+                <span className={styles.listMain}>{e.degree} · {e.institution}</span>
+                <span className={styles.listSub}>{e.year}</span>
+              </div>
+            ))}
         </div>
 
         {/* Skills */}
         <div className={styles.section}>
           <span className={styles.sectionTitle}>Skills ({subLoading ? "…" : skillList.length})</span>
-          {subLoading ? (
-            <p className={styles.empty}>Loading…</p>
-          ) : skillList.length === 0 ? (
-            <p className={styles.empty}>No skills added</p>
-          ) : (
-            <div className={styles.skillPills}>
-              {skillList.map(s => (
-                <span key={s.id} className={styles.skillPill}>{s.name}</span>
-              ))}
-            </div>
-          )}
+          {subLoading ? <p className={styles.empty}>Loading…</p>
+            : skillList.length === 0 ? <p className={styles.empty}>No skills added</p>
+            : <div className={styles.skillPills}>{skillList.map(s => <span key={s.id} className={styles.skillPill}>{s.name}</span>)}</div>}
         </div>
 
         {/* Credentials */}
         <div className={styles.section}>
           <span className={styles.sectionTitle}>Credentials ({subLoading ? "…" : credList.length})</span>
-          {subLoading ? (
-            <p className={styles.empty}>Loading…</p>
-          ) : credList.length === 0 ? (
-            <p className={styles.empty}>No credentials uploaded</p>
-          ) : credList.map(c => (
-            <div key={c.id} className={styles.credRow}>
-              <div>
-                <span className={styles.listMain}>{c.type || "Document"}</span>
-                <span className={styles.listSub}>Uploaded: {c.upload_date || "—"}</span>
+          {subLoading ? <p className={styles.empty}>Loading…</p>
+            : credList.length === 0 ? <p className={styles.empty}>No credentials uploaded</p>
+            : credList.map(c => (
+              <div key={c.id} className={styles.credRow}>
+                <div>
+                  <span className={styles.listMain}>{c.type || "Document"}</span>
+                  <span className={styles.listSub}>Uploaded: {c.upload_date || "—"}</span>
+                </div>
+                {c.file && <a href={c.file} target="_blank" rel="noopener noreferrer" className={styles.viewFileBtn}>View file ↗</a>}
               </div>
-              {c.file && (
-                <a href={c.file} target="_blank" rel="noopener noreferrer" className={styles.viewFileBtn}>
-                  View file ↗
-                </a>
-              )}
-            </div>
-          ))}
+            ))}
         </div>
 
         {/* Query box */}
         {showQueryBox && (
           <div className={styles.queryBox}>
             <span className={styles.sectionTitle}>📨 Message to Talent</span>
-            <textarea
-              className={styles.queryTextarea}
-              value={queryMsg || defaultQuery}
-              onChange={e => setQueryMsg(e.target.value)}
-              rows={9}
-            />
+            <textarea className={styles.queryTextarea} value={queryMsg || defaultQuery}
+              onChange={e => setQueryMsg(e.target.value)} rows={9} />
             <div className={styles.queryActions}>
               <button className={styles.cancelQueryBtn} onClick={() => setShowQueryBox(false)}>Cancel</button>
-              <button
-                className={styles.sendQueryBtn}
-                disabled={loadingAction}
-                onClick={() => onQuery(talent, queryMsg || defaultQuery)}
-              >
+              <button className={styles.sendQueryBtn} disabled={loadingAction}
+                onClick={() => onQuery(talent, queryMsg || defaultQuery)}>
                 {loadingAction ? "Sending…" : "Send Message"}
               </button>
             </div>
@@ -239,35 +181,20 @@ function TalentDetail({ talent, onClose, onVerify, onReject, onQuery, loadingAct
 
         {/* Action footer */}
         <div className={styles.panelFooter}>
-          <button
-            className={styles.queryBtn}
-            onClick={() => { setQueryMsg(defaultQuery); setShowQueryBox(v => !v); }}
-          >
+          <button className={styles.queryBtn} onClick={() => { setQueryMsg(defaultQuery); setShowQueryBox(v => !v); }}>
             📨 Query Talent
           </button>
           {!talent.verified ? (
             <>
-              <button
-                className={styles.rejectBtn}
-                disabled={loadingAction}
-                onClick={() => onReject(talent.id)}
-              >
+              <button className={styles.rejectBtn} disabled={loadingAction} onClick={() => onReject(talent.id)}>
                 {loadingAction ? "…" : "✗ Reject"}
               </button>
-              <button
-                className={styles.verifyBtn}
-                disabled={loadingAction}
-                onClick={() => onVerify(talent.id)}
-              >
+              <button className={styles.verifyBtn} disabled={loadingAction} onClick={() => onVerify(talent.id)}>
                 {loadingAction ? "…" : "✓ Verify"}
               </button>
             </>
           ) : (
-            <button
-              className={styles.revokeBtn}
-              disabled={loadingAction}
-              onClick={() => onReject(talent.id)}
-            >
+            <button className={styles.revokeBtn} disabled={loadingAction} onClick={() => onReject(talent.id)}>
               {loadingAction ? "…" : "Revoke Verification"}
             </button>
           )}
@@ -289,19 +216,32 @@ export default function AdminTalentVerification() {
   const [updateTalent]     = useUpdateTalentProfileMutation();
   const [sendNotification] = useSendNotificationMutation();
 
-  // Normalise — handle paginated {results:[]} or flat array, verified as 0/1/bool
   const allTalents = (talentsData?.results ?? talentsData ?? []).map(t => ({
     ...t,
-    verified:  t.verified  === true || t.verified  === 1,
-    rejected:  t.rejected  === true || t.rejected  === 1,
+    verified: t.verified === true || t.verified === 1,
+    rejected: t.rejected === true || t.rejected === 1,
   }));
+
+  // Log raw API shape on first load to debug field names
+  if (allTalents.length > 0 && !window.__talentLogDone) {
+    window.__talentLogDone = true;
+    const s = allTalents[0];
+    console.log("[AdminTalentVerification] sample talent from API →", {
+      id: s.id,
+      verified_raw: (talentsData?.results ?? talentsData ?? [])[0]?.verified,
+      rejected_raw: (talentsData?.results ?? talentsData ?? [])[0]?.rejected,
+      verified_normalised: s.verified,
+      rejected_normalised: s.rejected,
+      user: s.user,
+    });
+  }
 
   const filtered = allTalents.filter(t => {
     const matchesFilter =
       filter === "all"      ? true :
       filter === "verified" ? t.verified === true :
       filter === "rejected" ? t.rejected === true :
-                              !t.verified && !t.rejected; // pending = not verified AND not rejected
+                              !t.verified && !t.rejected;
     const q = search.toLowerCase();
     const matchesSearch = !q ||
       t.full_name?.toLowerCase().includes(q) ||
@@ -326,25 +266,33 @@ export default function AdminTalentVerification() {
   }
 
   async function handleVerify(talentId) {
+    const payload = { talentId, data: { verified: true, rejected: false } };
+    console.log("[AdminTalentVerification] PATCH verify →", payload);
     setLoadingId(talentId);
     try {
-      await updateTalent({ talentId, data: { verified: true, rejected: false } }).unwrap();
+      const result = await updateTalent(payload).unwrap();
+      console.log("[AdminTalentVerification] verify response →", result);
       showToast("Talent verified successfully");
       setSelected(prev => prev?.id === talentId ? { ...prev, verified: true, rejected: false } : prev);
       refetch();
-    } catch {
+    } catch (err) {
+      console.error("[AdminTalentVerification] verify failed →", err?.data ?? err);
       showToast("Failed to verify talent", "error");
     } finally { setLoadingId(null); }
   }
 
   async function handleReject(talentId) {
+    const payload = { talentId, data: { verified: false, rejected: true } };
+    console.log("[AdminTalentVerification] PATCH reject/revoke →", payload);
     setLoadingId(talentId);
     try {
-      await updateTalent({ talentId, data: { verified: false, rejected: true } }).unwrap();
+      const result = await updateTalent(payload).unwrap();
+      console.log("[AdminTalentVerification] reject response →", result);
       showToast("Talent rejected");
       setSelected(prev => prev?.id === talentId ? { ...prev, verified: false, rejected: true } : prev);
       refetch();
-    } catch {
+    } catch (err) {
+      console.error("[AdminTalentVerification] reject failed →", err?.data ?? err);
       showToast("Failed to update talent", "error");
     } finally { setLoadingId(null); }
   }
@@ -357,6 +305,8 @@ export default function AdminTalentVerification() {
         (typeof talent.user === "object" ? talent.user?.id : talent.user) ??
         null;
 
+      console.log("[AdminTalentVerification] sendNotification →", { userId, talent_user: talent.user });
+
       if (!userId) {
         showToast("Cannot resolve user ID — check serializer.", "error");
         return;
@@ -368,7 +318,8 @@ export default function AdminTalentVerification() {
         content: message,
       }).unwrap();
       showToast("Message sent to talent");
-    } catch {
+    } catch (err) {
+      console.error("[AdminTalentVerification] sendNotification failed →", err?.data ?? err);
       showToast("Failed to send message", "error");
     } finally {
       setLoadingId(null);
@@ -378,11 +329,8 @@ export default function AdminTalentVerification() {
   return (
     <div className={styles.page}>
 
-      {toast && (
-        <div className={`${styles.toast} ${styles[toast.type]}`}>{toast.msg}</div>
-      )}
+      {toast && <div className={`${styles.toast} ${styles[toast.type]}`}>{toast.msg}</div>}
 
-      {/* Header */}
       <div className={styles.header}>
         <div>
           <h1>Talent Verification</h1>
@@ -390,7 +338,6 @@ export default function AdminTalentVerification() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className={styles.statsRow}>
         <div className={styles.statCard}>
           <span className={styles.statNum}>{isLoading ? "—" : counts.unverified}</span>
@@ -406,7 +353,6 @@ export default function AdminTalentVerification() {
         </div>
       </div>
 
-      {/* Filters + search */}
       <div className={styles.controls}>
         <div className={styles.filterTabs}>
           {[
@@ -432,7 +378,6 @@ export default function AdminTalentVerification() {
         />
       </div>
 
-      {/* List */}
       {isLoading ? (
         <div className={styles.loadingGrid}>
           {[...Array(4)].map((_, i) => <div key={i} className={styles.shimmerCard} />)}
@@ -474,26 +419,18 @@ export default function AdminTalentVerification() {
                 </div>
 
                 <div className={styles.cardFooter}>
-                  <button
-                    className={styles.detailBtn}
-                    onClick={e => { e.stopPropagation(); setSelected(t); }}
-                  >
+                  <button className={styles.detailBtn}
+                    onClick={e => { e.stopPropagation(); setSelected(t); }}>
                     View Profile
                   </button>
                   {!t.verified ? (
-                    <button
-                      className={styles.quickVerifyBtn}
-                      disabled={loadingId === t.id}
-                      onClick={e => { e.stopPropagation(); handleVerify(t.id); }}
-                    >
+                    <button className={styles.quickVerifyBtn} disabled={loadingId === t.id}
+                      onClick={e => { e.stopPropagation(); handleVerify(t.id); }}>
                       {loadingId === t.id ? "…" : "✓ Verify"}
                     </button>
                   ) : (
-                    <button
-                      className={styles.quickRevokeBtn}
-                      disabled={loadingId === t.id}
-                      onClick={e => { e.stopPropagation(); handleReject(t.id); }}
-                    >
+                    <button className={styles.quickRevokeBtn} disabled={loadingId === t.id}
+                      onClick={e => { e.stopPropagation(); handleReject(t.id); }}>
                       Revoke
                     </button>
                   )}
@@ -504,7 +441,6 @@ export default function AdminTalentVerification() {
         </div>
       )}
 
-      {/* Detail panel */}
       {selected && (
         <TalentDetail
           key={selected.id}

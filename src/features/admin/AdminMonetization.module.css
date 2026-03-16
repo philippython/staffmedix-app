@@ -1,0 +1,399 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+.page {
+  --green:       #0d9269;
+  --green-d:     #0a7554;
+  --green-pale:  #f0fdf8;
+  --green-mid:   #d1fae5;
+  --red:         #ef4444;
+  --red-pale:    #fef2f2;
+  --amber:       #f59e0b;
+  --amber-pale:  #fffbeb;
+  --blue:        #3b82f6;
+  --blue-pale:   #eff6ff;
+  --purple:      #8b5cf6;
+  --purple-pale: #f5f3ff;
+  --text:        #0f1f17;
+  --text-2:      #4b5563;
+  --text-3:      #9ca3af;
+  --border:      #e5e7eb;
+  --surface:     #f8fafb;
+  --white:       #ffffff;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface);
+  min-height: 100vh;
+  padding: 2.5rem 2rem 4rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.pageHead {
+  margin-bottom: 1.75rem;
+}
+.pageHead h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.75rem; font-weight: 800;
+  color: var(--text); margin: 0 0 0.2rem;
+  letter-spacing: -0.02em;
+}
+.pageHead p { font-size: 0.875rem; color: var(--text-3); margin: 0; }
+
+/* ── Main tabs (Subscriptions / Ads) ─────────────────────────────────────── */
+.mainTabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+.mainTab {
+  padding: 0.7rem 1.5rem;
+  border: none; background: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem; font-weight: 600;
+  color: var(--text-3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.15s;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+.mainTab:hover { color: var(--green); background: var(--green-pale); }
+.mainTabActive { color: var(--green) !important; border-bottom-color: var(--green) !important; background: var(--green-pale); }
+
+.tabContent { animation: fadeIn 0.15s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } }
+
+/* ── Stats strip ─────────────────────────────────────────────────────────── */
+.statsStrip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+.statCard {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 1.1rem;
+  padding: 1.1rem 1.25rem;
+  display: flex; align-items: center; gap: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: box-shadow 0.15s;
+}
+.statCard:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.statCard.stat_green  { border-color: var(--green-mid); background: var(--green-pale); }
+.statCard.stat_amber  { border-color: #fde68a;          background: var(--amber-pale); }
+.statCard.stat_blue   { border-color: #bfdbfe;          background: var(--blue-pale); }
+.statCard.stat_purple { border-color: #ddd6fe;          background: var(--purple-pale); }
+.statCard.stat_red    { border-color: #fecaca;          background: var(--red-pale); }
+.statIcon { font-size: 1.5rem; flex-shrink: 0; }
+.statVal {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.35rem; font-weight: 800;
+  color: var(--text); margin: 0 0 0.1rem; line-height: 1;
+}
+.statLbl { font-size: 0.72rem; color: var(--text-3); font-weight: 500; margin: 0; }
+
+/* ── Section heading ─────────────────────────────────────────────────────── */
+.sectionHead {
+  display: flex; align-items: center; gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.sectionHead h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  color: var(--text); margin: 0;
+}
+
+/* ── Plans grid ──────────────────────────────────────────────────────────── */
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.planCard {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-top: 3px solid var(--plan-color, var(--green));
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.planCard:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09); transform: translateY(-1px); }
+.planCardSkel {
+  height: 150px; border-radius: 1rem;
+  background: linear-gradient(90deg, var(--border) 25%, #f3f4f6 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmerAnim 1.2s infinite;
+}
+.planCardTop { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+.planDot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.planName {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.875rem; font-weight: 700; color: var(--text);
+  margin: 0; flex: 1;
+}
+.planSubs { font-size: 0.7rem; color: var(--text-3); font-weight: 500; white-space: nowrap; }
+.planPrice {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--text); margin: 0 0 0.3rem;
+}
+.planDur { font-size: 0.75rem; font-weight: 500; color: var(--text-3); }
+.planDesc { font-size: 0.775rem; color: var(--text-3); margin: 0 0 0.75rem; line-height: 1.4; }
+.planBarWrap { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+.planBarTrack { flex: 1; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.planBarFill  { height: 100%; border-radius: 99px; transition: width 0.5s; }
+.planPct { font-size: 0.7rem; font-weight: 700; color: var(--text-3); min-width: 28px; text-align: right; }
+
+/* ── Filter tabs ─────────────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.tab {
+  padding: 0.5rem 1rem;
+  border: none; background: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem; font-weight: 600;
+  color: var(--text-2);
+  display: flex; align-items: center; gap: 0.35rem;
+  border-right: 1px solid var(--border);
+  transition: all 0.15s;
+}
+.tab:last-child { border-right: none; }
+.tab:hover { background: var(--surface); color: var(--green); }
+.tabActive { background: var(--green) !important; color: #fff !important; }
+.tabBadge {
+  background: rgba(255,255,255,0.25);
+  border-radius: 2rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.68rem;
+}
+
+/* ── Search ──────────────────────────────────────────────────────────────── */
+.search {
+  flex: 1; min-width: 180px; max-width: 320px;
+  padding: 0.5rem 0.9rem;
+  border: 1.5px solid var(--border);
+  border-radius: 0.75rem;
+  font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+  background: var(--white); outline: none;
+  transition: border-color 0.15s;
+}
+.search:focus { border-color: var(--green); }
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+.tableWrap {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 1.1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-bottom: 1rem;
+}
+.table { width: 100%; border-collapse: collapse; font-size: 0.85rem; overflow-x: auto; }
+.table thead tr { background: var(--surface); border-bottom: 1.5px solid var(--border); }
+.table th {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: middle; }
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: var(--surface); }
+.tdBold  { font-weight: 600; color: var(--text); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tdMoney { font-weight: 700; color: var(--green); font-family: 'Sora', sans-serif; }
+.tdMute  { font-size: 0.78rem; color: var(--text-3); white-space: nowrap; }
+
+/* ── Pills ───────────────────────────────────────────────────────────────── */
+.pill {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 2rem;
+  font-size: 0.7rem; font-weight: 700;
+  white-space: nowrap;
+}
+.pillGreen { background: var(--green-mid); color: var(--green-d); border: 1px solid #a7f3d0; }
+.pillRed   { background: var(--red-pale);  color: var(--red);     border: 1px solid #fecaca; }
+.pillAmber { background: var(--amber-pale); color: #92400e;       border: 1px solid #fde68a; }
+
+.planPill {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: var(--blue-pale); color: var(--blue);
+  border: 1px solid #bfdbfe;
+  border-radius: 2rem; font-size: 0.7rem; font-weight: 700;
+  white-space: nowrap;
+}
+
+.expBadge {
+  display: inline-block; margin-left: 0.35rem;
+  padding: 0.1rem 0.35rem;
+  background: var(--amber-pale); color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: 2rem; font-size: 0.62rem; font-weight: 700;
+}
+
+/* ── Row buttons ─────────────────────────────────────────────────────────── */
+.rowBtns { display: flex; gap: 0.4rem; }
+.btnAmber {
+  padding: 0.3rem 0.7rem; border-radius: 0.5rem;
+  border: 1.5px solid #fde68a; background: var(--amber-pale);
+  font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 700;
+  color: #92400e; cursor: pointer; white-space: nowrap; transition: background 0.15s;
+}
+.btnAmber:hover { background: #fef3c7; }
+.btnRed {
+  padding: 0.3rem 0.7rem; border-radius: 0.5rem;
+  border: 1.5px solid #fecaca; background: var(--red-pale);
+  font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 700;
+  color: var(--red); cursor: pointer; white-space: nowrap; transition: background 0.15s;
+}
+.btnRed:hover { background: #fee2e2; }
+.btnGreen {
+  padding: 0.3rem 0.7rem; border-radius: 0.5rem;
+  border: none; background: var(--green); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 700;
+  cursor: pointer; white-space: nowrap; transition: background 0.15s;
+}
+.btnGreen:hover { background: var(--green-d); }
+.btnGhost {
+  padding: 0.5rem 1rem; border-radius: 0.65rem;
+  border: 1.5px solid var(--border); background: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 0.825rem; font-weight: 600;
+  color: var(--text-2); cursor: pointer;
+}
+.btnDanger {
+  padding: 0.5rem 1.25rem; border-radius: 0.65rem;
+  border: none; background: var(--red); color: #fff;
+  font-family: 'DM Sans', sans-serif; font-size: 0.825rem; font-weight: 700;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.btnDanger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Ads grid ────────────────────────────────────────────────────────────── */
+.adGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.adCardSkel {
+  height: 180px; border-radius: 1rem;
+  background: linear-gradient(90deg, var(--border) 25%, #f3f4f6 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmerAnim 1.2s infinite;
+}
+.adCard {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex; flex-direction: column; gap: 0.65rem;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.adCard:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.09); transform: translateY(-1px); }
+.adCardHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+.adCardInfo h3 { font-size: 0.875rem; font-weight: 700; color: var(--text); margin: 0 0 0.15rem; }
+.adTitle { font-size: 0.75rem; color: var(--text-3); margin: 0; }
+.adDesc { font-size: 0.78rem; color: var(--text-2); line-height: 1.5; margin: 0; }
+.adMeta { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.75rem; color: var(--text-3); margin-top: auto; }
+.adCardFoot { display: flex; gap: 0.5rem; }
+
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+.pager { display: flex; align-items: center; justify-content: center; gap: 0.35rem; padding: 1rem 0; }
+.pgBtn {
+  min-width: 32px; height: 32px; padding: 0 0.5rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid var(--border); background: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
+  color: var(--text-2); cursor: pointer; transition: all 0.15s;
+}
+.pgBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pgActive { background: var(--green) !important; color: #fff !important; border-color: var(--green) !important; }
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; top: 1.5rem; right: 1.5rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem; font-weight: 600;
+  z-index: 9999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  animation: slideDown 0.2s ease;
+}
+.toast.success { background: var(--green); color: #fff; }
+.toast.error   { background: var(--red);   color: #fff; }
+@keyframes slideDown { from { transform: translateY(-8px); opacity: 0; } }
+
+/* ── Confirm modal ───────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.modal {
+  background: var(--white); border-radius: 1.25rem;
+  padding: 2rem; max-width: 400px; width: 90%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  animation: popIn 0.2s ease;
+}
+.modal h3 { font-family: 'Sora', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text); margin: 0 0 0.5rem; }
+.modal p  { font-size: 0.875rem; color: var(--text-2); margin: 0 0 1.5rem; }
+.modalFoot { display: flex; gap: 0.75rem; justify-content: flex-end; }
+@keyframes popIn { from { transform: translateY(10px); opacity: 0; } }
+
+/* ── Skeletons & empty ───────────────────────────────────────────────────── */
+.skelRows { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem 0 1rem; }
+.skelRow {
+  height: 48px; border-radius: 0.65rem;
+  background: linear-gradient(90deg, var(--border) 25%, #f3f4f6 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmerAnim 1.2s infinite;
+}
+.shimmer {
+  display: inline-block; border-radius: 0.35rem;
+  background: linear-gradient(90deg, var(--border) 25%, #f3f4f6 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmerAnim 1.2s infinite;
+}
+@keyframes shimmerAnim { to { background-position: -200% 0; } }
+
+.emptyBox { text-align: center; padding: 3rem 2rem; color: var(--text-3); }
+.emptyBox span { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+.emptyBox p { font-size: 0.9rem; }
+.empty { font-size: 0.85rem; color: var(--text-3); padding: 0.5rem 0; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .page { padding: 1.5rem 1rem 3rem; }
+  .statsStrip { grid-template-columns: 1fr 1fr; }
+  .plansGrid  { grid-template-columns: 1fr 1fr; }
+  .adGrid     { grid-template-columns: 1fr; }
+  .mainTabs   { gap: 0; }
+  .mainTab    { padding: 0.6rem 1rem; font-size: 0.8rem; }
+  .sectionHead { flex-direction: column; align-items: flex-start; }
+  .search { max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .statsStrip { grid-template-columns: 1fr; }
+  .plansGrid  { grid-template-columns: 1fr; }
+}
+
+.adCardInfo { flex: 1; min-width: 0; }
