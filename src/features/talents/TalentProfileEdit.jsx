@@ -207,7 +207,6 @@ export default function TalentProfileEdit() {
         skillId,
       }).unwrap();
     } catch (error) {
-      .error("Failed to delete skill:", error);
       alert(error?.data?.detail || "Failed to delete skill.");
     }
   };
