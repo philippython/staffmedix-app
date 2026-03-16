@@ -129,7 +129,7 @@ export default function AdminDashboard() {
 
       {/* ── Verification cards ── */}
       <div className={styles.verificationGrid}>
-        <Link to="/admin-dashboard/verification" className={styles.verifyCard}>
+        <Link to="/admin-dashboard/employer-verification" className={styles.verifyCard}>
           <div className={styles.verifyCardIcon}>🏥</div>
           <div className={styles.verifyCardInfo}>
             <p className={styles.verifyCardNum}>
