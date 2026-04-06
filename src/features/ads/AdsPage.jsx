@@ -89,7 +89,7 @@ function OrgCard({ org }) {
   const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 
   return (
-    <Link to={`/organisations/${org.id}`} className={styles.orgCard}>
+    <Link to={`/employers/${org.id}`} className={styles.orgCard}>
       <div className={styles.orgLogoWrap}>
         {org.logo ? (
           <img src={org.logo} alt={name} className={styles.orgLogo} />

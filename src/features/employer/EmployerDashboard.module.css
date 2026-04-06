@@ -469,3 +469,116 @@
   background-color: var(--dark-grey);
   color: var(--primary-color);
 }
+
+/* ── Plan banner ─────────────────────────────────────────────────────────── */
+.planBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 2px solid;
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.planBannerLeft { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.planBannerBadge {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+}
+.locumBadge {
+  background: #ede9fe;
+  color: #7c3aed;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  border: 1px solid #ddd6fe;
+}
+.planFeatureList { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.planFeatureItem { font-size: 0.78rem; color: #4b5563; }
+.planBannerRight { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
+.planLimitText { font-size: 0.82rem; color: #4b5563; margin: 0; }
+.planSpent { font-size: 0.82rem; color: #0d9269; font-weight: 600; margin: 0; }
+.upgradeBannerBtn {
+  padding: 0.5rem 1.1rem;
+  background: #0d9269;
+  color: #fff;
+  border-radius: 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.postJobDisabled {
+  background-color: #9ca3af !important;
+  cursor: default;
+}
+.locumTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #ede9fe;
+  color: #7c3aed;
+  padding: 0.2rem 0.55rem;
+  border-radius: 1rem;
+  border: 1px solid #ddd6fe;
+}
+
+/* ── Payment summary sidebar card ────────────────────────────────────────── */
+.paymentSummary {
+  background-color: var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: var(--soft-shadow);
+}
+.paymentSummary h3 { font-size: 1.1rem; color: var(--dark-grey); margin-bottom: 1rem; }
+.paymentSummaryRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  color: var(--dark-grey);
+}
+.paymentSummaryList { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem; }
+.paymentSummaryItem { display: flex; justify-content: space-between; font-size: 0.8rem; }
+.paymentSummaryNote { color: #6b7280; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
+.paymentSummaryAmt { font-weight: 700; }
+.amtSuccess { color: #0d9269; }
+.amtFailed  { color: #ef4444; }
+.planBadge2 {
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* ── Locked action button ─────────────────────────────────────────────── */
+.actionButtonLocked {
+  display: block;
+  padding: 0.8rem;
+  text-align: center;
+  background-color: var(--soft-grey);
+  color: #aaa;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+  cursor: not-allowed;
+  font-size: 0.875rem;
+  opacity: 0.7;
+  border: 1.5px dashed #d1d5db;
+}
+.planLockBadge {
+  display: inline-block;
+  background: #f59e0b;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.3rem;
+  margin-left: 0.3rem;
+  vertical-align: middle;
+}

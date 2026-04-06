@@ -11,6 +11,7 @@ import { subscriptionApi } from "../services/subscriptionApi";
 import { interviewsApi } from "../services/interviewApi";
 import { chatApi } from "../services/chatApi";
 import { adsApi } from "../services/adsApi";
+import { paymentApi } from "../services/paymentApi";
 
 const store = configureStore({
   reducer: {
@@ -23,6 +24,7 @@ const store = configureStore({
     [interviewsApi.reducerPath]: interviewsApi.reducer,
     [adsApi.reducerPath]: adsApi.reducer,
     [chatApi.reducerPath]: chatApi.reducer,
+    [paymentApi.reducerPath] : paymentApi.reducer,
 
     auth: authReducer,
     jobFilter: jobFilterReducer,
@@ -38,6 +40,7 @@ const store = configureStore({
       interviewsApi.middleware,
       adsApi.middleware,
       chatApi.middleware,
+      paymentApi.middleware
     ),
 });
 

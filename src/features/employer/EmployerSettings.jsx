@@ -23,6 +23,13 @@ import {
   useDeleteSubscriptionMutation,
 } from "../../services/subscriptionApi";
 import { useSelector } from "react-redux";
+import { usePlanFeatures } from "../../hooks/usePlanFeatures";
+import {
+  useGetPaymentsQuery,
+  useInitiatePaymentMutation,
+  useCreateRecipientMutation,
+} from "../../services/paymentApi";
+import { useGetAppliedJobsQuery } from "../../services/jobsApi";
 
 const ORG_TYPE_LABELS = {
   hospital: "Hospital",
@@ -61,12 +68,33 @@ export default function EmployerSettings() {
   const [errMsg, setErrMsg] = useState("");
   const [selectedPlan, setSelectedPlan] = useState(null); // plan chosen for confirmation modal
   const [subscribingPlanId, setSubscribingPlanId] = useState(null); // track which plan is loading
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false); // cancel confirmation modal
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [payAmount, setPayAmount]               = useState("");
+  const [payLocumNote, setPayLocumNote]         = useState("");
+  const [selectedAppliedJob, setSelectedAppliedJob] = useState(null);
   const navigate = useNavigate();
 
   const token = useSelector((state) => state.auth.token);
   const { data: whoAmI } = useWhoAmIQuery(undefined, { skip: !token });
   const companyId = whoAmI?.company_id;
+  const settingsPlanFeatures = usePlanFeatures();
+  const { isEnterprise, isProfessional, planType: settingsPlanType, activeSub: settingsActiveSub } = settingsPlanFeatures;
+  const canMakeLocumPayment = isEnterprise;
+
+  // ── Debug log ──────────────────────────────────────────────────────────────
+  if (typeof window !== "undefined" && !window.__settingsPlanLogged) {
+    window.__settingsPlanLogged = true;
+    console.log("[EmployerSettings] planFeatures →", settingsPlanFeatures);
+    console.log("[EmployerSettings] planType →", settingsPlanType);
+    console.log("[EmployerSettings] isEnterprise →", isEnterprise, "| isPro →", isProfessional);
+    console.log("[EmployerSettings] canMakeLocumPayment →", canMakeLocumPayment);
+    console.log("[EmployerSettings] activeSub →", settingsActiveSub);
+  }
+  // Also log what subscriptionsData returns for this company
+  if (typeof window !== "undefined" && !window.__settingsSubLogged) {
+    window.__settingsSubLogged = true;
+    // Log after subscriptionsData loads
+  }
 
   // ── Profile ──────────────────────────────────────────────────────────────
   const { data: company, isLoading: loadingProfile } =
@@ -291,6 +319,15 @@ export default function EmployerSettings() {
   const allSubscriptions =
     subscriptionsData?.results ?? subscriptionsData ?? [];
   const subscription = allSubscriptions.find((s) => s.active) ?? null;
+
+  // ── Subscription raw log ───────────────────────────────────────────────────
+  if (typeof window !== "undefined" && subscriptionsData && !window.__settingsSubRawLogged) {
+    window.__settingsSubRawLogged = true;
+    console.log("[EmployerSettings] subscriptionsData raw →", subscriptionsData);
+    console.log("[EmployerSettings] allSubscriptions →", allSubscriptions);
+    console.log("[EmployerSettings] active subscription →", subscription);
+    console.log("[EmployerSettings] subscription.plan →", subscription?.plan, "| type:", typeof subscription?.plan);
+  }
   const expiredSubscriptions = allSubscriptions.filter((s) => {
     if (s.active) return false;
     const expiry = new Date(s.expiry_date);
@@ -307,35 +344,87 @@ export default function EmployerSettings() {
   const [deleteSubscription, { isLoading: deleting }] =
     useDeleteSubscriptionMutation();
 
+  // ── Payment hooks ──────────────────────────────────────────────────────
+  const { data: paymentsRaw }                  = useGetPaymentsQuery();
+  const [initiatePayment, { isLoading: initiating }] = useInitiatePaymentMutation();
+  const [createRecipient]                      = useCreateRecipientMutation();
+  const allPayments = paymentsRaw?.results ?? paymentsRaw ?? [];
+
+  const totalSpent = allPayments
+    .filter(p => p.type === "outgoing" && p.status === "success")
+    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0), 0);
+
+  function fmtMoney(n) {
+    if (!n) return "₦0";
+    return `₦${Number(n).toLocaleString()}`;
+  }
+
+  // Applied locum jobs for this company
+  const { data: appliedJobsRaw } = useGetAppliedJobsQuery(
+    { limit: 200 },
+    { skip: !companyId }
+  );
+  const locumAppliedJobs = (appliedJobsRaw?.results ?? appliedJobsRaw ?? []).filter(aj =>
+    (aj.job?.employment_type ?? "").toUpperCase() === "LOCUM"
+  );
+
   async function handleSubscribe(plan) {
-    setErrMsg("");
-    setSuccessMsg("");
+    setErrMsg(""); setSuccessMsg("");
     setSubscribingPlanId(plan.id);
-    const today = new Date();
-    const expiry = new Date(today);
-    expiry.setMonth(expiry.getMonth() + 1);
-    const fmt = (d) => d.toISOString().split("T")[0];
     try {
-      // Cancel existing active subscription first
-      if (subscription?.id) {
-        await deleteSubscription(subscription.id).unwrap();
+      const amount = plan.amount ?? plan.price ?? 0;
+      if (!amount || parseFloat(amount) <= 0) {
+        setErrMsg("Plan price not available. Please contact support.");
+        return;
       }
-      await createSubscription({
-        plan: plan.id,
-        company: companyId,
-        start_date: fmt(today),
-        expiry_date: fmt(expiry),
+      const res = await initiatePayment({
+        amount,
+        reason: "subscription",
+        plan_id: plan.id,
       }).unwrap();
-      setSuccessMsg("Subscription activated successfully.");
-      setSelectedPlan(null);
+      if (res.authorization_url) {
+        sessionStorage.setItem("pendingSubscription", JSON.stringify({
+          planId: plan.id,
+          planName: plan.type ?? plan.name,
+          amount,
+          companyId,
+          paymentId: res.payment_id,
+          reference: res.reference,
+        }));
+        window.location.href = res.authorization_url;
+      }
     } catch (err) {
-      setErrMsg(
-        err?.data?.detail ||
-          JSON.stringify(err?.data) ||
-          "Failed to subscribe.",
-      );
+      setErrMsg(err?.data?.detail || JSON.stringify(err?.data) || "Failed to initiate payment.");
     } finally {
       setSubscribingPlanId(null);
+      setSelectedPlan(null);
+    }
+  }
+
+  async function handleInitiatePayment() {
+    if (!payAmount || parseFloat(payAmount) <= 0) {
+      setErrMsg("Please enter a valid amount"); return;
+    }
+    if (!selectedAppliedJob) {
+      setErrMsg("Please select the talent/job you are paying for"); return;
+    }
+    setErrMsg("");
+    try {
+      const res = await initiatePayment({
+        amount: payAmount,
+        reason: "locum",
+        note: payLocumNote || `Locum: ${selectedAppliedJob.job?.title} — ${selectedAppliedJob.talent?.full_name}`,
+      }).unwrap();
+      if (res.authorization_url) {
+        sessionStorage.setItem("pendingLocum", JSON.stringify({
+          paymentId:  res.payment_id,
+          talentId:   selectedAppliedJob.talent?.user ?? selectedAppliedJob.talent?.id,
+          jobId:      selectedAppliedJob.id,
+        }));
+        window.location.href = res.authorization_url;
+      }
+    } catch (err) {
+      setErrMsg(err?.data?.detail ?? err?.data?.error ?? "Payment initiation failed");
     }
   }
 
@@ -393,7 +482,8 @@ export default function EmployerSettings() {
             { key: "contact", label: "👤 Contact Person" },
             { key: "services", label: "📋 Services" },
             { key: "companycontact", label: "📍 Company Contact" },
-            { key: "billing", label: "💳 Billing & Subscription" },
+            { key: "billing",  label: "💳 Billing & Subscription" },
+            { key: "payments", label: canMakeLocumPayment ? "💰 Payments" : "💰 Payments 🔒" },
           ].map(({ key, label }) => (
             <button
               key={key}
@@ -998,6 +1088,17 @@ export default function EmployerSettings() {
                             ⏱ {plan.duration} days
                           </p>
                         )}
+                        <ul className={styles.planFeatureBullets}>
+                          {(() => {
+                            const t = (plan.type ?? plan.name ?? "").toLowerCase();
+                            const feats = t.includes("enterprise")
+                              ? ["Everything in Professional","API access","Advanced reporting","24/7 phone support","🏥 Locum management tools"]
+                              : t.includes("pro")
+                              ? ["Unlimited job postings","Advanced candidate search","Priority support","Featured job listings","Detailed analytics","Messaging feature"]
+                              : ["Post up to 3 jobs/month","Basic candidate search","Email support","Standard visibility","Basic analytics"];
+                            return feats.map((f, i) => <li key={i}>✓ {f}</li>);
+                          })()}
+                        </ul>
                       </div>
                       <button
                         className={
@@ -1121,8 +1222,8 @@ export default function EmployerSettings() {
                         disabled={!!subscribingPlanId}
                       >
                         {subscribingPlanId
-                          ? "Processing…"
-                          : "Confirm & Subscribe"}
+                          ? "Redirecting to Paystack…"
+                          : `💳 Pay ₦${selectedPlan?.amount ? Number(selectedPlan.amount).toLocaleString() : "—"} via Paystack`}
                       </button>
                     </div>
                   </div>
@@ -1163,6 +1264,159 @@ export default function EmployerSettings() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+          {activeSection === "payments" && (
+            <div className={styles.section}>
+              <h2>Payments</h2>
+
+              {!canMakeLocumPayment && (
+                <div className={styles.paymentsGateBanner}>
+                  <span className={styles.paymentsGateIcon}>🔒</span>
+                  <div>
+                    <h3>Enterprise Plan Required</h3>
+                    <p>Locum payments are only available on the Enterprise plan. Upgrade to pay talents directly via Paystack.</p>
+                    <button className={styles.payBtn} onClick={() => switchTab("billing")}>
+                      ⬆ Upgrade to Enterprise
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.paySummaryGrid}>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>💸</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{fmtMoney(totalSpent)}</p>
+                    <p className={styles.paySummaryLbl}>Total Spent</p>
+                  </div>
+                </div>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>🧾</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{allPayments.length}</p>
+                    <p className={styles.paySummaryLbl}>Transactions</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.payBlock}>
+                <h3>🏥 Pay a Locum Talent</h3>
+                <p className={styles.payHint}>
+                  Select a talent who applied to one of your locum roles, enter the amount, and pay via Paystack.
+                </p>
+                {locumAppliedJobs.length === 0 ? (
+                  <div className={styles.noLocumMsg}>
+                    No locum applicants found. Post a locum role and wait for talents to apply.
+                  </div>
+                ) : (
+                  <div className={styles.payFormCol}>
+                    <div className={styles.payFormGroup}>
+                      <label>Select Talent & Job</label>
+                      <select
+                        className={styles.payInput}
+                        value={selectedAppliedJob?.id ?? ""}
+                        onChange={e => {
+                          const aj = locumAppliedJobs.find(a => a.id === e.target.value);
+                          setSelectedAppliedJob(aj ?? null);
+                        }}
+                      >
+                        <option value="">-- Select applicant --</option>
+                        {locumAppliedJobs.map(aj => (
+                          <option key={aj.id} value={aj.id}>
+                            {aj.talent?.full_name ?? "Talent"} → {aj.job?.title ?? "Locum job"} ({aj.status})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {selectedAppliedJob && (
+                      <div className={styles.selectedApplicantCard}>
+                        <div className={styles.selectedApplicantRow}>
+                          <span className={styles.selectedApplicantLabel}>Talent</span>
+                          <span className={styles.selectedApplicantVal}>{selectedAppliedJob.talent?.full_name}</span>
+                        </div>
+                        <div className={styles.selectedApplicantRow}>
+                          <span className={styles.selectedApplicantLabel}>Job</span>
+                          <span className={styles.selectedApplicantVal}>{selectedAppliedJob.job?.title}</span>
+                        </div>
+                        <div className={styles.selectedApplicantRow}>
+                          <span className={styles.selectedApplicantLabel}>Status</span>
+                          <span className={styles.selectedApplicantVal}>{selectedAppliedJob.status}</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className={styles.payFormGroup}>
+                      <label>Amount (₦)</label>
+                      <input
+                        type="number"
+                        className={styles.payInput}
+                        placeholder="e.g. 50000"
+                        min="100"
+                        value={payAmount}
+                        onChange={e => setPayAmount(e.target.value)}
+                      />
+                    </div>
+                    <div className={styles.payFormGroup}>
+                      <label>Note (optional)</label>
+                      <input
+                        type="text"
+                        className={styles.payInput}
+                        placeholder="e.g. Week of Jan 5–12 locum shift"
+                        value={payLocumNote}
+                        onChange={e => setPayLocumNote(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      className={styles.payBtn}
+                      onClick={handleInitiatePayment}
+                      disabled={initiating || !payAmount || !selectedAppliedJob}
+                    >
+                      {initiating ? "Redirecting to Paystack…" : "💳 Pay via Paystack"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.payBlock}>
+                <h3>Transaction History</h3>
+                {allPayments.length === 0 ? (
+                  <p className={styles.emptyMsg}>No transactions yet.</p>
+                ) : (
+                  <div className={styles.txTableWrap}>
+                    <div className={styles.txTable}>
+                      <div className={styles.txHead}>
+                        <span>Date</span>
+                        <span>Talent / Job</span>
+                        <span>Reason</span>
+                        <span>Amount</span>
+                        <span>Status</span>
+                      </div>
+                      {allPayments.map(p => {
+                        const recipient  = p.recipients?.[0];
+                        const talentName = recipient?.talent?.full_name ?? recipient?.talent?.username ?? null;
+                        const jobTitle   = recipient?.job?.title ?? null;
+                        const label      = talentName && jobTitle ? `${talentName} — ${jobTitle}`
+                                         : talentName ?? jobTitle  ?? "—";
+
+                        console.log(p)
+                        return (
+                          <div key={p.id} className={styles.txRow}>
+                            <span className={styles.txDate}>
+                              {new Date(p.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                            </span>
+                            <span className={styles.txRef} title={label}>{label}</span>
+                            <span className={styles.txReason}>{p.reason}</span>
+                            <span className={styles.txAmt}>{fmtMoney(p.amount)}</span>
+                            <span className={`${styles.txStatus} ${p.status === "success" ? styles.txOk : styles.txFail}`}>
+                              {p.status}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

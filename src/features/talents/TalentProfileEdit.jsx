@@ -1,4 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
+import {
+  useWithdrawMutation,
+  useGetAccountDetailsQuery,
+  useCreateAccountDetailsMutation,
+  useUpdateAccountDetailsMutation,
+  useGetBanksQuery,
+  useResolveAccountQuery,
+  useGetRecipientsQuery,
+} from "../../services/paymentApi";
 import { Link, useParams } from "react-router";
 import styles from "./TalentProfileEdit.module.css";
 import {
@@ -19,7 +28,138 @@ import {
 
 export default function TalentProfileEdit() {
   const { talentId } = useParams();
-  const [activeSection, setActiveSection] = useState("basic");
+
+  // ── useState FIRST (payment hooks below reference these) ─────────────
+  const [activeSection, setActiveSection]   = useState("basic");
+  const [withdrawAmt, setWithdrawAmt]       = useState("");
+  const [bankSearch, setBankSearch]         = useState("");
+  const [selectedBank, setSelectedBank]     = useState(null);
+  const [acctNumber, setAcctNumber]         = useState("");
+  const [acctName, setAcctName]             = useState("");
+  // resolveEnabled removed — derived from acctNumber.length === 10 && !!selectedBank
+  const [payMsg, setPayMsg]                 = useState({ text: "", type: "" });
+
+  // ── Payment hooks ─────────────────────────────────────────────────────────
+  // Talents are RECIPIENTS of payments, not the payment.user (that's the employer)
+  // So we use getRecipients to get their earnings, NOT getPayments
+  const [withdraw, { isLoading: withdrawing }] = useWithdrawMutation();
+  const { data: accountRaw }                   = useGetAccountDetailsQuery(undefined, {
+    // returns [] when no account exists — see account_viewset.py
+  });
+  const [createAccount]                        = useCreateAccountDetailsMutation();
+  const [updateAccount]                        = useUpdateAccountDetailsMutation();
+  const { data: banksRaw }                     = useGetBanksQuery();
+  const canResolve = acctNumber.length === 10 && !!selectedBank;
+  const { data: resolvedAcct, isFetching: resolvingAcct, isError: resolveError } = useResolveAccountQuery(
+    { accountNumber: acctNumber, bankCode: selectedBank?.code },
+    { skip: !canResolve }
+  );
+
+  // Log resolve state changes
+  if (typeof window !== "undefined") {
+    if (canResolve && !window.__resolveLogged) {
+      window.__resolveLogged = true;
+      console.log("[resolveAccount] firing →", { accountNumber: acctNumber, bankCode: selectedBank?.code });
+    }
+    if (!canResolve) window.__resolveLogged = false;
+    if (resolvedAcct) console.log("[resolveAccount] success →", resolvedAcct);
+    if (resolveError)  console.warn("[resolveAccount] error — check bank_code is valid Paystack bank code");
+  }
+  const allBanks  = banksRaw ?? [];
+  const savedAcct = Array.isArray(accountRaw) ? (accountRaw[0] ?? null) : (accountRaw?.results?.[0] ?? accountRaw?.[0] ?? null);
+
+  // Talent's payment recipients — this is their earnings history
+  const { data: recipientsRaw } = useGetRecipientsQuery();
+  const myRecipients       = recipientsRaw?.results ?? recipientsRaw ?? [];
+  const hasAssignedPayment = myRecipients.length > 0;
+
+  // Earnings from recipients
+  const totalEarned = myRecipients
+    .filter(r => r.payment?.status === "success" || r.payment?.status === "SUCCESS")
+    .reduce((sum, r) => sum + parseFloat(r.payment?.amount ?? 0), 0);
+
+  // eligible: true only when at least one recipient has eligible=true
+  const eligible = myRecipients.some(r => r.eligible === true);
+
+  function fmtMoney(n) {
+    if (!n) return "₦0";
+    return `₦${Number(n).toLocaleString()}`;
+  }
+
+  function showMsg(text, type = "success") {
+    setPayMsg({ text, type });
+    setTimeout(() => setPayMsg({ text: "", type: "" }), 4000);
+  }
+
+  async function handleWithdraw() {
+    if (!withdrawAmt || parseFloat(withdrawAmt) <= 0) return;
+    try {
+      await withdraw({ amount: withdrawAmt }).unwrap();
+      showMsg("Withdrawal initiated. Funds arrive in 1-2 business days.");
+      setWithdrawAmt("");
+    } catch (err) {
+      showMsg(err?.data?.error ?? err?.data?.detail ?? "Withdrawal failed. Ensure account details are saved.", "error");
+    }
+  }
+
+  async function handleSaveAccount() {
+    const bankName    = selectedBank?.name   ?? savedAcct?.bank_name    ?? "";
+    const bankCode    = selectedBank?.code   ?? savedAcct?.bank_code    ?? "";
+    const acctNum     = acctNumber           || savedAcct?.account_number || "";
+    const acctNameVal = (resolvedAcct?.account_name ?? acctName ?? savedAcct?.account_name ?? "").trim();
+
+    console.log("[handleSaveAccount] called", {
+      selectedBank,
+      savedAcct,
+      acctNumber,
+      acctName,
+      resolvedAcct,
+      bankName,
+      bankCode,
+      acctNum,
+      acctNameVal,
+    });
+
+    if (!bankCode) {
+      console.warn("[handleSaveAccount] no bankCode — user must select a bank");
+      showMsg("Please search and select a bank first", "error"); return;
+    }
+    if (!acctNum || String(acctNum).length !== 10) {
+      console.warn("[handleSaveAccount] invalid account number:", acctNum);
+      showMsg("Please enter a valid 10-digit account number", "error"); return;
+    }
+    // acctName is optional — if empty, use account number as fallback name
+    // This allows saving even if resolve hasn't completed
+    const finalAcctName = acctNameVal || acctNum;
+
+    const payload = {
+      bank_name:      bankName,
+      bank_code:      bankCode,
+      account_number: String(acctNum),
+      account_name:   finalAcctName,
+    };
+
+    console.log("[handleSaveAccount] sending payload →", payload);
+
+    try {
+      let result;
+      if (savedAcct?.id) {
+        console.log("[handleSaveAccount] PATCH existing account id:", savedAcct.id);
+        result = await updateAccount({ id: savedAcct.id, data: payload }).unwrap();
+      } else {
+        result = await createAccount(payload).unwrap();
+      }
+      console.log("[handleSaveAccount] success →", result);
+      showMsg("Account details saved ✓");
+    } catch (err) {
+      console.error("[handleSaveAccount] error →", err);
+      const msg = err?.data?.detail
+        ?? err?.data?.non_field_errors?.[0]
+        ?? JSON.stringify(err?.data)
+        ?? "Failed to save account";
+      showMsg(String(msg), "error");
+    }
+  }
 
   // Fetch complete profile with nested data
   const {
@@ -152,6 +292,23 @@ export default function TalentProfileEdit() {
   });
 
   const [newSkill, setNewSkill] = useState("");
+
+  // Sync resolved account name into acctName state
+  useEffect(() => {
+    if (resolvedAcct?.account_name) {
+      setAcctName(resolvedAcct.account_name);
+    }
+  }, [resolvedAcct?.account_name]);
+
+  // Pre-fill bank account form from savedAcct when it loads
+  useEffect(() => {
+    if (savedAcct) {
+      setAcctNumber(savedAcct.account_number ?? "");
+      setAcctName(savedAcct.account_name ?? "");
+      // Note: we can't re-select the bank object from just a name/code
+      // so just show the saved data; user can search to change it
+    }
+  }, [savedAcct?.id]);
 
   // Load profile data into form
   useEffect(() => {
@@ -365,6 +522,12 @@ export default function TalentProfileEdit() {
           >
             📄 Documents ({credentials.length})
           </button>
+          <button
+            className={activeSection === "earnings" ? styles.active : ""}
+            onClick={() => setActiveSection("earnings")}
+          >
+            💰 Earnings & Payments
+          </button>
         </aside>
 
         <div className={styles.editContent}>
@@ -376,18 +539,10 @@ export default function TalentProfileEdit() {
                   <label>Profile Photo</label>
                   <div className={styles.photoUpload}>
                     <div className={styles.currentPhoto}>
-                      {profile?.images ? (
-                        <img
-                          src={
-                            profile.images.length !== 0
-                              ? profile.images[profile.images.length - 1].image
-                              : ""
-                          }
-                          alt="Profile"
-                        />
-                      ) : (
-                        "👩‍⚕️"
-                      )}
+                      {profile?.images?.length > 0 && profile.images[profile.images.length - 1].image
+                        ? <img src={profile.images[profile.images.length - 1].image} alt="Profile" />
+                        : <span>👩‍⚕️</span>
+                      }
                     </div>
                     <div>
                       <input
@@ -663,6 +818,213 @@ export default function TalentProfileEdit() {
                       </button>
                     </div>
                   ))
+                )}
+              </div>
+            </div>
+          )}
+          {activeSection === "earnings" && (
+            <div className={styles.section}>
+              <h2>Earnings & Payments</h2>
+
+              <div className={styles.paySummaryGrid}>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>💰</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{fmtMoney(totalEarned)}</p>
+                    <p className={styles.paySummaryLbl}>Total Earned</p>
+                  </div>
+                </div>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>📋</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{myRecipients.length}</p>
+                    <p className={styles.paySummaryLbl}>Payments Received</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Withdraw — only shown when an employer has assigned a payment to this talent */}
+              {!hasAssignedPayment ? (
+                <div className={styles.noPaymentBanner}>
+                  💼 Withdrawal is available once an employer assigns a locum payment to you for a job you applied to.
+                </div>
+              ) : (
+                <>
+                  {!eligible && (
+                    <div className={styles.ineligibleBanner}>
+                      ⚠️ Your account is not yet eligible for withdrawals. Your earnings are visible but withdrawals are disabled until eligibility is confirmed by the admin.
+                    </div>
+                  )}
+                  <div className={styles.payBlock}>
+                    <h3>Withdraw Funds</h3>
+                    <p className={styles.payHint}>Funds are sent to your saved bank account.</p>
+                    {!savedAcct && <p className={styles.payWarn}>⚠️ Add your bank account below before withdrawing.</p>}
+                    <div className={styles.payFormCol}>
+                      {myRecipients.length > 0 && (
+                        <div className={styles.recipientList}>
+                          {myRecipients.map(r => (
+                            <div key={r.id} className={styles.recipientItem}>
+                              <span>🏥 {r.job?.title ?? "Locum job"}</span>
+                              <span className={r.eligible ? styles.recipientEligible : styles.recipientLocked}>
+                                {r.eligible ? "✓ Eligible" : "⏳ Pending"}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <input
+                        type="number"
+                        className={styles.payInput}
+                        placeholder="Amount to withdraw (₦)"
+                        value={withdrawAmt}
+                        onChange={e => setWithdrawAmt(e.target.value)}
+                        disabled={!eligible}
+                      />
+                      <button
+                        className={styles.payBtn}
+                        onClick={handleWithdraw}
+                        disabled={withdrawing || !eligible || !savedAcct || !withdrawAmt}
+                      >
+                        {!eligible ? "🔒 Not Yet Eligible" : withdrawing ? "Processing…" : "💸 Withdraw"}
+                      </button>
+                      {payMsg.text && (
+                        <p className={payMsg.type === "error" ? styles.payMsgError : styles.payMsgOk}>{payMsg.text}</p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className={styles.payBlock}>
+                <h3>Bank Account Details</h3>
+                {savedAcct ? (
+                  <div className={styles.savedAcctBanner}>
+                    🏦 <strong>{savedAcct.bank_name}</strong> — {savedAcct.account_number}
+                    <span style={{display:"block",fontSize:"0.78rem",marginTop:"0.2rem",color:"#065f46"}}>
+                      Account Name: {savedAcct.account_name}
+                    </span>
+                  </div>
+                ) : (
+                  <p className={styles.payWarn}>No bank account saved yet. Add one below.</p>
+                )}
+                <div className={styles.payFormCol}>
+                  <div className={styles.bankSearchWrap}>
+                    <input
+                      className={styles.payInput}
+                      placeholder={selectedBank ? `✓ ${selectedBank.name} — type to change` : "Search bank name…"}
+                      value={bankSearch}
+                      onChange={e => {
+                        setBankSearch(e.target.value);
+                        // Clear selection if user starts typing a new bank
+                        if (e.target.value) setSelectedBank(null);
+                      }}
+                    />
+                    {bankSearch.length > 0 && allBanks.filter(b =>
+                      b.name.toLowerCase().includes(bankSearch.toLowerCase())
+                    ).length > 0 && (
+                      <div className={styles.bankDropdown}>
+                        {allBanks
+                          .filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()))
+                          .slice(0, 8)
+                          .map(b => (
+                            <div key={b.id} className={styles.bankOption}
+                              onClick={() => { setSelectedBank(b); setBankSearch(""); }}>
+                              {b.name}
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.payFormRow}>
+                    <div className={styles.payFormGroup}>
+                      <label>
+                        Account Number
+                        {canResolve && resolvingAcct && (
+                          <span className={styles.resolveSpinner}> ⏳ Looking up…</span>
+                        )}
+                        {canResolve && resolvedAcct && !resolvingAcct && (
+                          <span className={styles.resolveOk}> ✓ Found</span>
+                        )}
+                        {canResolve && resolveError && !resolvingAcct && (
+                          <span className={styles.resolveErr}> ✕ Not found</span>
+                        )}
+                      </label>
+                      <input
+                        className={styles.payInput}
+                        placeholder="10-digit number"
+                        maxLength={10}
+                        value={acctNumber}
+                        onChange={e => setAcctNumber(e.target.value)}
+                      />
+                    </div>
+                    <div className={styles.payFormGroup}>
+                      <label>Account Name</label>
+                      <input
+                        className={`${styles.payInput} ${resolvedAcct ? styles.payInputResolved : ""} ${resolveError ? styles.payInputError : ""}`}
+                        value={resolvingAcct ? "" : (resolvedAcct?.account_name ?? acctName)}
+                        onChange={e => {
+                          // Always allow manual entry — resolvedAcct takes priority when set
+                          setAcctName(e.target.value);
+                        }}
+                        placeholder={resolvingAcct ? "Looking up account…" : resolveError ? "Not found — type name manually" : "Auto-filled or type manually"}
+                        readOnly={resolvingAcct}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.payBtnOutline}
+                    onClick={handleSaveAccount}
+                    disabled={!acctNumber || !selectedBank && !savedAcct}
+                  >
+                    💾 Save Account
+                  </button>
+                  {payMsg.text && (
+                    <p className={payMsg.type === "error" ? styles.payMsgError : styles.payMsgOk}
+                       style={{marginTop:"0.5rem",fontSize:"0.85rem"}}>
+                      {payMsg.text}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.payBlock}>
+                <h3>Payment History</h3>
+                {myRecipients.length === 0 ? (
+                  <p className={styles.emptyState}>No payment history yet.</p>
+                ) : (
+                  <div className={styles.txTableWrap}>
+                    <div className={styles.txTable}>
+                      <div className={styles.txHead}>
+                        <span>Date</span>
+                        <span>Job</span>
+                        <span>Employer</span>
+                        <span>Amount</span>
+                        <span>Status</span>
+                      </div>
+                      {myRecipients.map(r => {
+                        const p         = r.payment ?? {};
+                        const jobTitle  = r.job?.title ?? r.applied_job?.job?.title ?? "—";
+                        const employer  = p.user?.company_profile?.company_name ?? p.user?.email ?? "—";
+                        const status    = p.status ?? "pending";
+                        const isSuccess = ["success","SUCCESS"].includes(status);
+                        const date      = p.created_at ?? r.created_at;
+                        return (
+                          <div key={r.id} className={styles.txRow}>
+                            <span className={styles.txDate}>
+                              {date ? new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                            </span>
+                            <span className={styles.txRef}>{jobTitle}</span>
+                            <span className={styles.txReason}>{employer}</span>
+                            <span className={styles.txAmt}>{fmtMoney(p.amount ?? 0)}</span>
+                            <span className={`${styles.txStatus} ${isSuccess ? styles.txOk : styles.txFail}`}>
+                              {r.eligible ? "✓ Eligible" : "⏳ Pending"} · {status}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

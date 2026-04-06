@@ -14,7 +14,6 @@ export const subscriptionApi = createApi({
   }),
   tagTypes: ["Subscription", "Plan"],
   endpoints: (builder) => ({
-    // ── Plans ─────────────────────────────────────
     getPlans: builder.query({
       query: () => "plan/",
       providesTags: ["Plan"],

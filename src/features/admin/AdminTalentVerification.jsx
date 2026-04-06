@@ -7,7 +7,6 @@ import {
 } from "../../services/talentApi";
 import { useSendNotificationMutation } from "../../services/notificationApi";
 
-// ── Tiny helpers ──────────────────────────────────────────────────────────
 function getInitial(t) {
   return (t?.full_name?.[0] || t?.user?.username?.[0] || "T").toUpperCase();
 }

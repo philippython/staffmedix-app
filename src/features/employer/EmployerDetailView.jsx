@@ -40,7 +40,7 @@ export default function OrganisationDetailView() {
     isLoading: loadingOrg,
     isError,
   } = useGetCompanyProfileByIdQuery(id);
-  const { data: svcData } = useGetCompanyServicesQuery(id, { skip: !id });
+  const { data: svcData } = useGetCompanyServicesQuery({ companyId: id }, { skip: !id });
   const { data: contactData } = useGetCompanyContactsQuery(
     { companyId: id },
     { skip: !id },

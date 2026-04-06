@@ -12,6 +12,8 @@ import {
   useGetSubscriptionsQuery,
   useGetPlanByIdQuery,
 } from "../../services/subscriptionApi";
+import { usePlanFeatures } from "../../hooks/usePlanFeatures";
+import { useGetPaymentsQuery } from "../../services/paymentApi";
 
 export default function EmployerDashboard() {
   const { data: user } = useWhoAmIQuery();
@@ -40,13 +42,16 @@ export default function EmployerDashboard() {
     ) ??
     null;
 
-  // subscription.plan is a UUID — fetch the full plan object
-  const { data: planData } = useGetPlanByIdQuery(subscription?.plan, {
-    skip: !subscription?.plan,
+  // subscription.plan can be a UUID string OR a nested plan object {id, type, name}
+  const planIsObj  = subscription?.plan && typeof subscription.plan === "object";
+  const planId     = planIsObj ? subscription.plan.id : subscription?.plan;
+  const { data: planData } = useGetPlanByIdQuery(planId, {
+    skip: !planId || planIsObj,
   });
+  const resolvedPlan = planIsObj ? subscription.plan : planData;
 
   const isBasicPlan = !subscription;
-  const planName = planData?.type ?? "Basic";
+  const planName = resolvedPlan?.type ?? resolvedPlan?.name ?? "Basic";
   const expiryDate = subscription?.expiry_date
     ? new Date(subscription.expiry_date).toLocaleDateString("en-GB", {
         day: "numeric",
@@ -56,6 +61,8 @@ export default function EmployerDashboard() {
     : null;
 
   const verification = useCompanyVerification();
+  const { hasMessaging, planType, canPostLocum } = usePlanFeatures();
+  const { data: paymentsData } = useGetPaymentsQuery();
 
   const jobPosts = jobsData?.results ?? [];
 
@@ -263,9 +270,24 @@ export default function EmployerDashboard() {
             >
               📢 Advertise Your Organization
             </Link>
-            <Link to="/employer-dashboard/chat" className={styles.actionButton}>
-              💬 Messages
-            </Link>
+            {hasMessaging ? (
+              <Link to="/employer-dashboard/chat" className={styles.actionButton}>
+                💬 Messages
+              </Link>
+            ) : (
+              <span className={styles.actionButtonLocked} title="Messaging requires Professional or Enterprise plan">
+                💬 Messages <span className={styles.planLockBadge}>Pro+</span>
+              </span>
+            )}
+            {canPostLocum ? (
+              <Link to="/employer-dashboard/settings?tab=payments" className={styles.actionButton}>
+                💰 Locum Payments
+              </Link>
+            ) : (
+              <span className={styles.actionButtonLocked} title="Locum payments require Enterprise plan">
+                💰 Locum Payments <span className={styles.planLockBadge}>Enterprise</span>
+              </span>
+            )}
           </div>
 
           <div className={styles.subscriptionInfo}>

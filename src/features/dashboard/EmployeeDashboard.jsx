@@ -7,6 +7,7 @@ import {
 } from "../../services/jobsApi";
 import { useWhoAmIQuery } from "../../services/userApi";
 import { useGetMyProfileQuery } from "../../services/talentApi";
+import { useGetPaymentsQuery } from "../../services/paymentApi";
 import { useMemo } from "react";
 
 export default function EmployeeDashboard() {
@@ -24,6 +25,17 @@ export default function EmployeeDashboard() {
     { limit: 3, talent: user?.talent_id },
     { skip: !user?.talent_id },
   );
+
+  const { data: earningsData } = useGetPaymentsQuery();
+  const allEarnings   = earningsData?.results ?? earningsData ?? [];
+  const totalEarned   = allEarnings
+    .filter(p => p.type === "incoming" && p.status === "success")
+    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0), 0);
+  const recentPayments = allEarnings.slice(0, 3);
+  function fmtMoney(n) {
+    if (!n) return "₦0";
+    return `₦${Number(n).toLocaleString()}`;
+  }
 
   const { data: jobsData } = useGetJobsQuery(
     { limit: 2, title: profile?.profession || "" },
@@ -136,6 +148,7 @@ export default function EmployeeDashboard() {
       { label: "Applications Submitted", value: total.toString(), icon: "📄" },
       { label: "Under Review", value: underReview.toString(), icon: "🔍" },
       { label: "Selected", value: selected.toString(), icon: "✅" },
+      { label: "Total Earnings", value: fmtMoney(totalEarned), icon: "💰" },
     ];
   }, [appliedJobsData]);
 
@@ -288,6 +301,28 @@ export default function EmployeeDashboard() {
                 </div>
               ))
             )}
+          </div>
+
+          <div className={styles.earningsCard}>
+            <h3>💰 Earnings</h3>
+            <p className={styles.earningsTotal}>{fmtMoney(totalEarned)}</p>
+            <p className={styles.earningsSubLabel}>Total earned from locum jobs</p>
+            {recentPayments.length > 0 && (
+              <div className={styles.earningsList}>
+                {recentPayments.filter(p => p.type === "incoming").map(p => (
+                  <div key={p.id} className={styles.earningsItem}>
+                    <span className={styles.earningsItemJob}>
+                      {p.recipients?.[0]?.job?.title ?? p.reason}
+                    </span>
+                    <span className={styles.earningsItemAmt}>+{fmtMoney(p.amount)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <Link to={`/employee-dashboard/profile/edit/${user?.talent_id}`}
+              className={styles.completeProfile}>
+              View All Earnings
+            </Link>
           </div>
 
           <div className={styles.quickActions}>

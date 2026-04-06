@@ -5,14 +5,16 @@ import { useCreateJobMutation } from "../../services/jobsApi";
 import { useWhoAmIQuery } from "../../services/userApi";
 import { useCompanyVerification } from "../../hooks/useCompanyVerification";
 import VerificationBanner from "../../components/VerificationBanner";
+import { usePlanFeatures } from "../../hooks/usePlanFeatures";
 
 export default function JobPostForm() {
   const navigate = useNavigate();
   const { data: user } = useWhoAmIQuery();
-  const companyId = user?.company_id;
 
   const verification = useCompanyVerification();
-  const { canPostJobs, percent, isVerified, company } = verification;
+  const { canPostJobs, percent, isVerified } = verification;
+
+  const { canPostLocum, isEnterprise, maxJobsPerMonth } = usePlanFeatures();
 
   const [createJob, { isLoading: isCreating }] = useCreateJobMutation();
 
@@ -32,48 +34,47 @@ export default function JobPostForm() {
     deadline: "",
   });
 
+  const isLocum        = formData.employment_type === "LOCUM";
+  const locumBlocked   = isLocum && !canPostLocum;
+  const canSubmit      = !isCreating && canPostJobs && !locumBlocked;
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const formatBulletText = (text) => {
     if (!text) return "";
-    return text
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l.length > 0)
-      .join("\n");
+    return text.split("\n").map((l) => l.trim()).filter((l) => l.length > 0).join("\n");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!canPostJobs) return; // extra safety — form is disabled anyway
+    if (!canSubmit) return;
     const jobData = {
-      title: formData.title,
-      description: formData.description,
-      location: formData.location,
-      salary_min: parseFloat(formData.salary_min),
-      salary_max: parseFloat(formData.salary_max),
-      openings: parseInt(formData.openings),
-      experience: parseInt(formData.experience),
-      shift_type: formData.shift_type,
-      employment_type: formData.employment_type,
-      deadline: formData.deadline,
-      requirements: formatBulletText(formData.requirements),
+      title:            formData.title,
+      description:      formData.description,
+      location:         formData.location,
+      salary_min:       parseFloat(formData.salary_min),
+      salary_max:       parseFloat(formData.salary_max),
+      openings:         parseInt(formData.openings),
+      experience:       parseInt(formData.experience),
+      shift_type:       formData.shift_type,
+      employment_type:  formData.employment_type,
+      deadline:         formData.deadline,
+      requirements:     formatBulletText(formData.requirements),
       responsibilities: formatBulletText(formData.responsibilities),
-      benefits: formatBulletText(formData.benefits),
-      company: user?.company_id,
+      benefits:         formatBulletText(formData.benefits),
+      company:          user?.company_id,
     };
     try {
       await createJob(jobData).unwrap();
-      alert("Job posted successfully!");
       navigate("/employer-dashboard");
     } catch (error) {
       alert(error?.data?.detail || "Failed to post job. Please try again.");
     }
   };
 
-  // ── Blocked state ─────────────────────────────────────────────────────────
+  // ── Verification blocked ──────────────────────────────────────────────────
   if (!canPostJobs) {
     return (
       <div className={styles.jobPostPage}>
@@ -84,19 +85,16 @@ export default function JobPostForm() {
         <VerificationBanner verification={verification} />
         <div className={styles.blockedBox}>
           <span className={styles.blockedIcon}>🔒</span>
-          <h2>Verification required</h2>
+          <h2>Verification Required</h2>
           <p>
-            Only organisations verified by the StaffMedix admin can post jobs.
-            Your profile is <strong>{percent}%</strong> complete.
+            Only verified organisations can post jobs. Your profile is{" "}
+            <strong>{percent}%</strong> complete.
             {percent < 100
               ? " Complete your profile to speed up the verification process."
               : " Your profile is complete — please wait for admin verification."}
           </p>
           {percent < 100 && (
-            <Link
-              to="/employer-dashboard/settings"
-              className={styles.blockedBtn}
-            >
+            <Link to="/employer-dashboard/settings" className={styles.blockedBtn}>
               Complete Your Profile
             </Link>
           )}
@@ -118,6 +116,8 @@ export default function JobPostForm() {
 
       <div className={styles.formContainer}>
         <form className={styles.jobPostForm} onSubmit={handleSubmit}>
+
+          {/* ── Basic Information ───────────────────────────────────────── */}
           <div className={styles.sectionTitle}>Basic Information</div>
 
           <div className={styles.formRow}>
@@ -163,7 +163,9 @@ export default function JobPostForm() {
                 <option value="CONTRACT">Contract</option>
                 <option value="TEMPORARY">Temporary</option>
                 <option value="INTERNSHIP">Internship</option>
-                <option value="LOCUM">Locum</option>
+                <option value="LOCUM" disabled={!canPostLocum}>
+                  Locum{!canPostLocum ? " 🔒 (Enterprise only)" : ""}
+                </option>
               </select>
             </div>
             <div className={styles.formGroup}>
@@ -183,6 +185,20 @@ export default function JobPostForm() {
               </select>
             </div>
           </div>
+
+          {/* Locum warning — shown when LOCUM selected but not Enterprise */}
+          {locumBlocked && (
+            <div className={styles.locumWarning}>
+              <span className={styles.locumWarningIcon}>🔒</span>
+              <div>
+                <strong>Enterprise Plan Required</strong>
+                <p>Locum job postings are only available on the Enterprise plan.</p>
+                <Link to="/employer-dashboard/settings?tab=billing" className={styles.locumUpgradeLink}>
+                  Upgrade to Enterprise →
+                </Link>
+              </div>
+            </div>
+          )}
 
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
@@ -212,6 +228,7 @@ export default function JobPostForm() {
             </div>
           </div>
 
+          {/* ── Compensation ────────────────────────────────────────────── */}
           <div className={styles.sectionTitle}>Compensation</div>
 
           <div className={styles.formRow}>
@@ -260,6 +277,7 @@ export default function JobPostForm() {
             </div>
           </div>
 
+          {/* ── Job Details ─────────────────────────────────────────────── */}
           <div className={styles.sectionTitle}>Job Details</div>
 
           <div className={styles.formGroup}>
@@ -273,9 +291,7 @@ export default function JobPostForm() {
               placeholder="Describe the role, responsibilities, and what makes this position unique..."
               required
             />
-            <span className={styles.helperText}>
-              Be detailed and specific about daily responsibilities
-            </span>
+            <span className={styles.helperText}>Be detailed and specific about daily responsibilities</span>
           </div>
 
           <div className={styles.formGroup}>
@@ -286,14 +302,10 @@ export default function JobPostForm() {
               value={formData.responsibilities}
               onChange={handleChange}
               rows="6"
-              placeholder={
-                "Enter each responsibility on a new line:\nMonitor patient vital signs\nAdminister medications as prescribed"
-              }
+              placeholder={"Enter each responsibility on a new line:\nMonitor patient vital signs\nAdminister medications as prescribed"}
               required
             />
-            <span className={styles.helperText}>
-              💡 Enter each responsibility on a new line
-            </span>
+            <span className={styles.helperText}>💡 One per line</span>
           </div>
 
           <div className={styles.formGroup}>
@@ -304,14 +316,10 @@ export default function JobPostForm() {
               value={formData.requirements}
               onChange={handleChange}
               rows="6"
-              placeholder={
-                "Enter each requirement on a new line:\nBachelor's degree in Nursing\nValid nursing license"
-              }
+              placeholder={"Enter each requirement on a new line:\nBachelor's degree in Nursing\nValid nursing license"}
               required
             />
-            <span className={styles.helperText}>
-              💡 Enter each requirement on a new line
-            </span>
+            <span className={styles.helperText}>💡 One per line</span>
           </div>
 
           <div className={styles.formGroup}>
@@ -322,29 +330,33 @@ export default function JobPostForm() {
               value={formData.benefits}
               onChange={handleChange}
               rows="5"
-              placeholder={
-                "Enter each benefit on a new line:\nComprehensive health insurance\nPension contributions"
-              }
+              placeholder={"Enter each benefit on a new line:\nComprehensive health insurance\nPension contributions"}
             />
-            <span className={styles.helperText}>
-              💡 Enter each benefit on a new line
-            </span>
+            <span className={styles.helperText}>💡 One per line</span>
           </div>
 
+          {/* ── Actions ─────────────────────────────────────────────────── */}
           <div className={styles.formActions}>
             <Link to="/employer-dashboard" className={styles.cancelButton}>
               Cancel
             </Link>
+            {!isEnterprise && maxJobsPerMonth !== Infinity && (
+              <span className={styles.planLimit}>
+                Basic: up to {maxJobsPerMonth} jobs/month
+              </span>
+            )}
             <button
               type="submit"
-              className={styles.submitButton}
-              disabled={isCreating}
+              className={`${styles.submitButton} ${!canSubmit ? styles.submitDisabled : ""}`}
+              disabled={!canSubmit}
             >
-              {isCreating ? "Publishing..." : "Publish Job Post"}
+              {isCreating ? "Publishing…" : locumBlocked ? "🔒 Enterprise Required" : "Publish Job Post"}
             </button>
           </div>
+
         </form>
 
+        {/* ── Sidebar ───────────────────────────────────────────────────── */}
         <aside className={styles.sidebar}>
           <div className={styles.previewCard}>
             <h3>💡 Tips for Better Job Posts</h3>
@@ -363,21 +375,35 @@ export default function JobPostForm() {
             <h3>📊 Profile Status</h3>
             <p className={styles.planInfo}>
               {isVerified ? (
-                <span style={{ color: "#0d9269", fontWeight: 700 }}>
-                  ✅ Verified
-                </span>
+                <span style={{ color: "#0d9269", fontWeight: 700 }}>✅ Verified</span>
               ) : (
-                <span style={{ color: "#f59e0b", fontWeight: 700 }}>
-                  ⏳ Pending Verification
-                </span>
+                <span style={{ color: "#f59e0b", fontWeight: 700 }}>⏳ Pending Verification</span>
               )}
             </p>
             <p className={styles.remainingPosts}>Profile {percent}% complete</p>
-            <Link
-              to="/employer-dashboard/settings"
-              className={styles.upgradeLink}
-            >
+            <Link to="/employer-dashboard/settings" className={styles.upgradeLink}>
               {isVerified ? "View Settings" : "Complete Profile →"}
+            </Link>
+          </div>
+
+          {/* Plan indicator */}
+          <div className={styles.planCard}>
+            <h3>📋 Your Plan</h3>
+            <div className={`${styles.planBadge} ${isEnterprise ? styles.planEnterprise : styles.planBasic}`}>
+              {isEnterprise ? "🏥 Enterprise" : maxJobsPerMonth === Infinity ? "⭐ Professional" : "🆓 Basic"}
+            </div>
+            {!canPostLocum && (
+              <p className={styles.locumNote}>
+                🔒 Locum postings require Enterprise plan
+              </p>
+            )}
+            {canPostLocum && (
+              <p className={styles.locumAvail}>
+                ✓ Locum postings available
+              </p>
+            )}
+            <Link to="/employer-dashboard/settings?tab=billing" className={styles.upgradeLink}>
+              {isEnterprise ? "Manage Plan" : "Upgrade Plan →"}
             </Link>
           </div>
         </aside>

@@ -9,7 +9,7 @@ import styles from "./ViewAllEmployerApplications.module.css";
 import {
   useGetCompanyApplicationsQuery,
   useUpdateApplicationStatusMutation,
-} from "../../services/companiesApi";
+} from "../services/companiesApi";
 
 const statusOptions = ["All Status", "Pending", "Reviewing", "Accepted", "Rejected"];
 
