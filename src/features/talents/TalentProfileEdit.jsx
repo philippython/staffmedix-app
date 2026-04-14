@@ -73,13 +73,30 @@ export default function TalentProfileEdit() {
   const myRecipients       = recipientsRaw?.results ?? recipientsRaw ?? [];
   const hasAssignedPayment = myRecipients.length > 0;
 
-  // Earnings from recipients
-  const totalEarned = myRecipients
-    .filter(r => r.payment?.status === "success" || r.payment?.status === "SUCCESS")
-    .reduce((sum, r) => sum + parseFloat(r.payment?.amount ?? 0), 0);
+  // 5% platform commission — talent receives 95% of employer payment
+  const PLATFORM_FEE = 0.05;
+  const TALENT_SHARE = 1 - PLATFORM_FEE; // 0.95
 
-  // eligible: true only when at least one recipient has eligible=true
-  const eligible = myRecipients.some(r => r.eligible === true);
+  const pendingRecipients  = myRecipients.filter(r => !r.eligible);
+  const eligibleRecipients = myRecipients.filter(r => r.eligible === true);
+
+  // Total gross paid by employer for this talent
+  const totalGross = myRecipients
+    .filter(r => r.payment_status === "success" || r.payment_status === "SUCCESS")
+    .reduce((sum, r) => sum + parseFloat(r.payment_amount ?? 0), 0);
+
+  // What talent actually receives after 5% platform fee
+  const totalEarned       = totalGross * TALENT_SHARE;
+  const platformFeeTotal  = totalGross * PLATFORM_FEE;
+
+  // Withdrawable = 95% of eligible (approved) payments only
+  const withdrawableGross = eligibleRecipients
+    .filter(r => r.payment_status === "success" || r.payment_status === "SUCCESS")
+    .reduce((sum, r) => sum + parseFloat(r.payment_amount ?? 0), 0);
+  const withdrawableAmt = withdrawableGross * TALENT_SHARE;
+
+  // eligible: at least one recipient is approved
+  const eligible = eligibleRecipients.length > 0;
 
   function fmtMoney(n) {
     if (!n) return "₦0";
@@ -92,13 +109,20 @@ export default function TalentProfileEdit() {
   }
 
   async function handleWithdraw() {
-    if (!withdrawAmt || parseFloat(withdrawAmt) <= 0) return;
+    // Talent can only withdraw 95% of the eligible gross amount
+    const amt = parseFloat(withdrawAmt) || withdrawableAmt;
+    if (!amt || amt <= 0) { showMsg("Enter a valid amount", "error"); return; }
+    if (amt > withdrawableAmt) { showMsg(`Max withdrawable is ${fmtMoney(withdrawableAmt)} (95% of approved payments)`, "error"); return; }
+    if (!savedAcct) { showMsg("Add your bank account before withdrawing", "error"); return; }
+    console.log("[withdraw] sending:", { amount: amt, to: savedAcct?.bank_name, account: savedAcct?.account_number });
     try {
-      await withdraw({ amount: withdrawAmt }).unwrap();
-      showMsg("Withdrawal initiated. Funds arrive in 1-2 business days.");
+      const result = await withdraw({ amount: amt }).unwrap();
+      console.log("[withdraw] success:", result);
+      showMsg(`Withdrawal of ${fmtMoney(amt)} initiated. Funds arrive in 1-2 business days.`);
       setWithdrawAmt("");
     } catch (err) {
-      showMsg(err?.data?.error ?? err?.data?.detail ?? "Withdrawal failed. Ensure account details are saved.", "error");
+      console.error("[withdraw] error:", err);
+      showMsg(err?.data?.error ?? err?.data?.detail ?? `Withdrawal failed (${err?.status ?? "unknown error"}). Check your account details.`, "error");
     }
   }
 
@@ -147,6 +171,7 @@ export default function TalentProfileEdit() {
         console.log("[handleSaveAccount] PATCH existing account id:", savedAcct.id);
         result = await updateAccount({ id: savedAcct.id, data: payload }).unwrap();
       } else {
+        console.log("[handleSaveAccount] POST new account");
         result = await createAccount(payload).unwrap();
       }
       console.log("[handleSaveAccount] success →", result);
@@ -831,14 +856,28 @@ export default function TalentProfileEdit() {
                   <span className={styles.paySummaryIcon}>💰</span>
                   <div>
                     <p className={styles.paySummaryVal}>{fmtMoney(totalEarned)}</p>
-                    <p className={styles.paySummaryLbl}>Total Earned</p>
+                    <p className={styles.paySummaryLbl}>Total Earned (after 5% fee)</p>
                   </div>
                 </div>
                 <div className={styles.paySummaryCard}>
-                  <span className={styles.paySummaryIcon}>📋</span>
+                  <span className={styles.paySummaryIcon}>💸</span>
                   <div>
-                    <p className={styles.paySummaryVal}>{myRecipients.length}</p>
-                    <p className={styles.paySummaryLbl}>Payments Received</p>
+                    <p className={styles.paySummaryVal}>{fmtMoney(withdrawableAmt)}</p>
+                    <p className={styles.paySummaryLbl}>Withdrawable</p>
+                  </div>
+                </div>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>⏳</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{pendingRecipients.length}</p>
+                    <p className={styles.paySummaryLbl}>Pending Approval</p>
+                  </div>
+                </div>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>✅</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{eligibleRecipients.length}</p>
+                    <p className={styles.paySummaryLbl}>Approved</p>
                   </div>
                 </div>
               </div>
@@ -852,40 +891,62 @@ export default function TalentProfileEdit() {
                 <>
                   {!eligible && (
                     <div className={styles.ineligibleBanner}>
-                      ⚠️ Your account is not yet eligible for withdrawals. Your earnings are visible but withdrawals are disabled until eligibility is confirmed by the admin.
+                      ⏳ Withdrawal is locked until admin approves your payment. Once approved, funds will be available to withdraw to your connected bank account.
                     </div>
                   )}
                   <div className={styles.payBlock}>
                     <h3>Withdraw Funds</h3>
                     <p className={styles.payHint}>Funds are sent to your saved bank account.</p>
-                    {!savedAcct && <p className={styles.payWarn}>⚠️ Add your bank account below before withdrawing.</p>}
+                    {!savedAcct && <p className={styles.payWarn}>⚠️ Connect your bank account below so funds can be transferred once your payment is approved.</p>}
                     <div className={styles.payFormCol}>
                       {myRecipients.length > 0 && (
                         <div className={styles.recipientList}>
-                          {myRecipients.map(r => (
-                            <div key={r.id} className={styles.recipientItem}>
-                              <span>🏥 {r.job?.title ?? "Locum job"}</span>
-                              <span className={r.eligible ? styles.recipientEligible : styles.recipientLocked}>
-                                {r.eligible ? "✓ Eligible" : "⏳ Pending"}
-                              </span>
+                          {pendingRecipients.length > 0 && (
+                            <div className={styles.recipientGroup}>
+                              <p className={styles.recipientGroupLabel}>⏳ Pending Admin Approval</p>
+                              {pendingRecipients.map(r => (
+                                <div key={r.id} className={styles.recipientItem}>
+                                  <span>🏥 {r.job_title ?? "Locum job"}</span>
+                                  <span className={styles.recipientLocked}>Pending</span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          )}
+                          {eligibleRecipients.length > 0 && (
+                            <div className={styles.recipientGroup}>
+                              <p className={styles.recipientGroupLabel}>✅ Approved — Ready to Withdraw</p>
+                              {eligibleRecipients.map(r => (
+                                <div key={r.id} className={styles.recipientItem}>
+                                  <span>🏥 {r.job_title ?? "Locum job"}</span>
+                                  <span className={styles.recipientEligible}>
+                                    {fmtMoney(parseFloat(r.payment_amount ?? 0) * TALENT_SHARE)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
+                      )}
+                      {eligible && (
+                        <p className={styles.payHint}>
+                          Max withdrawable: <strong>{fmtMoney(withdrawableAmt)}</strong> (95% of ₦{Number(withdrawableGross).toLocaleString()} approved)
+                        </p>
                       )}
                       <input
                         type="number"
                         className={styles.payInput}
-                        placeholder="Amount to withdraw (₦)"
+                        placeholder={eligible ? `Up to ${fmtMoney(withdrawableAmt)}` : "Not eligible yet"}
                         value={withdrawAmt}
                         onChange={e => setWithdrawAmt(e.target.value)}
                         disabled={!eligible}
+                        max={withdrawableAmt}
                       />
                       <button
                         className={styles.payBtn}
                         onClick={handleWithdraw}
-                        disabled={withdrawing || !eligible || !savedAcct || !withdrawAmt}
+                        disabled={withdrawing || !eligible || !savedAcct}
                       >
-                        {!eligible ? "🔒 Not Yet Eligible" : withdrawing ? "Processing…" : "💸 Withdraw"}
+                        {!eligible ? "🔒 Awaiting Admin Approval" : withdrawing ? "Processing…" : `💸 Withdraw${withdrawAmt ? " ₦" + Number(withdrawAmt).toLocaleString() : ""}`}
                       </button>
                       {payMsg.text && (
                         <p className={payMsg.type === "error" ? styles.payMsgError : styles.payMsgOk}>{payMsg.text}</p>
@@ -1003,12 +1064,11 @@ export default function TalentProfileEdit() {
                         <span>Status</span>
                       </div>
                       {myRecipients.map(r => {
-                        const p         = r.payment ?? {};
-                        const jobTitle  = r.job?.title ?? r.applied_job?.job?.title ?? "—";
-                        const employer  = p.user?.company_profile?.company_name ?? p.user?.email ?? "—";
-                        const status    = p.status ?? "pending";
-                        const isSuccess = ["success","SUCCESS"].includes(status);
-                        const date      = p.created_at ?? r.created_at;
+                        const jobTitle  = r.job_title ?? "—";
+                        const employer  = r.company_name || r.employer_email || "—";
+                        const status    = r.payment_status ?? "pending";
+                        const isSuccess = ["success","SUCCESS"].includes(r.payment_status ?? "");
+                        const date      = r.payment_date ?? r.date;
                         return (
                           <div key={r.id} className={styles.txRow}>
                             <span className={styles.txDate}>
@@ -1016,7 +1076,10 @@ export default function TalentProfileEdit() {
                             </span>
                             <span className={styles.txRef}>{jobTitle}</span>
                             <span className={styles.txReason}>{employer}</span>
-                            <span className={styles.txAmt}>{fmtMoney(p.amount ?? 0)}</span>
+                            <span className={styles.txAmt}>
+                              {fmtMoney(parseFloat(r.payment_amount ?? 0) * TALENT_SHARE)}
+                              <span className={styles.txAmtNote}> (95% of {fmtMoney(r.payment_amount ?? 0)})</span>
+                            </span>
                             <span className={`${styles.txStatus} ${isSuccess ? styles.txOk : styles.txFail}`}>
                               {r.eligible ? "✓ Eligible" : "⏳ Pending"} · {status}
                             </span>

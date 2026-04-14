@@ -7,11 +7,16 @@ import {
   useDeleteSubscriptionMutation,
   useUpdateSubscriptionMutation,
 } from "../../services/subscriptionApi";
+import { useGetAllCompanyProfilesQuery } from "../../services/employerApi";
 import {
   useGetAdsQuery,
   useToggleAdMutation,
   useDeleteAdMutation,
 } from "../../services/adsApi";
+import {
+  useGetRecipientsQuery,
+  useUpdateRecipientMutation,
+} from "../../services/paymentApi";
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 function fmt(n) {
@@ -121,7 +126,7 @@ function Paginator({ page, total, onChange }) {
 }
 
 // ── Plans panel ───────────────────────────────────────────────────────────
-function PlansPanel({ plans, planCounts, totalSubs, loading }) {
+function PlansPanel({ plans, planCounts, totalEmployers = 0, loading, freeCount = 0 }) {
   return (
     <div className={styles.plansGrid}>
       {loading
@@ -129,21 +134,26 @@ function PlansPanel({ plans, planCounts, totalSubs, loading }) {
         : plans.length === 0
         ? <p className={styles.empty}>No plans configured</p>
         : plans.map((plan, i) => {
-            const count = planCounts[plan.name ?? plan.type] ?? 0;
-            const pct   = totalSubs ? Math.round((count / totalSubs) * 100) : 0;
+            const planKey = (plan.type ?? "").toUpperCase();
+            const rawCount = planCounts[planKey] ?? 0;
+            const isFree = parseFloat(plan.amount ?? 0) === 0;
+            const count = isFree ? freeCount : rawCount;
+            // % of all employers (free + paid)
+            const pct = totalEmployers > 0 ? Math.round((count / totalEmployers) * 100) : 0;
+
             const color = PLAN_COLORS[i % PLAN_COLORS.length];
             return (
               <div key={plan.id ?? i} className={styles.planCard} style={{ "--plan-color": color }}>
                 <div className={styles.planCardTop}>
                   <span className={styles.planDot} style={{ background: color }} />
-                  <h3 className={styles.planName}>{plan.name ?? plan.type ?? "Plan"}</h3>
-                  <span className={styles.planSubs}>{count} subscriber{count !== 1 ? "s" : ""}</span>
+                  <h3 className={styles.planName}>{plan.type ?? "Plan"}</h3>
+                  <span className={styles.planSubs}>{isFree ? `${freeCount} on free plan` : `${count} subscriber${count !== 1 ? "s" : ""}`}</span>
                 </div>
                 <p className={styles.planPrice}>
-                  {plan.price != null ? fmt(plan.price) : "—"}
-                  {plan.duration ? <span className={styles.planDur}> / {plan.duration}</span> : ""}
+                  {isFree ? "Free" : plan.amount != null ? fmt(plan.amount) : "—"}
+                  
                 </p>
-                {plan.description && <p className={styles.planDesc}>{plan.description}</p>}
+                
                 <div className={styles.planBarWrap}>
                   <div className={styles.planBarTrack}>
                     <div className={styles.planBarFill} style={{ width: `${pct}%`, background: color }} />
@@ -178,20 +188,33 @@ function SubscriptionsTab() {
   const allSubs  = subsRaw?.results  ?? subsRaw  ?? [];
   const allPlans = plansRaw?.results ?? plansRaw ?? [];
 
+  // Total employers = all company profiles
+  // Free (Basic) employers = total - those with a paid active subscription
+  const { data: companiesRaw } = useGetAllCompanyProfilesQuery({ limit: 1000 });
+  const totalEmployers = companiesRaw?.count ?? (companiesRaw?.results ?? companiesRaw ?? []).length;
+  const paidSubCount   = allSubs.filter(s => parseFloat(s.plan?.amount ?? 0) > 0).length;
+  const freeCount      = Math.max(0, totalEmployers - paidSubCount);
+
   const active   = allSubs.filter(subIsActive);
   const inactive = allSubs.filter(s => !subIsActive(s));
   const expiring = active.filter(s => { const d = daysLeft(s.expiry_date); return d != null && d >= 0 && d <= 7; });
 
+  // Revenue = plan.amount per subscription (Subscription model has no amount field)
   const totalRevenue = allSubs.reduce((sum, s) =>
-    sum + parseFloat(s.amount ?? s.price ?? s.plan?.price ?? 0), 0);
+    sum + parseFloat(s.plan?.amount ?? 0), 0);
 
   const now = new Date();
   const monthRevenue = allSubs
     .filter(s => { const d = s.start_date ? new Date(s.start_date) : null; return d && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); })
-    .reduce((sum, s) => sum + parseFloat(s.amount ?? s.price ?? s.plan?.price ?? 0), 0);
+    .reduce((sum, s) => sum + parseFloat(s.plan?.amount ?? 0), 0);
 
+  // Plan model has .type field (e.g. "BASIC", "PROFESSIONAL", "ENTERPRISE")
+  // Subscription.plan is a nested object from the serializer
+  // planCounts: key = plan.type (uppercase e.g. "ENTERPRISE")
+  // BASIC plan is free — companies on basic have NO subscription record
+  // so planCounts["BASIC"] = 0 is correct (they never paid)
   const planCounts = allSubs.reduce((acc, s) => {
-    const k = s.plan?.name ?? s.plan?.type ?? s.plan_name ?? "Unknown";
+    const k = (s.plan?.type ?? "Unknown").toUpperCase();
     acc[k] = (acc[k] ?? 0) + 1;
     return acc;
   }, {});
@@ -205,7 +228,7 @@ function SubscriptionsTab() {
     const q = search.trim().toLowerCase();
     return ok && (!q ||
       s.company?.company_name?.toLowerCase().includes(q) ||
-      (s.plan?.name ?? s.plan_name ?? "").toLowerCase().includes(q));
+      (s.plan?.type ?? "").toLowerCase().includes(q));
   });
 
   const totalPg = Math.ceil(filtered.length / SUB_PAGE);
@@ -246,7 +269,7 @@ function SubscriptionsTab() {
 
       {/* Plans */}
       <div className={styles.sectionHead}><h2>Plans</h2></div>
-      <PlansPanel plans={allPlans} planCounts={planCounts} totalSubs={allSubs.length} loading={loadPlans} />
+      <PlansPanel plans={allPlans} planCounts={planCounts} totalEmployers={totalEmployers} loading={loadPlans} freeCount={freeCount} />
 
       {/* Subscriptions table */}
       <div className={styles.sectionHead}>
@@ -293,9 +316,10 @@ function SubscriptionsTab() {
                 {paged.map(s => {
                   const live   = subIsActive(s);
                   const days   = daysLeft(s.expiry_date);
-                  const amt    = parseFloat(s.amount ?? s.price ?? s.plan?.price ?? 0);
-                  const plan   = s.plan?.name ?? s.plan?.type ?? s.plan_name ?? "—";
-                  const co     = s.company?.company_name ?? s.company ?? "—";
+                  const amt    = parseFloat(s.plan?.amount ?? 0);
+                  const plan   = s.plan?.type ?? "—";
+                  // company may be a UUID string (FK) or nested object
+                  const co     = s.company?.company_name ?? (typeof s.company === "string" ? "ID: " + s.company.slice(0,8) + "…" : "—");
                   return (
                     <tr key={s.id}>
                       <td className={styles.tdBold}>{co}</td>
@@ -498,6 +522,134 @@ function AdsTab() {
   );
 }
 
+// ── Locum Manager tab ───────────────────────────────────────────────────────
+function LocumTab() {
+  const [filter, setFilter] = useState("pending");
+  const [toast, setToast]   = useState(null);
+
+  const { data: recipientsRaw, isLoading } = useGetRecipientsQuery();
+  const [updateRecipient, { isLoading: updating }] = useUpdateRecipientMutation();
+
+  const TALENT_SHARE = 0.95;
+  const fmt = (n) => n ? `₦${Number(n).toLocaleString()}` : "₦0";
+  function fmtD(d) {
+    if (!d) return "—";
+    try { return new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }); }
+    catch { return d; }
+  }
+
+  function toast_(msg, type = "success") {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3500);
+  }
+
+  const allRecipients = recipientsRaw?.results ?? recipientsRaw ?? [];
+  const pending  = allRecipients.filter(r => !r.eligible);
+  const approved = allRecipients.filter(r => r.eligible === true);
+
+  const shown = filter === "pending" ? pending : filter === "approved" ? approved : allRecipients;
+
+  async function handleSetEligible(id, eligible) {
+    try {
+      await updateRecipient({ id, eligible }).unwrap();
+      toast_(eligible ? "Payment approved — talent can now withdraw" : "Approval revoked");
+    } catch {
+      toast_("Failed to update", "error");
+    }
+  }
+
+  return (
+    <>
+      <Toast t={toast} />
+
+      <div className={styles.statsStrip}>
+        <StatCard icon="⏳" label="Pending Approval"  value={pending.length}  loading={isLoading} accent="amber" />
+        <StatCard icon="✅" label="Approved"          value={approved.length} loading={isLoading} accent="green" />
+        <StatCard icon="🏥" label="Total Locum"       value={allRecipients.length} loading={isLoading} />
+      </div>
+
+      <FilterTabs
+        active={filter}
+        onChange={setFilter}
+        tabs={[
+          { key: "pending",  label: "Pending",  count: pending.length },
+          { key: "approved", label: "Approved", count: approved.length },
+          { key: "all",      label: "All",      count: allRecipients.length },
+        ]}
+      />
+
+      {isLoading ? (
+        <div className={styles.skelRows}>{[...Array(4)].map((_, i) => <div key={i} className={styles.skelRow} />)}</div>
+      ) : shown.length === 0 ? (
+        <div className={styles.emptyBox}><span>🏥</span><p>No locum payments found</p></div>
+      ) : (
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Talent</th>
+                <th>Job</th>
+                <th>Employer / Company</th>
+                <th>Gross (Employer Paid)</th>
+                <th>Talent Gets (95%)</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {shown.map(r => {
+                const gross  = parseFloat(r.payment_amount ?? 0);
+                const net    = gross * TALENT_SHARE;
+                const talent = r.talent_name || r.talent_email || "—";
+                const job    = r.job_title ?? "—";
+                const co     = r.company_name || r.employer_email || "—";
+                const date   = r.payment_date ?? r.date;
+                return (
+                  <tr key={r.id}>
+                    <td className={styles.tdBold}>{talent}</td>
+                    <td className={styles.tdMute}>{job}</td>
+                    <td className={styles.tdMute}>{co}</td>
+                    <td className={styles.tdMoney}>{fmt(gross)}</td>
+                    <td className={styles.tdMoney} style={{color:"#3b82f6"}}>{fmt(net)}</td>
+                    <td className={styles.tdMute}>{fmtD(date)}</td>
+                    <td>
+                      <span className={`${styles.pill} ${r.eligible ? styles.pillGreen : styles.pillAmber}`}>
+                        {r.eligible ? "✅ Approved" : "⏳ Pending"}
+                      </span>
+                    </td>
+                    <td>
+                      <div className={styles.rowBtns}>
+                        {!r.eligible ? (
+                          <button
+                            className={styles.btnGreen}
+                            disabled={updating}
+                            onClick={() => handleSetEligible(r.id, true)}
+                          >
+                            ✓ Approve
+                          </button>
+                        ) : (
+                          <button
+                            className={styles.btnAmber}
+                            disabled={updating}
+                            onClick={() => handleSetEligible(r.id, false)}
+                          >
+                            Revoke
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────
 export default function AdminMonetization() {
   const [tab, setTab] = useState("subscriptions");
@@ -519,6 +671,12 @@ export default function AdminMonetization() {
           💳 Subscriptions & Plans
         </button>
         <button
+          className={`${styles.mainTab} ${tab === "locum" ? styles.mainTabActive : ""}`}
+          onClick={() => setTab("locum")}
+        >
+          🏥 Locum Payments
+        </button>
+        <button
           className={`${styles.mainTab} ${tab === "ads" ? styles.mainTabActive : ""}`}
           onClick={() => setTab("ads")}
         >
@@ -527,7 +685,7 @@ export default function AdminMonetization() {
       </div>
 
       <div className={styles.tabContent}>
-        {tab === "subscriptions" ? <SubscriptionsTab /> : <AdsTab />}
+        {tab === "subscriptions" ? <SubscriptionsTab /> : tab === "locum" ? <LocumTab /> : <AdsTab />}
       </div>
     </div>
   );

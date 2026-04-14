@@ -157,6 +157,16 @@ export const paymentApi = createApi({
       invalidatesTags: ["Recipient", "Payment"],
     }),
 
+    /** PATCH /payments/payment-recipients/<id>/ — admin approve/revoke */
+    updateRecipient: builder.mutation({
+      query: ({ id, eligible }) => ({
+        url: `payment-recipients/${id}/`,
+        method: "PATCH",
+        body: { eligible },
+      }),
+      invalidatesTags: ["Recipient"],
+    }),
+
     deleteRecipient: builder.mutation({
       query: (id) => ({
         url: `payment-recipients/${id}/`,
@@ -184,5 +194,6 @@ export const {
   useGetRecipientsQuery,
   useGetRecipientByIdQuery,
   useCreateRecipientMutation,
+  useUpdateRecipientMutation,
   useDeleteRecipientMutation,
 } = paymentApi;

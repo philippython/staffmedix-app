@@ -7,7 +7,7 @@ import {
 } from "../../services/jobsApi";
 import { useWhoAmIQuery } from "../../services/userApi";
 import { useGetMyProfileQuery } from "../../services/talentApi";
-import { useGetPaymentsQuery } from "../../services/paymentApi";
+import { useGetRecipientsQuery } from "../../services/paymentApi";
 import { useMemo } from "react";
 
 export default function EmployeeDashboard() {
@@ -26,12 +26,22 @@ export default function EmployeeDashboard() {
     { skip: !user?.talent_id },
   );
 
-  const { data: earningsData } = useGetPaymentsQuery();
-  const allEarnings   = earningsData?.results ?? earningsData ?? [];
-  const totalEarned   = allEarnings
-    .filter(p => p.type === "incoming" && p.status === "success")
-    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0), 0);
-  const recentPayments = allEarnings.slice(0, 3);
+  // Talent earnings come from PaymentRecipients, not Payments directly
+  // (Payments are owned by the employer who paid, not the talent)
+  const { data: recipientsData } = useGetRecipientsQuery();
+  const allRecipients  = recipientsData?.results ?? recipientsData ?? [];
+  const TALENT_SHARE   = 0.95; // 5% platform fee
+
+  const successRecipients = allRecipients.filter(
+    r => r.payment_status === "success" || r.payment_status === "SUCCESS"
+  );
+  const totalEarned    = successRecipients.reduce(
+    (sum, r) => sum + parseFloat(r.payment_amount ?? 0) * TALENT_SHARE, 0
+  );
+  const pendingCount   = allRecipients.filter(r => !r.eligible).length;
+  const eligibleCount  = allRecipients.filter(r => r.eligible === true).length;
+  const recentPayments = allRecipients.slice(0, 3);
+
   function fmtMoney(n) {
     if (!n) return "₦0";
     return `₦${Number(n).toLocaleString()}`;
@@ -307,19 +317,26 @@ export default function EmployeeDashboard() {
             <h3>💰 Earnings</h3>
             <p className={styles.earningsTotal}>{fmtMoney(totalEarned)}</p>
             <p className={styles.earningsSubLabel}>Total earned from locum jobs</p>
+            <div className={styles.earningsMeta}>
+              <span>⏳ {pendingCount} pending</span>
+              <span>✅ {eligibleCount} approved</span>
+            </div>
             {recentPayments.length > 0 && (
               <div className={styles.earningsList}>
-                {recentPayments.filter(p => p.type === "incoming").map(p => (
-                  <div key={p.id} className={styles.earningsItem}>
+                {recentPayments.map(r => (
+                  <div key={r.id} className={styles.earningsItem}>
                     <span className={styles.earningsItemJob}>
-                      {p.recipients?.[0]?.job?.title ?? p.reason}
+                      {r.job_title ?? "Locum job"}
+                      {!r.eligible && <span className={styles.pendingTag}> ⏳</span>}
                     </span>
-                    <span className={styles.earningsItemAmt}>+{fmtMoney(p.amount)}</span>
+                    <span className={`${styles.earningsItemAmt} ${!r.eligible ? styles.earningsItemPending : ""}`}>
+                      {r.eligible ? "+" : "~"}{fmtMoney(parseFloat(r.payment_amount ?? 0) * TALENT_SHARE)}
+                    </span>
                   </div>
                 ))}
               </div>
             )}
-            <Link to={`/employee-dashboard/profile/edit/${user?.talent_id}`}
+            <Link to={`/employee-dashboard/profile/edit/${user?.talent_id}#earnings`}
               className={styles.completeProfile}>
               View All Earnings
             </Link>

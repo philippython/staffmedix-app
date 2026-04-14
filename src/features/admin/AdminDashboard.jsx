@@ -3,6 +3,7 @@ import styles from "./AdminDashboard.module.css";
 import { useGetAllUsersQuery } from "../../services/userApi";
 import { useGetJobsQuery, useGetAppliedJobsQuery } from "../../services/jobsApi";
 import { useGetSubscriptionsQuery } from "../../services/subscriptionApi";
+import { useGetPaymentsQuery, useGetRecipientsQuery, useUpdateRecipientMutation } from "../../services/paymentApi";
 import { useGetTalentsQuery } from "../../services/talentApi";
 import { useGetAllCompanyProfilesQuery } from "../../services/employerApi";
 
@@ -23,23 +24,61 @@ function StatCard({ label, value, icon, isLoading, sub }) {
   );
 }
 
-function calcRevenue(subscriptions = []) {
-  const now = new Date();
+function fmt(n) {
+  if (!n) return "₦0";
+  return n >= 1_000_000 ? `₦${(n / 1_000_000).toFixed(1)}M`
+    : n >= 1_000 ? `₦${(n / 1_000).toFixed(1)}K`
+    : `₦${Number(n).toLocaleString()}`;
+}
+
+function calcStats(subscriptions = [], payments = []) {
+  const COMMISSION = 0.05;
+  const now       = new Date();
   const thisMonth = now.getMonth();
   const thisYear  = now.getFullYear();
-  let total = 0, monthly = 0;
-  for (const sub of subscriptions) {
-    const amount = parseFloat(sub.amount ?? sub.price ?? sub.plan?.price ?? 0);
-    total += amount;
-    const start = sub.start_date ? new Date(sub.start_date) : null;
-    if (start && start.getMonth() === thisMonth && start.getFullYear() === thisYear)
-      monthly += amount;
-  }
-  const fmt = (n) =>
-    n >= 1_000_000 ? `₦${(n / 1_000_000).toFixed(1)}M`
-    : n >= 1_000   ? `₦${(n / 1_000).toFixed(1)}K`
-    : `₦${n.toLocaleString()}`;
-  return { total: fmt(total), monthly: fmt(monthly) };
+
+  // Paid subs only — Basic plan is FREE (amount = 0), skip it
+  const paidSubs = subscriptions.filter(s => parseFloat(s.plan?.amount ?? 0) > 0);
+
+  // Total Revenue = sum of paid subscription amounts
+  const subRevenue = paidSubs.reduce((sum, s) => sum + parseFloat(s.plan?.amount ?? 0), 0);
+
+  // 5% commission on all successful locum payments
+  const locumRevenue = payments
+    .filter(p => p.reason === "locum" && (p.status === "success" || p.status === "SUCCESS"))
+    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0) * COMMISSION, 0);
+
+  // Platform earnings = sub revenue + locum commission
+  const platformEarnings = subRevenue + locumRevenue;
+
+  // Total locum gross (shown separately)
+  const totalLocum = payments
+    .filter(p => p.reason === "locum" && (p.status === "success" || p.status === "SUCCESS"))
+    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0), 0);
+
+  // This month
+  const monthlySubRev = paidSubs
+    .filter(s => { const d = s.start_date ? new Date(s.start_date) : null; return d && d.getMonth() === thisMonth && d.getFullYear() === thisYear; })
+    .reduce((sum, s) => sum + parseFloat(s.plan?.amount ?? 0), 0);
+
+  const monthlyLocumRev = payments
+    .filter(p => {
+      if (p.reason !== "locum" || (p.status !== "success" && p.status !== "SUCCESS")) return false;
+      const d = p.created_at ? new Date(p.created_at) : null;
+      return d && d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+    })
+    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0) * COMMISSION, 0);
+
+  const monthlyPlatform = monthlySubRev + monthlyLocumRev;
+
+  return {
+    subRevenue:       fmt(subRevenue),
+    platformEarnings: fmt(platformEarnings),
+    locumCommission:  fmt(locumRevenue),
+    totalLocum:       fmt(totalLocum),
+    monthlyPlatform:  fmt(monthlyPlatform),
+    monthlySubRev:    fmt(monthlySubRev),
+  };
 }
 
 function timeAgo(dateStr) {
@@ -82,7 +121,27 @@ export default function AdminDashboard() {
   const totalJobs       = allJobsData?.count       ?? "—";
 
   const allSubs         = allSubsData?.results ?? allSubsData ?? [];
-  const { total: revenueTotal, monthly: revenueMonthly } = calcRevenue(allSubs);
+  const { data: paymentsRaw }   = useGetPaymentsQuery();
+  const { data: recipientsRaw } = useGetRecipientsQuery();
+  const allPayments   = paymentsRaw?.results   ?? paymentsRaw   ?? [];
+  const allRecipients = recipientsRaw?.results ?? recipientsRaw ?? [];
+
+  const stats = calcStats(allSubs, allPayments);
+
+  // Locum management
+  const [approveRecipient, { isLoading: approving }] = useUpdateRecipientMutation();
+
+  async function handleApproveLocum(recipientId) {
+    try {
+      await approveRecipient({ id: recipientId, eligible: true }).unwrap();
+    } catch (e) {
+      console.error("Approve failed:", e);
+    }
+  }
+
+  const pendingLocum   = allRecipients.filter(r => !r.eligible);
+  const approvedLocum  = allRecipients.filter(r => r.eligible === true);
+  // totalLocum is in stats.totalLocum
   const totalSubs       = allSubs.length;
 
   const allTalents       = talentsData?.results  ?? talentsData  ?? [];
@@ -96,8 +155,8 @@ export default function AdminDashboard() {
 
   // Subscription plan breakdown
   const planCounts = allSubs.reduce((acc, s) => {
-    const name = s.plan?.name ?? s.plan_name ?? "Unknown";
-    acc[name] = (acc[name] ?? 0) + 1;
+    const k = s.plan?.type ?? "Unknown";
+    acc[k] = (acc[k] ?? 0) + 1;
     return acc;
   }, {});
 
@@ -117,6 +176,9 @@ export default function AdminDashboard() {
           <Link to="/admin-dashboard/monetization" className={styles.settingsButton}>
             💳 Monetization
           </Link>
+          <Link to="/admin-dashboard/employer-verification" className={styles.settingsButton}>
+            🔍 Verifications
+          </Link>
         </div>
       </div>
 
@@ -124,7 +186,9 @@ export default function AdminDashboard() {
       <div className={styles.statsGrid}>
         <StatCard label="Total Users"    value={totalUsers}      icon="👥" isLoading={loadingCount}   sub={`${totalSubs} active subscriptions`} />
         <StatCard label="Active Jobs"    value={totalActiveJobs} icon="💼" isLoading={loadingJobs}    sub={`${totalJobs} total postings`} />
-        <StatCard label="Total Revenue"  value={revenueTotal}    icon="💰" isLoading={loadingSubs}    sub={`${revenueMonthly} this month`} />
+        <StatCard label="Subscription Revenue" value={stats.subRevenue}       icon="💰" isLoading={loadingSubs} sub={`${stats.monthlySubRev} this month (paid plans only)`} />
+        <StatCard label="Platform Earnings"    value={stats.platformEarnings} icon="📈" isLoading={loadingSubs} sub={`Subs + ${stats.locumCommission} locum commission`} />
+        <StatCard label="Locum Payments"       value={stats.totalLocum}       icon="🏥" isLoading={loadingSubs} sub={`${pendingLocum.length} pending approval`} />
       </div>
 
       {/* ── Verification cards ── */}
@@ -295,7 +359,7 @@ export default function AdminDashboard() {
               <Link to="/admin-dashboard/all-users/create" className={styles.quickItem}>
                 <span>➕</span><span>Create User</span>
               </Link>
-              <Link to="/admin-dashboard/verification" className={styles.quickItem}>
+              <Link to="/admin-dashboard/employer-verification" className={styles.quickItem}>
                 <span>🔍</span>
                 <span>
                   Verify Employers
@@ -321,6 +385,81 @@ export default function AdminDashboard() {
 
         </aside>
       </div>
+
+      {/* ── Locum Payment Manager ─────────────────────────────────────────── */}
+      <section className={styles.locumSection}>
+        <div className={styles.locumHeader}>
+          <h2>🏥 Locum Payment Manager</h2>
+          <div className={styles.locumTabs}>
+            <span className={styles.locumTabBadge}>
+              {pendingLocum.length} pending · {approvedLocum.length} approved
+            </span>
+          </div>
+        </div>
+
+        {pendingLocum.length === 0 && approvedLocum.length === 0 ? (
+          <p className={styles.emptyMsg}>No locum payments recorded yet.</p>
+        ) : (
+          <div className={styles.locumTable}>
+            <div className={styles.locumTableHead}>
+              <span>Talent</span>
+              <span>Job</span>
+              <span>Employer</span>
+              <span>Gross Amount</span>
+              <span>Talent Gets (95%)</span>
+              <span>Date</span>
+              <span>Status</span>
+            </div>
+            {[...pendingLocum, ...approvedLocum].map(r => {
+              const gross       = parseFloat(r.payment_amount ?? 0);
+              const talentShare = gross * 0.95;
+              const employer    = r.company_name || r.employer_email || "—";
+              const talent      = r.talent_name  || r.talent_email   || "—";
+              const job         = r.job_title    ?? "—";
+              const date        = r.payment_date ?? r.date;
+              const isPending   = !r.eligible;
+              const fmt = (n) => n ? `₦${Number(n).toLocaleString()}` : "₦0";
+              return (
+                <div key={r.id} className={`${styles.locumTableRow} ${isPending ? styles.locumRowPending : styles.locumRowApproved}`}>
+                  <span className={styles.locumCell}>{talent}</span>
+                  <span className={styles.locumCell}>{job}</span>
+                  <span className={styles.locumCell}>{employer}</span>
+                  <span className={styles.locumCell}>{fmt(gross)}</span>
+                  <span className={styles.locumCell}>{fmt(talentShare)}</span>
+                  <span className={styles.locumCell}>
+                    {date ? new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                  </span>
+                  <span className={styles.locumCell}>
+                    <div style={{display:"flex",gap:"0.4rem",alignItems:"center",flexWrap:"wrap"}}>
+                      <span className={isPending ? styles.locumBadgePending : styles.locumBadgeApproved}>
+                        {isPending ? "⏳ Pending" : "✅ Approved"}
+                      </span>
+                      {isPending && (
+                        <button
+                          onClick={() => handleApproveLocum(r.id)}
+                          disabled={approving}
+                          style={{
+                            padding:"0.15rem 0.5rem",
+                            fontSize:"0.68rem",
+                            fontWeight:700,
+                            background:"#0d9269",
+                            color:"#fff",
+                            border:"none",
+                            borderRadius:"0.35rem",
+                            cursor:"pointer",
+                          }}
+                        >
+                          {approving ? "…" : "✓ Approve"}
+                        </button>
+                      )}
+                    </div>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

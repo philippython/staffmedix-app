@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import { Link, useNavigate } from "react-router";
 import styles from "./EmployerSettings.module.css";
 import {
@@ -72,7 +73,9 @@ export default function EmployerSettings() {
   const [payAmount, setPayAmount]               = useState("");
   const [payLocumNote, setPayLocumNote]         = useState("");
   const [selectedAppliedJob, setSelectedAppliedJob] = useState(null);
+  const [payReturnMsg, setPayReturnMsg]         = useState(null);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const token = useSelector((state) => state.auth.token);
   const { data: whoAmI } = useWhoAmIQuery(undefined, { skip: !token });
@@ -112,6 +115,120 @@ export default function EmployerSettings() {
     website: "",
     description: "",
   });
+
+  // ── Handle Paystack redirect back ─────────────────────────────────────
+  useEffect(() => {
+    const params    = new URLSearchParams(window.location.search);
+    const reference = params.get("reference");
+    if (!reference) return;
+
+    // Clear the reference from URL so refresh doesn't re-run
+    const clean = window.location.pathname + window.location.search.replace(/[?&]reference=[^&]*/g, "").replace(/^&/, "?");
+    window.history.replaceState({}, "", clean);
+
+    const pendingSub   = sessionStorage.getItem("pendingSubscription");
+    const pendingLocum = sessionStorage.getItem("pendingLocum");
+
+    async function handleReturn() {
+      try {
+        setPayReturnMsg({ type: "loading", text: "Verifying payment…" });
+
+        // Call backend verify endpoint
+        // Get token for direct fetch calls
+        const authToken = (() => {
+          try {
+            const persist = JSON.parse(localStorage.getItem("persist:root") ?? "{}");
+            const auth    = JSON.parse(persist.auth ?? "{}");
+            if (auth.token) return auth.token;
+          } catch {}
+          return localStorage.getItem("token") ?? sessionStorage.getItem("token") ?? localStorage.getItem("authToken") ?? "";
+        })();
+
+        const verifyRes = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/payments/verify/?reference=${reference}`,
+          { headers: { Authorization: `Token ${authToken}` } }
+        );
+        const verifyData = await verifyRes.json();
+
+        if (!verifyRes.ok || (verifyData.status !== "success" && verifyData.status !== "SUCCESS")) {
+          setPayReturnMsg({ type: "error", text: `Payment verification failed: ${verifyData.error ?? verifyData.detail ?? "unknown error"}` });
+          return;
+        }
+
+        // ── Subscription payment ────────────────────────────────────────
+        if (pendingSub) {
+          const sub = JSON.parse(pendingSub);
+          sessionStorage.removeItem("pendingSubscription");
+
+          // Subscription is activated by backend verify/_try_activate_subscription
+          // Just show success and refresh
+          setPayReturnMsg({ type: "success", text: `🎉 You are now on the ${sub.planName} plan!` });
+          return;
+        }
+
+        // ── Locum payment ───────────────────────────────────────────────
+        if (pendingLocum) {
+          const loc = JSON.parse(pendingLocum);
+          sessionStorage.removeItem("pendingLocum");
+
+          const paymentId = loc.paymentId ?? verifyData.payment_id;
+          const talentId  = loc.talentId;
+          const jobId     = loc.jobId;
+
+          console.log("[payReturn] creating recipient:", { paymentId, talentId, jobId });
+
+          if (!talentId) {
+            setPayReturnMsg({ type: "error", text: "Payment succeeded but talent ID was missing. Contact support with ref: " + reference });
+            return;
+          }
+
+          // Get auth token - try multiple storage locations
+          const token = (() => {
+            try {
+              // Try redux-persist
+              const persist = JSON.parse(localStorage.getItem("persist:root") ?? "{}");
+              const auth    = JSON.parse(persist.auth ?? "{}");
+              if (auth.token) return auth.token;
+            } catch {}
+            // Try direct storage
+            return localStorage.getItem("token")
+                ?? sessionStorage.getItem("token")
+                ?? localStorage.getItem("authToken")
+                ?? "";
+          })();
+
+          const recipRes = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/payments/payment-recipients/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Token ${token}`,
+              },
+              body: JSON.stringify({ payment: paymentId, talent: talentId, job: jobId }),
+            }
+          );
+          const recipData = await recipRes.json();
+          console.log("[payReturn] recipient response:", recipData);
+
+          if (recipRes.ok) {
+            setPayReturnMsg({ type: "success", text: "✅ Locum payment recorded. The talent will see it in their earnings." });
+          } else {
+            setPayReturnMsg({ type: "error", text: `Payment succeeded but recipient recording failed: ${JSON.stringify(recipData)}` });
+          }
+          return;
+        }
+
+        setPayReturnMsg({ type: "success", text: "✅ Payment verified successfully." });
+      } catch (err) {
+        console.error("[payReturn] error:", err);
+        setPayReturnMsg({ type: "error", text: "Payment return error: " + err.message });
+      }
+    }
+
+    handleReturn();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (company) {
@@ -350,8 +467,18 @@ export default function EmployerSettings() {
   const [createRecipient]                      = useCreateRecipientMutation();
   const allPayments = paymentsRaw?.results ?? paymentsRaw ?? [];
 
+  // Total spent = all successful payments this employer made (subscription + locum)
+  // Payments are stored as INCOMING type (money goes into Paystack), not outgoing
   const totalSpent = allPayments
-    .filter(p => p.type === "outgoing" && p.status === "success")
+    .filter(p => p.status === "success" || p.status === "SUCCESS")
+    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0), 0);
+
+  const subscriptionSpend = allPayments
+    .filter(p => (p.status === "success" || p.status === "SUCCESS") && p.reason === "subscription")
+    .reduce((sum, p) => sum + parseFloat(p.amount ?? 0), 0);
+
+  const locumSpend = allPayments
+    .filter(p => (p.status === "success" || p.status === "SUCCESS") && p.reason === "locum")
     .reduce((sum, p) => sum + parseFloat(p.amount ?? 0), 0);
 
   function fmtMoney(n) {
@@ -372,7 +499,7 @@ export default function EmployerSettings() {
     setErrMsg(""); setSuccessMsg("");
     setSubscribingPlanId(plan.id);
     try {
-      const amount = plan.amount ?? plan.price ?? 0;
+      const amount = plan.amount ?? 0;
       if (!amount || parseFloat(amount) <= 0) {
         setErrMsg("Plan price not available. Please contact support.");
         return;
@@ -385,7 +512,7 @@ export default function EmployerSettings() {
       if (res.authorization_url) {
         sessionStorage.setItem("pendingSubscription", JSON.stringify({
           planId: plan.id,
-          planName: plan.type ?? plan.name,
+          planName: plan.type,
           amount,
           companyId,
           paymentId: res.payment_id,
@@ -416,10 +543,16 @@ export default function EmployerSettings() {
         note: payLocumNote || `Locum: ${selectedAppliedJob.job?.title} — ${selectedAppliedJob.talent?.full_name}`,
       }).unwrap();
       if (res.authorization_url) {
+        // Resolve talentId — backend accepts both User UUID and Talents UUID
+        const talentId = selectedAppliedJob.talent?.user?.id
+                      ?? selectedAppliedJob.talent?.user_id
+                      ?? selectedAppliedJob.talent?.user
+                      ?? selectedAppliedJob.talent?.id;
+        console.log("[locum] talentId:", talentId, "raw talent:", selectedAppliedJob.talent);
         sessionStorage.setItem("pendingLocum", JSON.stringify({
-          paymentId:  res.payment_id,
-          talentId:   selectedAppliedJob.talent?.user ?? selectedAppliedJob.talent?.id,
-          jobId:      selectedAppliedJob.id,
+          paymentId: res.payment_id,
+          talentId,
+          jobId: selectedAppliedJob.id,
         }));
         window.location.href = res.authorization_url;
       }
@@ -1003,7 +1136,7 @@ export default function EmployerSettings() {
                   <div className={styles.currentSubLeft}>
                     <span className={styles.currentSubLabel}>Current Plan</span>
                     <h3 className={styles.currentSubName}>
-                      {subscription.plan?.type ?? "Active Plan"}
+                      {subscription.plan?.type ?? "Plan"}
                     </h3>
                     <div className={styles.currentSubDates}>
                       <span>Started {subscription.start_date}</span>
@@ -1042,7 +1175,7 @@ export default function EmployerSettings() {
                 )}
                 {plans.map((plan) => {
                   const isBasic =
-                    (plan.type ?? plan.name)?.toLowerCase() === "basic";
+                    (plan.type)?.toLowerCase() === "basic";
                   const isCurrent =
                     subscription?.plan?.id === plan.id ||
                     subscription?.plan === plan.id;
@@ -1061,7 +1194,7 @@ export default function EmployerSettings() {
                       )}
                       <div className={styles.planCard2Top}>
                         <h4 className={styles.planCard2Name}>
-                          {plan.type ?? plan.name}
+                          {plan.type}
                         </h4>
                         <div className={styles.planCard2Price}>
                           {isBasic ? (
@@ -1090,7 +1223,7 @@ export default function EmployerSettings() {
                         )}
                         <ul className={styles.planFeatureBullets}>
                           {(() => {
-                            const t = (plan.type ?? plan.name ?? "").toLowerCase();
+                            const t = (plan.type ?? "").toLowerCase();
                             const feats = t.includes("enterprise")
                               ? ["Everything in Professional","API access","Advanced reporting","24/7 phone support","🏥 Locum management tools"]
                               : t.includes("pro")
@@ -1162,13 +1295,11 @@ export default function EmployerSettings() {
                     </p>
                     <div className={styles.modalPlanBox}>
                       <span className={styles.modalPlanName}>
-                        {selectedPlan.type ?? selectedPlan.name}
+                        {selectedPlan.type}
                       </span>
                       <span className={styles.modalPlanPrice}>
                         ₦
-                        {selectedPlan.amount
-                          ? Number(selectedPlan.amount).toLocaleString()
-                          : "—"}{" "}
+                        {Number(selectedPlan.amount ?? 0).toLocaleString()}{" "}
                         / month
                       </span>
                     </div>
@@ -1283,12 +1414,37 @@ export default function EmployerSettings() {
                 </div>
               )}
 
+              {/* Payment return banner */}
+              {payReturnMsg && (
+                <div className={`${styles.payReturnBanner} ${styles["payReturn_" + payReturnMsg.type]}`}>
+                  {payReturnMsg.type === "loading" && <span className={styles.spinner} />}
+                  {payReturnMsg.text}
+                  {payReturnMsg.type !== "loading" && (
+                    <button className={styles.payReturnClose} onClick={() => setPayReturnMsg(null)}>✕</button>
+                  )}
+                </div>
+              )}
+
               <div className={styles.paySummaryGrid}>
                 <div className={styles.paySummaryCard}>
                   <span className={styles.paySummaryIcon}>💸</span>
                   <div>
                     <p className={styles.paySummaryVal}>{fmtMoney(totalSpent)}</p>
                     <p className={styles.paySummaryLbl}>Total Spent</p>
+                  </div>
+                </div>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>💳</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{fmtMoney(subscriptionSpend)}</p>
+                    <p className={styles.paySummaryLbl}>Subscriptions</p>
+                  </div>
+                </div>
+                <div className={styles.paySummaryCard}>
+                  <span className={styles.paySummaryIcon}>🏥</span>
+                  <div>
+                    <p className={styles.paySummaryVal}>{fmtMoney(locumSpend)}</p>
+                    <p className={styles.paySummaryLbl}>Locum Payments</p>
                   </div>
                 </div>
                 <div className={styles.paySummaryCard}>
@@ -1386,29 +1542,40 @@ export default function EmployerSettings() {
                     <div className={styles.txTable}>
                       <div className={styles.txHead}>
                         <span>Date</span>
+                        <span>Type</span>
                         <span>Talent / Job</span>
-                        <span>Reason</span>
                         <span>Amount</span>
                         <span>Status</span>
                       </div>
                       {allPayments.map(p => {
-                        const recipient  = p.recipients?.[0];
-                        const talentName = recipient?.talent?.full_name ?? recipient?.talent?.username ?? null;
-                        const jobTitle   = recipient?.job?.title ?? null;
-                        const label      = talentName && jobTitle ? `${talentName} — ${jobTitle}`
-                                         : talentName ?? jobTitle  ?? "—";
+                        const isLocum   = p.reason === "locum";
+                        const isSub     = p.reason === "subscription";
+                        const isSuccess = p.status === "success" || p.status === "SUCCESS";
 
-                        console.log(p)
+                        // Locum: get talent name + job title from recipients
+                        const recipient  = p.recipients?.[0];
+                        const talentName = recipient?.talent?.full_name ?? recipient?.talent?.email ?? null;
+                        const jobTitle   = recipient?.job?.job_title ?? recipient?.job?.title ?? null;
+
+                        let label;
+                        if (isLocum && talentName && jobTitle) label = `${talentName} — ${jobTitle}`;
+                        else if (isLocum && talentName)         label = talentName;
+                        else if (isLocum && jobTitle)           label = jobTitle;
+                        else if (isSub)                         label = "Subscription";
+                        else                                    label = p.note ?? p.reference ?? "—";
+
                         return (
                           <div key={p.id} className={styles.txRow}>
                             <span className={styles.txDate}>
                               {new Date(p.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                             </span>
+                            <span className={`${styles.txReason} ${isLocum ? styles.txReasonLocum : styles.txReasonSub}`}>
+                              {isLocum ? "🏥 Locum" : "💳 Sub"}
+                            </span>
                             <span className={styles.txRef} title={label}>{label}</span>
-                            <span className={styles.txReason}>{p.reason}</span>
                             <span className={styles.txAmt}>{fmtMoney(p.amount)}</span>
-                            <span className={`${styles.txStatus} ${p.status === "success" ? styles.txOk : styles.txFail}`}>
-                              {p.status}
+                            <span className={`${styles.txStatus} ${isSuccess ? styles.txOk : styles.txFail}`}>
+                              {isSuccess ? "✓ Success" : p.status}
                             </span>
                           </div>
                         );
