@@ -61,7 +61,11 @@ function Field({ label, value }) {
 }
 
 export default function EmployerSettings() {
-  const [activeSection, setActiveSection] = useState("profile");
+  const [activeSection, setActiveSection] = useState(() => {
+    // Read tab from URL on mount (e.g. when Paystack redirects back with ?tab=payments)
+    const p = new URLSearchParams(window.location.search);
+    return p.get("tab") ?? "profile";
+  });
   const [editingProfile, setEditingProfile] = useState(false);
   const [editingContact, setEditingContact] = useState(false);
   const [newService, setNewService] = useState("");
@@ -182,39 +186,14 @@ export default function EmployerSettings() {
             return;
           }
 
-          // Get auth token - try multiple storage locations
-          const token = (() => {
-            try {
-              // Try redux-persist
-              const persist = JSON.parse(localStorage.getItem("persist:root") ?? "{}");
-              const auth    = JSON.parse(persist.auth ?? "{}");
-              if (auth.token) return auth.token;
-            } catch {}
-            // Try direct storage
-            return localStorage.getItem("token")
-                ?? sessionStorage.getItem("token")
-                ?? localStorage.getItem("authToken")
-                ?? "";
-          })();
-
-          const recipRes = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/payments/payment-recipients/`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Token ${token}`,
-              },
-              body: JSON.stringify({ payment: paymentId, talent: talentId, job: jobId }),
-            }
-          );
-          const recipData = await recipRes.json();
-          console.log("[payReturn] recipient response:", recipData);
-
-          if (recipRes.ok) {
+          // Use RTK mutation so cache is invalidated and talent/admin see update immediately
+          try {
+            const recipData = await createRecipient({ paymentId, talentId, jobId }).unwrap();
+            console.log("[payReturn] recipient created:", recipData);
             setPayReturnMsg({ type: "success", text: "✅ Locum payment recorded. The talent will see it in their earnings." });
-          } else {
-            setPayReturnMsg({ type: "error", text: `Payment succeeded but recipient recording failed: ${JSON.stringify(recipData)}` });
+          } catch (err) {
+            console.error("[payReturn] createRecipient failed:", err);
+            setPayReturnMsg({ type: "error", text: `Payment succeeded but recipient recording failed: ${err?.data?.error ?? JSON.stringify(err?.data) ?? "unknown error"}` });
           }
           return;
         }
@@ -633,6 +612,17 @@ export default function EmployerSettings() {
           {errMsg && <p className={styles.errMsg}>✕ {errMsg}</p>}
 
           {/* ── Organization Profile ── */}
+          {/* ── Paystack return banner — visible on any tab ── */}
+          {payReturnMsg && (
+            <div className={`${styles.payReturnBanner} ${styles["payReturn_" + payReturnMsg.type]}`}>
+              {payReturnMsg.type === "loading" && <span className={styles.spinner} />}
+              {payReturnMsg.text}
+              {payReturnMsg.type !== "loading" && (
+                <button className={styles.payReturnClose} onClick={() => setPayReturnMsg(null)}>✕</button>
+              )}
+            </div>
+          )}
+
           {activeSection === "profile" && (
             <div className={styles.section}>
               <div className={styles.sectionHeader}>
@@ -1411,17 +1401,6 @@ export default function EmployerSettings() {
                       ⬆ Upgrade to Enterprise
                     </button>
                   </div>
-                </div>
-              )}
-
-              {/* Payment return banner */}
-              {payReturnMsg && (
-                <div className={`${styles.payReturnBanner} ${styles["payReturn_" + payReturnMsg.type]}`}>
-                  {payReturnMsg.type === "loading" && <span className={styles.spinner} />}
-                  {payReturnMsg.text}
-                  {payReturnMsg.type !== "loading" && (
-                    <button className={styles.payReturnClose} onClick={() => setPayReturnMsg(null)}>✕</button>
-                  )}
                 </div>
               )}
 
