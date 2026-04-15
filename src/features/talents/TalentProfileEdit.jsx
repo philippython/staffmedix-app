@@ -32,6 +32,7 @@ export default function TalentProfileEdit() {
   // ── useState FIRST (payment hooks below reference these) ─────────────
   const [activeSection, setActiveSection]   = useState("basic");
   const [withdrawAmt, setWithdrawAmt]       = useState("");
+  const [editingAcct, setEditingAcct]       = useState(false);
   const [bankSearch, setBankSearch]         = useState("");
   const [selectedBank, setSelectedBank]     = useState(null);
   const [acctNumber, setAcctNumber]         = useState("");
@@ -176,6 +177,7 @@ export default function TalentProfileEdit() {
       }
       console.log("[handleSaveAccount] success →", result);
       showMsg("Account details saved ✓");
+      setEditingAcct(false);
     } catch (err) {
       console.error("[handleSaveAccount] error →", err);
       const msg = err?.data?.detail
@@ -957,8 +959,16 @@ export default function TalentProfileEdit() {
               )}
 
               <div className={styles.payBlock}>
-                <h3>Bank Account Details</h3>
-                {savedAcct ? (
+                <div className={styles.payBlockHeader}>
+                  <h3>Bank Account Details</h3>
+                  {savedAcct && !editingAcct && (
+                    <button className={styles.editAcctBtn} onClick={() => setEditingAcct(true)}>
+                      ✏️ Change Account
+                    </button>
+                  )}
+                </div>
+
+                {savedAcct && !editingAcct ? (
                   <div className={styles.savedAcctBanner}>
                     🏦 <strong>{savedAcct.bank_name}</strong> — {savedAcct.account_number}
                     <span style={{display:"block",fontSize:"0.78rem",marginTop:"0.2rem",color:"#065f46"}}>
@@ -966,8 +976,13 @@ export default function TalentProfileEdit() {
                     </span>
                   </div>
                 ) : (
-                  <p className={styles.payWarn}>No bank account saved yet. Add one below.</p>
-                )}
+                  <>
+                    {!savedAcct && <p className={styles.payWarn}>No bank account saved yet. Add one to receive withdrawals.</p>}
+                    {editingAcct && (
+                      <div className={styles.editAcctNote}>
+                        ⚠️ Updating your account will replace the existing one. Ensure the new details are correct.
+                      </div>
+                    )}
                 <div className={styles.payFormCol}>
                   <div className={styles.bankSearchWrap}>
                     <input
@@ -1032,14 +1047,25 @@ export default function TalentProfileEdit() {
                       />
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    className={styles.payBtnOutline}
-                    onClick={handleSaveAccount}
-                    disabled={!acctNumber || !selectedBank && !savedAcct}
-                  >
-                    💾 Save Account
-                  </button>
+                  <div className={styles.payFormRow} style={{gap:"0.5rem"}}>
+                    <button
+                      type="button"
+                      className={styles.payBtnOutline}
+                      onClick={handleSaveAccount}
+                      disabled={!acctNumber || (!selectedBank && !savedAcct)}
+                    >
+                      💾 {savedAcct ? "Update Account" : "Save Account"}
+                    </button>
+                    {editingAcct && (
+                      <button
+                        type="button"
+                        className={styles.payBtnCancel}
+                        onClick={() => { setEditingAcct(false); }}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
                   {payMsg.text && (
                     <p className={payMsg.type === "error" ? styles.payMsgError : styles.payMsgOk}
                        style={{marginTop:"0.5rem",fontSize:"0.85rem"}}>
@@ -1047,6 +1073,8 @@ export default function TalentProfileEdit() {
                     </p>
                   )}
                 </div>
+                  </>
+                )}
               </div>
 
               <div className={styles.payBlock}>

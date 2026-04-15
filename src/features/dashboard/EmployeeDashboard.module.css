@@ -474,3 +474,24 @@
   display: flex;
   align-items: center;
 }
+
+/* ── Earnings pending state ──────────────────────────────────────────────── */
+.earningsMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+.earningsItemPending { color: #f59e0b; }
+.pendingTag { font-size: 0.7rem; color: #f59e0b; }
+
+/* ── Earnings card updates ── */
+.earningsMetaPending  { font-size: 0.8rem; color: #92400e; background: #fef3c7; padding: 0.15rem 0.5rem; border-radius: 2rem; }
+.earningsMetaApproved { font-size: 0.8rem; color: #065f46; background: #d1fae5; padding: 0.15rem 0.5rem; border-radius: 2rem; }
+.earningsEmpty        { font-size: 0.8rem; color: #9ca3af; text-align: center; padding: 0.75rem 0; }
+.earningsItemLeft     { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; min-width: 0; }
+.earningsItemRight    { display: flex; flex-direction: column; align-items: flex-end; gap: 0.1rem; flex-shrink: 0; }
+.earningsItemCompany  { font-size: 0.72rem; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.earningsItemApproved { color: #065f46; font-weight: 700; }
+.earningsItemStatus   { font-size: 0.68rem; color: #9ca3af; }

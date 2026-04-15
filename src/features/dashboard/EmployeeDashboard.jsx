@@ -142,25 +142,17 @@ export default function EmployeeDashboard() {
   };
 
   const stats = useMemo(() => {
-    if (!appliedJobsData?.results)
-      return [
-        { label: "Applications Submitted", value: "0", icon: "📄" },
-        { label: "Under Review", value: "0", icon: "🔍" },
-        { label: "Selected", value: "0", icon: "✅" },
-      ];
-    const applications = appliedJobsData.results;
-    const total = appliedJobsData.count || applications.length;
-    const underReview = applications.filter(
-      (a) => a.status === "UNDER_REVIEW",
-    ).length;
-    const selected = applications.filter((a) => a.status === "SELECTED").length;
+    const applications = appliedJobsData?.results ?? [];
+    const total      = appliedJobsData?.count || applications.length;
+    const underReview = applications.filter(a => a.status === "UNDER_REVIEW").length;
+    const selected    = applications.filter(a => a.status === "SELECTED").length;
     return [
-      { label: "Applications Submitted", value: total.toString(), icon: "📄" },
-      { label: "Under Review", value: underReview.toString(), icon: "🔍" },
-      { label: "Selected", value: selected.toString(), icon: "✅" },
-      { label: "Total Earnings", value: fmtMoney(totalEarned), icon: "💰" },
+      { label: "Applications",  value: total.toString(),        icon: "📄" },
+      { label: "Under Review",  value: underReview.toString(),  icon: "🔍" },
+      { label: "Selected",      value: selected.toString(),     icon: "✅" },
+      { label: "Total Earnings", value: fmtMoney(totalEarned),  icon: "💰" },
     ];
-  }, [appliedJobsData]);
+  }, [appliedJobsData, totalEarned]);
 
   const formatDate = (d) =>
     new Date(d).toLocaleDateString("en-US", {
@@ -316,29 +308,36 @@ export default function EmployeeDashboard() {
           <div className={styles.earningsCard}>
             <h3>💰 Earnings</h3>
             <p className={styles.earningsTotal}>{fmtMoney(totalEarned)}</p>
-            <p className={styles.earningsSubLabel}>Total earned from locum jobs</p>
+            <p className={styles.earningsSubLabel}>Total earned (95% after platform fee)</p>
             <div className={styles.earningsMeta}>
-              <span>⏳ {pendingCount} pending</span>
-              <span>✅ {eligibleCount} approved</span>
+              <span className={styles.earningsMetaPending}>⏳ {pendingCount} pending approval</span>
+              <span className={styles.earningsMetaApproved}>✅ {eligibleCount} approved</span>
             </div>
-            {recentPayments.length > 0 && (
+            {allRecipients.length === 0 ? (
+              <p className={styles.earningsEmpty}>No payments yet. Apply to locum jobs to get started.</p>
+            ) : (
               <div className={styles.earningsList}>
                 {recentPayments.map(r => (
                   <div key={r.id} className={styles.earningsItem}>
-                    <span className={styles.earningsItemJob}>
-                      {r.job_title ?? "Locum job"}
-                      {!r.eligible && <span className={styles.pendingTag}> ⏳</span>}
-                    </span>
-                    <span className={`${styles.earningsItemAmt} ${!r.eligible ? styles.earningsItemPending : ""}`}>
-                      {r.eligible ? "+" : "~"}{fmtMoney(parseFloat(r.payment_amount ?? 0) * TALENT_SHARE)}
-                    </span>
+                    <div className={styles.earningsItemLeft}>
+                      <span className={styles.earningsItemJob}>{r.job_title ?? "Locum job"}</span>
+                      <span className={styles.earningsItemCompany}>{r.company_name ?? ""}</span>
+                    </div>
+                    <div className={styles.earningsItemRight}>
+                      <span className={`${styles.earningsItemAmt} ${!r.eligible ? styles.earningsItemPending : styles.earningsItemApproved}`}>
+                        {fmtMoney(parseFloat(r.payment_amount ?? 0) * TALENT_SHARE)}
+                      </span>
+                      <span className={styles.earningsItemStatus}>
+                        {r.eligible ? "✅ Ready" : "⏳ Pending"}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
-            <Link to={`/employee-dashboard/profile/edit/${user?.talent_id}#earnings`}
+            <Link to={`/employee-dashboard/profile/edit/${user?.talent_id}`}
               className={styles.completeProfile}>
-              View All Earnings
+              {eligibleCount > 0 ? "💸 Withdraw Funds" : "View All Earnings →"}
             </Link>
           </div>
 
