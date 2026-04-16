@@ -137,16 +137,39 @@ export default function EmployerSettings() {
       try {
         setPayReturnMsg({ type: "loading", text: "Verifying payment…" });
 
-        // Call backend verify endpoint
-        // Get token for direct fetch calls
+        // Get auth token - check all possible storage locations
         const authToken = (() => {
+          // 1. redux-persist (most common - RTK Query stores token here)
           try {
             const persist = JSON.parse(localStorage.getItem("persist:root") ?? "{}");
             const auth    = JSON.parse(persist.auth ?? "{}");
-            if (auth.token) return auth.token;
+            if (auth.token) { console.log("[payReturn] token from redux-persist"); return auth.token; }
           } catch {}
-          return localStorage.getItem("token") ?? sessionStorage.getItem("token") ?? localStorage.getItem("authToken") ?? "";
+          // 2. Direct localStorage keys
+          const direct = localStorage.getItem("token") ?? localStorage.getItem("authToken") ?? localStorage.getItem("auth_token");
+          if (direct) { console.log("[payReturn] token from localStorage direct"); return direct; }
+          // 3. sessionStorage
+          const session = sessionStorage.getItem("token") ?? sessionStorage.getItem("authToken");
+          if (session) { console.log("[payReturn] token from sessionStorage"); return session; }
+          // 4. Check all localStorage keys for anything that looks like a token
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.includes("token") || key.includes("Token") || key.includes("auth"))) {
+              try {
+                const val = localStorage.getItem(key);
+                const parsed = JSON.parse(val ?? "");
+                if (typeof parsed === "string" && parsed.length > 20) { console.log("[payReturn] token from key:", key); return parsed; }
+                if (parsed?.token) { console.log("[payReturn] token.token from key:", key); return parsed.token; }
+              } catch {
+                const val = localStorage.getItem(key);
+                if (val && val.length > 20 && !val.startsWith("{")) { console.log("[payReturn] raw token from key:", key); return val; }
+              }
+            }
+          }
+          console.warn("[payReturn] NO TOKEN FOUND in any storage location");
+          return "";
         })();
+        console.log("[payReturn] authToken found:", authToken ? `${authToken.slice(0,8)}...` : "EMPTY");
 
         const verifyRes = await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/payments/verify/?reference=${reference}`,
@@ -186,14 +209,31 @@ export default function EmployerSettings() {
             return;
           }
 
-          // Use RTK mutation so cache is invalidated and talent/admin see update immediately
+          // Use direct fetch with token from localStorage
+          // (RTK mutations can't be reliably called in useEffect on page reload
+          // because redux-persist rehydrates the token asynchronously)
           try {
-            const recipData = await createRecipient({ paymentId, talentId, jobId }).unwrap();
-            console.log("[payReturn] recipient created:", recipData);
-            setPayReturnMsg({ type: "success", text: "✅ Locum payment recorded. The talent will see it in their earnings." });
+            const recipRes = await fetch(
+              `${import.meta.env.VITE_API_BASE_URL}/payments/payment-recipients/`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Token ${authToken}`,
+                },
+                body: JSON.stringify({ payment: paymentId, talent: talentId, job: jobId }),
+              }
+            );
+            const recipData = await recipRes.json();
+            console.log("[payReturn] recipient response:", recipData, "status:", recipRes.status);
+            if (recipRes.ok) {
+              setPayReturnMsg({ type: "success", text: "✅ Locum payment recorded. The talent will see it in their earnings." });
+            } else {
+              setPayReturnMsg({ type: "error", text: `Payment succeeded but recipient recording failed (${recipRes.status}): ${JSON.stringify(recipData)}` });
+            }
           } catch (err) {
-            console.error("[payReturn] createRecipient failed:", err);
-            setPayReturnMsg({ type: "error", text: `Payment succeeded but recipient recording failed: ${err?.data?.error ?? JSON.stringify(err?.data) ?? "unknown error"}` });
+            console.error("[payReturn] createRecipient fetch failed:", err);
+            setPayReturnMsg({ type: "error", text: `Payment succeeded but recipient recording failed: ${err.message}` });
           }
           return;
         }
