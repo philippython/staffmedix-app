@@ -137,39 +137,14 @@ export default function EmployerSettings() {
       try {
         setPayReturnMsg({ type: "loading", text: "Verifying payment…" });
 
-        // Get auth token - check all possible storage locations
-        const authToken = (() => {
-          // 1. redux-persist (most common - RTK Query stores token here)
-          try {
-            const persist = JSON.parse(localStorage.getItem("persist:root") ?? "{}");
-            const auth    = JSON.parse(persist.auth ?? "{}");
-            if (auth.token) { console.log("[payReturn] token from redux-persist"); return auth.token; }
-          } catch {}
-          // 2. Direct localStorage keys
-          const direct = localStorage.getItem("token") ?? localStorage.getItem("authToken") ?? localStorage.getItem("auth_token");
-          if (direct) { console.log("[payReturn] token from localStorage direct"); return direct; }
-          // 3. sessionStorage
-          const session = sessionStorage.getItem("token") ?? sessionStorage.getItem("authToken");
-          if (session) { console.log("[payReturn] token from sessionStorage"); return session; }
-          // 4. Check all localStorage keys for anything that looks like a token
-          for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && (key.includes("token") || key.includes("Token") || key.includes("auth"))) {
-              try {
-                const val = localStorage.getItem(key);
-                const parsed = JSON.parse(val ?? "");
-                if (typeof parsed === "string" && parsed.length > 20) { console.log("[payReturn] token from key:", key); return parsed; }
-                if (parsed?.token) { console.log("[payReturn] token.token from key:", key); return parsed.token; }
-              } catch {
-                const val = localStorage.getItem(key);
-                if (val && val.length > 20 && !val.startsWith("{")) { console.log("[payReturn] raw token from key:", key); return val; }
-              }
-            }
-          }
-          console.warn("[payReturn] NO TOKEN FOUND in any storage location");
-          return "";
-        })();
-        console.log("[payReturn] authToken found:", authToken ? `${authToken.slice(0,8)}...` : "EMPTY");
+        // Read token saved before redirect — this is the ONLY reliable way
+        // since localStorage is empty and Redux resets on full page reload
+        const authToken = sessionStorage.getItem("staffmedix_token") ?? "";
+        console.log("[payReturn] authToken:", authToken ? `${authToken.slice(0,8)}...` : "EMPTY — token was not saved before redirect");
+        if (!authToken) {
+          setPayReturnMsg({ type: "error", text: "Session expired after payment redirect. Please log in again and check your payment history." });
+          return;
+        }
 
         const verifyRes = await fetch(
           `${import.meta.env.VITE_API_BASE_URL}/payments/verify/?reference=${reference}`,
@@ -227,6 +202,7 @@ export default function EmployerSettings() {
             const recipData = await recipRes.json();
             console.log("[payReturn] recipient response:", recipData, "status:", recipRes.status);
             if (recipRes.ok) {
+              sessionStorage.removeItem("staffmedix_token"); // clean up
               setPayReturnMsg({ type: "success", text: "✅ Locum payment recorded. The talent will see it in their earnings." });
             } else {
               setPayReturnMsg({ type: "error", text: `Payment succeeded but recipient recording failed (${recipRes.status}): ${JSON.stringify(recipData)}` });
@@ -505,14 +481,15 @@ export default function EmployerSettings() {
     return `₦${Number(n).toLocaleString()}`;
   }
 
-  // Applied locum jobs for this company
-  const { data: appliedJobsRaw } = useGetAppliedJobsQuery(
-    { limit: 200 },
+  // Get all applied jobs for this employer's jobs
+  // Pass company param - backend AppliedJobViewSet supports filterset_fields = ['company']
+  const { data: appliedJobsRaw, refetch: refetchApplied } = useGetAppliedJobsQuery(
+    { company: companyId, limit: 500 },
     { skip: !companyId }
   );
-  const locumAppliedJobs = (appliedJobsRaw?.results ?? appliedJobsRaw ?? []).filter(aj =>
-    (aj.job?.employment_type ?? "").toUpperCase() === "LOCUM"
-  );
+  // ALL applied jobs regardless of employment type — employer pays for any role
+  const locumAppliedJobs = appliedJobsRaw?.results ?? appliedJobsRaw ?? [];
+  console.log("[locum] applied jobs for employer:", locumAppliedJobs.length, locumAppliedJobs[0]);
 
   async function handleSubscribe(plan) {
     setErrMsg(""); setSuccessMsg("");
@@ -537,6 +514,8 @@ export default function EmployerSettings() {
           paymentId: res.payment_id,
           reference: res.reference,
         }));
+        // Save token before page reload — Redux resets on redirect
+        sessionStorage.setItem("staffmedix_token", token);
         window.location.href = res.authorization_url;
       }
     } catch (err) {
@@ -557,10 +536,18 @@ export default function EmployerSettings() {
     setErrMsg("");
     try {
       const res = await initiatePayment({
-        amount: payAmount,
-        reason: "locum",
-        note: payLocumNote || `Locum: ${selectedAppliedJob.job?.title} — ${selectedAppliedJob.talent?.full_name}`,
+        amount:    payAmount,
+        reason:    "locum",
+        talent_id: selectedAppliedJob.talent?.user?.id
+                ?? selectedAppliedJob.talent?.user_id
+                ?? selectedAppliedJob.talent?.user
+                ?? selectedAppliedJob.talent?.id,
+        job_id:    selectedAppliedJob.id,
+        note:      payLocumNote || `Locum: ${selectedAppliedJob.job?.title} — ${selectedAppliedJob.talent?.full_name}`,
       }).unwrap();
+      console.log("[locum] FULL selectedAppliedJob:", JSON.stringify(selectedAppliedJob, null, 2));
+      console.log("[locum] talent field:", selectedAppliedJob.talent);
+      console.log("[locum] talent_id resolved:", selectedAppliedJob.talent?.user?.id ?? selectedAppliedJob.talent?.user_id ?? selectedAppliedJob.talent?.user ?? selectedAppliedJob.talent?.id);
       if (res.authorization_url) {
         // Resolve talentId — backend accepts both User UUID and Talents UUID
         const talentId = selectedAppliedJob.talent?.user?.id
@@ -573,10 +560,13 @@ export default function EmployerSettings() {
           talentId,
           jobId: selectedAppliedJob.id,
         }));
+        // Save token before page reload — Redux resets on redirect
+        sessionStorage.setItem("staffmedix_token", token);
         window.location.href = res.authorization_url;
       }
     } catch (err) {
-      setErrMsg(err?.data?.detail ?? err?.data?.error ?? "Payment initiation failed");
+      console.error("[initiatePayment] error:", err);
+      setErrMsg(err?.data?.detail ?? err?.data?.error ?? JSON.stringify(err?.data) ?? `Payment initiation failed (${err?.status})`);
     }
   }
 

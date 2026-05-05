@@ -8,27 +8,18 @@ export const jobsApi = createApi({
     baseUrl: baseUrl,
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth.token;
-
       if (token) {
         headers.set("Authorization", `Token ${token}`);
       }
       return headers;
     },
   }),
-  tagTypes: ["Jobs", "AppliedJobs"],
+  tagTypes: ["Jobs", "AppliedJobs", "TalentProfile"],
   endpoints: (builder) => ({
     getJobs: builder.query({
-      query: ({
-        limit = 10,
-        offset = 0,
-        ...filters //
-      } = {}) => ({
+      query: ({ limit = 10, offset = 0, ...filters } = {}) => ({
         url: "job-postings/",
-        params: {
-          limit,
-          offset,
-          ...filters,
-        },
+        params: { limit, offset, ...filters },
       }),
       providesTags: ["Jobs"],
     }),
@@ -44,14 +35,16 @@ export const jobsApi = createApi({
 
     getJobById: builder.query({
       query: (jobId) => `job-postings/${jobId}/`,
+      providesTags: (result, error, jobId) => [{ type: "Jobs", id: jobId }],
     }),
+
     updateJob: builder.mutation({
       query: ({ id, data }) => ({
         url: `job-postings/${id}/`,
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Job", id }, "Job"],
+      invalidatesTags: (result, error, { id }) => [{ type: "Jobs", id }, "Jobs"],
     }),
 
     deleteJob: builder.mutation({
@@ -59,34 +52,33 @@ export const jobsApi = createApi({
         url: `job-postings/${id}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Job"],
+      invalidatesTags: ["Jobs"],
     }),
 
     applyToJob: builder.mutation({
       query: (jobId) => ({
         url: "applied-jobs/",
         method: "POST",
-        body: {
-          job: jobId,
-        },
+        body: { job: jobId },
       }),
-      invalidatesTags: ["AppliedJobs"],
+      // Invalidate AppliedJobs AND TalentProfile so applied_jobs list
+      // is fresh immediately — prevents stale data and duplicate applications
+      invalidatesTags: ["AppliedJobs", "TalentProfile"],
     }),
 
-    // Get all applied jobs for current user
     getAppliedJobs: builder.query({
-      query: ({ limit = 10, offset = 0, talent } = {}) => ({
+      query: ({ limit = 10, offset = 0, talent, company } = {}) => ({
         url: "applied-jobs/",
         params: {
           limit,
           offset,
-          ...(talent && { talent }),
+          ...(talent  && { talent }),
+          ...(company && { company }),
         },
       }),
       providesTags: ["AppliedJobs"],
     }),
 
-    // Get applied job by ID
     getAppliedJobById: builder.query({
       query: (appliedJobId) => `applied-jobs/${appliedJobId}/`,
       providesTags: ["AppliedJobs"],
@@ -101,7 +93,6 @@ export const jobsApi = createApi({
       invalidatesTags: ["AppliedJobs"],
     }),
 
-    // Delete/Withdraw applied job
     deleteAppliedJob: builder.mutation({
       query: (appliedJobId) => ({
         url: `applied-jobs/${appliedJobId}/`,
